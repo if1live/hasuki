@@ -29,6 +29,30 @@ class App extends React.Component {
       played: 0,
       loaded: 0,
     });
+
+    const r = Math.floor(Math.random() * 100);
+    if (navigator.mediaSession) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'todo-title',
+        artist: 'todo-artist',
+        album: 'todo-album',
+        artwork: [
+          { src: `https://fakeimg.pl/96x96/?text=${r}`, sizes: '96x96', type: 'image/png' },
+          { src: `https://fakeimg.pl/128x128/?text=${r}`, sizes: '128x128', type: 'image/png' },
+          { src: `https://fakeimg.pl/192x192/?text=${r}`, sizes: '192x192', type: 'image/png' },
+          { src: `https://fakeimg.pl/256x256/?text=${r}`, sizes: '256x256', type: 'image/png' },
+          { src: `https://fakeimg.pl/384x384/?text=${r}`, sizes: '384x384', type: 'image/png' },
+          { src: `https://fakeimg.pl/512x512/?text=${r}`, sizes: '512x512', type: 'image/png' },
+        ],
+      });
+
+      // navigator.mediaSession.setActionHandler('play', () => { /**/});
+      // navigator.mediaSession.setActionHandler('pause', () => { /**/ });
+      navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
+      navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
+      navigator.mediaSession.setActionHandler('previoustrack', () => { /* Code excerpted. */ });
+      navigator.mediaSession.setActionHandler('nexttrack', () => { /* Code excerpted. */ });
+    }
   }
 
   private playPause = () => {

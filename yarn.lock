@@ -54,6 +54,11 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
+"@types/wicg-mediasession@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/wicg-mediasession/-/wicg-mediasession-1.0.2.tgz#c6488b01a935407d0dd8b7f9a5639d1255e96c28"
+  integrity sha512-/Jnf5oMHCOuv7J1apRAQjzXPkKm1W0Pbrlh3NL/ScV2TuGOOH5z+qxD6HI/gBpz0ZIOFWGsE1w19LmjEVn7V4w==
+
 abab@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/abab/-/abab-1.0.4.tgz#5faad9c2c07f60dd76770f71cf025b62a63cfd4e"
