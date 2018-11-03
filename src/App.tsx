@@ -3,6 +3,8 @@ import ReactPlayer from 'react-player';
 import Duration from './Duration';
 
 const sampleUrls = [
+  'https://soundcloud.com/kaochan194/sets/yosuga-no-sora-ost',
+  'https://www.youtube.com/watch?v=xxOcLcPrs2w',
   'http://www.largesound.com/ashborytour/sound/brobob.mp3',
   'http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav',
 ];
@@ -22,6 +24,26 @@ class App extends React.Component {
     seeking: undefined,
     playIndex: 0,
   };
+
+  public componentDidMount() {
+    if (navigator.mediaSession) {
+      // navigator.mediaSession.setActionHandler('play', () => { /**/});
+      // navigator.mediaSession.setActionHandler('pause', () => { /**/ });
+      navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
+      navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
+      navigator.mediaSession.setActionHandler('previoustrack', this.previousTrack);
+      navigator.mediaSession.setActionHandler('nexttrack', this.nextTrack);
+    }
+  }
+
+  public componentWillUnmount() {
+    if (navigator.mediaSession) {
+      navigator.mediaSession.setActionHandler('seekbackward', null);
+      navigator.mediaSession.setActionHandler('seekforward', null);
+      navigator.mediaSession.setActionHandler('previoustrack', null);
+      navigator.mediaSession.setActionHandler('nexttrack', null);
+    }
+  }
 
   public load = (url: string) => {
     this.setState({
@@ -45,13 +67,6 @@ class App extends React.Component {
           { src: `https://fakeimg.pl/512x512/?text=${r}`, sizes: '512x512', type: 'image/png' },
         ],
       });
-
-      // navigator.mediaSession.setActionHandler('play', () => { /**/});
-      // navigator.mediaSession.setActionHandler('pause', () => { /**/ });
-      navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
-      navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
-      navigator.mediaSession.setActionHandler('previoustrack', () => { /* Code excerpted. */ });
-      navigator.mediaSession.setActionHandler('nexttrack', () => { /* Code excerpted. */ });
     }
   }
 
@@ -73,6 +88,13 @@ class App extends React.Component {
   private onPlay = () => {
     console.log('onPlay');
     this.setState({ playing: true });
+
+    if (navigator.mediaSession) {
+      navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
+      navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
+      navigator.mediaSession.setActionHandler('previoustrack', this.previousTrack);
+      navigator.mediaSession.setActionHandler('nexttrack', this.nextTrack);
+    }
   }
   private onPause = () => {
     console.log('onPause');
@@ -94,6 +116,24 @@ class App extends React.Component {
     if (!this.state.seeking) {
       this.setState(state);
     }
+  }
+
+  private nextTrack = () => {
+    this.setState({ url: null, playing: false });
+    const curr = this.state.playIndex;
+    const next = curr + 1;
+    const url = sampleUrls[next % sampleUrls.length];
+    this.load(url);
+    this.setState({ playIndex: next, playing: true });
+  }
+
+  private previousTrack = () => {
+    this.setState({ url: null, playing: false });
+    const curr = this.state.playIndex;
+    const next = curr - 1;
+    const url = sampleUrls[next % sampleUrls.length];
+    this.load(url);
+    this.setState({ playIndex: next, playing: true });
   }
 
   private onEnded = () => {
@@ -160,10 +200,12 @@ class App extends React.Component {
               <td>
                 <button onClick={() => {
                   // onError DOMException: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD
-                  this.load(sampleUrls[this.state.playIndex]);
+                  this.load(sampleUrls[this.state.playIndex % sampleUrls.length]);
                 }}>Play</button>
                 <button onClick={this.stop}>Stop</button>
                 <button onClick={this.playPause}>{playing ? 'Pause' : 'Play'}</button>
+                <button onClick={this.previousTrack}>previous track</button>
+                <button onClick={this.nextTrack}>next track</button>
               </td>
             </tr>
             <tr>
