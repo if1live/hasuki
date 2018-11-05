@@ -1,6 +1,9 @@
 import * as React from 'react';
+import 'semantic-ui-css/semantic.min.css';
 import ReactPlayer from 'react-player';
-import Duration from './Duration';
+
+import { ControlButtonGroup, PlayerStatusViewer, VolumeControl, SeekControl, PlayListComponent } from './components';
+import { PlayListItem } from './models';
 
 const sampleUrls = [
   'https://soundcloud.com/kaochan194/sets/yosuga-no-sora-ost',
@@ -76,11 +79,11 @@ class App extends React.Component {
   private stop = () => {
     this.setState({ url: null, playing: false });
   }
-  private toggleLoop = () => {
-    this.setState({ loop: !this.state.loop });
-  }
-  private setVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ volume: parseFloat(e.target.value) });
+  // private toggleLoop = () => {
+  //   this.setState({ loop: !this.state.loop });
+  // }
+  private setVolume = (volume: number) => {
+    this.setState({ volume });
   }
   private toggleMuted = () => {
     this.setState({ muted: !this.state.muted });
@@ -167,131 +170,84 @@ class App extends React.Component {
     // const SEPARATOR = ' · ';
 
     return (
-      <div className="app">
-        <section className="section">
-          <h1>ReactPlayer Demo</h1>
-          <div className="player-wrapper">
-            <ReactPlayer
-              ref={this.ref}
-              className="react-player"
-              width="100%"
-              height="100%"
-              url={url}
-              playing={playing}
-              loop={loop}
-              volume={volume}
-              muted={muted}
-              onReady={() => console.log('onReady')}
-              onStart={() => console.log('onStart')}
-              onPlay={this.onPlay}
-              onPause={this.onPause}
-              onBuffer={() => console.log('onBuffer')}
-              onSeek={(e) => console.log('onSeek', e)}
-              onEnded={this.onEnded}
-              onError={(e) => console.log('onError', e)}
-              onProgress={this.onProgress}
-              onDuration={this.onDuration}
-            />
-          </div>
+      <div>
+        <h1>Hasuki</h1>
+        <div className="player-wrapper">
+          <ReactPlayer
+            ref={this.ref}
+            className="react-player"
+            width="100%"
+            height="100%"
+            url={url}
+            playing={playing}
+            loop={loop}
+            volume={volume}
+            muted={muted}
+            onReady={() => console.log('onReady')}
+            onStart={() => console.log('onStart')}
+            onPlay={this.onPlay}
+            onPause={this.onPause}
+            onBuffer={() => console.log('onBuffer')}
+            onSeek={(e) => console.log('onSeek', e)}
+            onEnded={this.onEnded}
+            onError={(e) => console.log('onError', e)}
+            onProgress={this.onProgress}
+            onDuration={this.onDuration}
+          />
+        </div>
 
-          <table><tbody>
-            <tr>
-              <th>Controls</th>
-              <td>
-                <button onClick={() => {
-                  // onError DOMException: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD
-                  this.load(sampleUrls[this.state.playIndex % sampleUrls.length]);
-                }}>Play</button>
-                <button onClick={this.stop}>Stop</button>
-                <button onClick={this.playPause}>{playing ? 'Pause' : 'Play'}</button>
-                <button onClick={this.previousTrack}>previous track</button>
-                <button onClick={this.nextTrack}>next track</button>
-              </td>
-            </tr>
-            <tr>
-              <th>Seek</th>
-              <td>
-                <input
-                  type="range" min={0} max={1} step="any"
-                  value={played}
-                  onMouseDown={this.onSeekMouseDown}
-                  onChange={this.onSeekChange}
-                  onMouseUp={this.onSeekMouseUp}
-                />
-              </td>
-            </tr>
-            <tr>
-              <th>Volume</th>
-              <td>
-                <input type="range" min={0} max={1} step="any" value={volume} onChange={this.setVolume} />
-              </td>
-            </tr>
-            <tr>
-              <th>
-                <label htmlFor="muted">Muted</label>
-              </th>
-              <td>
-                <input id="muted" type="checkbox" checked={muted} onChange={this.toggleMuted} />
-              </td>
-            </tr>
-            <tr>
-              <th>
-                <label htmlFor="loop">Loop</label>
-              </th>
-              <td>
-                <input id="loop" type="checkbox" checked={loop} onChange={this.toggleLoop} />
-              </td>
-            </tr>
-            <tr>
-              <th>Played</th>
-              <td><progress max={1} value={played} /></td>
-            </tr>
-            <tr>
-              <th>Loaded</th>
-              <td><progress max={1} value={loaded} /></td>
-            </tr>
-          </tbody></table>
-        </section>
-        <section className="section">
-          <h2>State</h2>
+        <div>
+          <button
+            onClick={() => {
+              // onError DOMException: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD
+              this.load(sampleUrls[this.state.playIndex % sampleUrls.length]);
+            }}
+          >start</button>
+        </div>
 
-          <table><tbody>
-            <tr>
-              <th>url</th>
-              <td className={!url ? 'faded' : ''}>
-                {url || 'null'}
-              </td>
-            </tr>
-            <tr>
-              <th>playing</th>
-              <td>{playing ? 'true' : 'false'}</td>
-            </tr>
-            <tr>
-              <th>volume</th>
-              <td>{volume.toFixed(3)}</td>
-            </tr>
-            <tr>
-              <th>played</th>
-              <td>{played.toFixed(3)}</td>
-            </tr>
-            <tr>
-              <th>loaded</th>
-              <td>{loaded.toFixed(3)}</td>
-            </tr>
-            <tr>
-              <th>duration</th>
-              <td><Duration seconds={duration} /></td>
-            </tr>
-            <tr>
-              <th>elapsed</th>
-              <td><Duration seconds={duration * played} /></td>
-            </tr>
-            <tr>
-              <th>remaining</th>
-              <td><Duration seconds={duration * (1 - played)} /></td>
-            </tr>
-          </tbody></table>
-        </section>
+        <ControlButtonGroup
+          stop={this.stop}
+          playPause={this.playPause}
+          previousTrack={this.previousTrack}
+          nextTrack={this.nextTrack}
+          shuffle={() => { /**/ }}
+          sync={() => { /**/ }}
+          playing={playing}
+        />
+
+        <PlayListComponent items={
+          sampleUrls.map((u, idx): PlayListItem => ({
+            url: u,
+            title: `title-${idx}`,
+            seconds: 123,
+          }))
+        } />
+
+        <h2>volume</h2>
+        <VolumeControl
+          volume={volume}
+          muted={muted}
+          setVolume={this.setVolume}
+          toggleMuted={this.toggleMuted}
+        />
+
+        <h2>seek</h2>
+        <SeekControl
+          played={played}
+          onSeekMouseDown={this.onSeekMouseDown}
+          onSeekMouseUp={this.onSeekMouseUp}
+          onSeekChange={this.onSeekChange}
+        />
+
+        <h2>state</h2>
+        <PlayerStatusViewer
+          url={url}
+          playing={playing}
+          volume={volume}
+          played={played}
+          loaded={loaded}
+          duration={duration}
+        />
       </div>
     );
   }
