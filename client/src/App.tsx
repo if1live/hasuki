@@ -1,32 +1,56 @@
 import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import ReactPlayer from 'react-player';
+import {
+  SettingsView,
+  DebugView,
+  PlayListView,
+  PlayerView,
+} from './components';
+import { SheetProviderProps } from './SheetProvider';
+import { Header, Icon, Menu } from 'semantic-ui-react';
 
-import { ControlButtonGroup, PlayerStatusViewer, VolumeControl, SeekControl, PlayListComponent } from './components';
-import { PlayListItem } from './models';
-import { AuthorizedState, SheetProviderProps } from './SheetProvider';
-
-const sampleUrls = [
+// TODO local db로 옮기기
+export const sampleUrls = [
+  'http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav',
   'https://soundcloud.com/kaochan194/sets/yosuga-no-sora-ost',
   'https://www.youtube.com/watch?v=xxOcLcPrs2w',
   'http://www.largesound.com/ashborytour/sound/brobob.mp3',
-  'http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav',
 ];
 
-class App extends React.Component<SheetProviderProps> {
+type MenuKeys = 'playlist' | 'settings' | 'dev';
+
+interface State {
+  url?: string;
+  baseUrl?: string;
+  playing: boolean;
+  volume: number;
+  muted: boolean;
+  played: number;
+  loaded: number;
+  duration: number;
+  loop: boolean;
+  seeking?: boolean;
+  // TODO
+  playIndex: number;
+  activeItem: MenuKeys;
+}
+
+export type PlayerState = State;
+
+class App extends React.Component<SheetProviderProps, State> {
   private player: ReactPlayer;
 
-  public state = {
-    url: undefined as (string | undefined),
-    playing: true,
+  public state: State = {
+    playing: false,
     volume: 0.8,
     muted: false,
     played: 0,
     loaded: 0,
     duration: 0,
     loop: false,
-    seeking: undefined,
     playIndex: 0,
+    activeItem: 'playlist',
   };
 
   public componentDidMount() {
@@ -38,6 +62,9 @@ class App extends React.Component<SheetProviderProps> {
       navigator.mediaSession.setActionHandler('previoustrack', this.previousTrack);
       navigator.mediaSession.setActionHandler('nexttrack', this.nextTrack);
     }
+
+    // 첫번째 곡 연결시키기
+    this.load(sampleUrls[0]);
   }
 
   public componentWillUnmount() {
@@ -50,8 +77,10 @@ class App extends React.Component<SheetProviderProps> {
   }
 
   public load = (url: string) => {
+    // 유튜브는 비디오 링크, 오디오 링크를 쪼개야한다
     this.setState({
       url,
+      baseUrl: url,
       played: 0,
       loaded: 0,
     });
@@ -78,7 +107,11 @@ class App extends React.Component<SheetProviderProps> {
     this.setState({ playing: !this.state.playing });
   }
   private stop = () => {
-    this.setState({ url: null, playing: false });
+    this.setState({
+      url: undefined,
+      baseUrl: undefined,
+      playing: false,
+    });
   }
   // private toggleLoop = () => {
   //   this.setState({ loop: !this.state.loop });
@@ -114,16 +147,24 @@ class App extends React.Component<SheetProviderProps> {
     this.setState({ seeking: false });
     this.player.seekTo(parseFloat(e.target.value));
   }
-  private onProgress = (state: { played: number, playedSeconds: number, loaded: number, loadedSeconds: number }) => {
-    console.log('onProgress', state);
+  private onProgress = (state: {
+    played: number,
+    playedSeconds: number,
+    loaded: number,
+    loadedSeconds: number,
+  }) => {
+    // console.log('onProgress', state);
     // We only want to update time slider if we are not currently seeking
     if (!this.state.seeking) {
-      this.setState(state);
+      this.setState({
+        played: state.played,
+        loaded: state.loaded,
+      });
     }
   }
 
   private nextTrack = () => {
-    this.setState({ url: null, playing: false });
+    this.setState({ url: undefined, playing: false });
     const curr = this.state.playIndex;
     const next = curr + 1;
     const url = sampleUrls[next % sampleUrls.length];
@@ -132,7 +173,7 @@ class App extends React.Component<SheetProviderProps> {
   }
 
   private previousTrack = () => {
-    this.setState({ url: null, playing: false });
+    this.setState({ url: undefined, playing: false });
     const curr = this.state.playIndex;
     const next = curr - 1;
     const url = sampleUrls[next % sampleUrls.length];
@@ -162,30 +203,34 @@ class App extends React.Component<SheetProviderProps> {
   //   );
   // }
 
+  private handleMenuItemClick = (
+    e: any,
+    { name }: { name: MenuKeys },
+  ) => this.setState({ activeItem: name })
+
   private ref = (player: ReactPlayer) => {
     this.player = player;
   }
 
   public render() {
-    const { url, playing, volume, muted, loop, played, duration, loaded } = this.state;
-    // const SEPARATOR = ' · ';
-
-    const { authState, authClicked, signoutClicked } = this.props;
+    const {
+      url,
+      playing,
+      volume,
+      muted,
+      loop,
+      activeItem,
+    } = this.state;
 
     return (
       <div>
-        <h1>Hasuki</h1>
-
-        <button
-          onClick={authClicked}
-          hidden={authState !== AuthorizedState.NotAuthorized}>
-          authorize
-         </button>
-        <button
-          onClick={signoutClicked}
-          hidden={authState !== AuthorizedState.Authorized}>
-          signout
-          </button>
+        <Header as="h2">
+          <Icon name="music" />
+          <Header.Content>
+            Hasuki
+          <Header.Subheader>Audio Player</Header.Subheader>
+          </Header.Content>
+        </Header>
 
         <div className="player-wrapper">
           <ReactPlayer
@@ -211,58 +256,51 @@ class App extends React.Component<SheetProviderProps> {
           />
         </div>
 
-        <div>
-          <button
-            onClick={() => {
-              // onError DOMException: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD
-              this.load(sampleUrls[this.state.playIndex % sampleUrls.length]);
-            }}
-          >start</button>
-        </div>
-
-        <ControlButtonGroup
+        <PlayerView
+          {...this.state}
           stop={this.stop}
           playPause={this.playPause}
           previousTrack={this.previousTrack}
           nextTrack={this.nextTrack}
-          shuffle={() => { /**/ }}
-          sync={() => { /**/ }}
-          playing={playing}
         />
 
-        <PlayListComponent items={
-          sampleUrls.map((u, idx): PlayListItem => ({
-            url: u,
-            title: `title-${idx}`,
-            seconds: 123,
-          }))
-        } />
+        <Menu pointing secondary icon size="mini">
+          <Menu.Item
+            name="playlist"
+            active={activeItem === 'playlist'}
+            onClick={this.handleMenuItemClick}>
+            <Icon name="play" />
+          </Menu.Item>
+          <Menu.Item
+            name="settings"
+            active={activeItem === 'settings'}
+            onClick={this.handleMenuItemClick} >
+            <Icon name="setting" />
+          </Menu.Item>
+          <Menu.Item
+            name="dev"
+            active={activeItem === 'dev'}
+            onClick={this.handleMenuItemClick}>
+            <Icon name="code" />
+          </Menu.Item>
+        </Menu>
 
-        <h2>volume</h2>
-        <VolumeControl
-          volume={volume}
-          muted={muted}
-          setVolume={this.setVolume}
-          toggleMuted={this.toggleMuted}
-        />
+        <div hidden={activeItem !== 'playlist'}>
+          <PlayListView />
+        </div>
 
-        <h2>seek</h2>
-        <SeekControl
-          played={played}
-          onSeekMouseDown={this.onSeekMouseDown}
-          onSeekMouseUp={this.onSeekMouseUp}
-          onSeekChange={this.onSeekChange}
-        />
+        <div hidden={activeItem !== 'settings'}>
+          <SettingsView {...this.props} />
+        </div>
 
-        <h2>state</h2>
-        <PlayerStatusViewer
-          url={url}
-          playing={playing}
-          volume={volume}
-          played={played}
-          loaded={loaded}
-          duration={duration}
-        />
+        <div hidden={activeItem !== 'dev'}>
+          <DebugView {...this.state}
+            setVolume={this.setVolume}
+            toggleMuted={this.toggleMuted}
+            onSeekMouseDown={this.onSeekMouseDown}
+            onSeekMouseUp={this.onSeekMouseUp}
+            onSeekChange={this.onSeekChange} />
+        </div>
       </div>
     );
   }

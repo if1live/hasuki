@@ -1,17 +1,36 @@
 import * as React from 'react';
 import { Button } from 'semantic-ui-react';
+import { getLinkType, LinkType } from 'src/helpers';
 
 interface Props {
   stop: () => void;
   playPause: () => void;
   previousTrack: () => void;
   nextTrack: () => void;
-  shuffle: () => void;
-  sync: () => void;
+  random: () => void;
   playing: boolean;
+  baseUrl?: string;
 }
 
 export class ControlButtonGroup extends React.Component<Props> {
+  private openUrl = () => {
+    if (this.isExternalUrl()) {
+      const { baseUrl } = this.props;
+      window.open(baseUrl, '_blank');
+    }
+  }
+
+  private isExternalUrl = () => {
+    const { baseUrl } = this.props;
+    if (baseUrl) {
+      const linktype = getLinkType(baseUrl);
+      if (linktype !== LinkType.None) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public render() {
     const {
       playing,
@@ -19,8 +38,7 @@ export class ControlButtonGroup extends React.Component<Props> {
       playPause,
       previousTrack,
       nextTrack,
-      shuffle,
-      sync,
+      random,
     } = this.props;
 
     return (
@@ -29,8 +47,9 @@ export class ControlButtonGroup extends React.Component<Props> {
         <Button icon={playing ? 'pause' : 'play'} onClick={playPause}></Button>
         <Button icon="step backward" onClick={previousTrack} />
         <Button icon="step forward" onClick={nextTrack} />
-        <Button icon="shuffle" onClick={shuffle} />
-        <Button icon="sync" onClick={sync} />
+        <Button icon="random" onClick={random} />
+        <Button icon="external" onClick={this.openUrl}
+          disabled={!this.isExternalUrl()} />
       </Button.Group>
     );
   }
