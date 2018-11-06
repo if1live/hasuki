@@ -4,6 +4,7 @@ import ReactPlayer from 'react-player';
 
 import { ControlButtonGroup, PlayerStatusViewer, VolumeControl, SeekControl, PlayListComponent } from './components';
 import { PlayListItem } from './models';
+import { AuthorizedState } from './Root';
 
 const sampleUrls = [
   'https://soundcloud.com/kaochan194/sets/yosuga-no-sora-ost',
@@ -12,7 +13,13 @@ const sampleUrls = [
   'http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav',
 ];
 
-class App extends React.Component {
+interface Props {
+  authState: AuthorizedState;
+  authClicked: () => void;
+  signoutClicked: () => void;
+}
+
+class App extends React.Component<Props> {
   private player: ReactPlayer;
 
   public state = {
@@ -169,9 +176,23 @@ class App extends React.Component {
     const { url, playing, volume, muted, loop, played, duration, loaded } = this.state;
     // const SEPARATOR = ' · ';
 
+    const { authState, authClicked, signoutClicked } = this.props;
+
     return (
       <div>
         <h1>Hasuki</h1>
+
+        <button
+          onClick={authClicked}
+          hidden={authState !== AuthorizedState.NotAuthorized}>
+          authorize
+         </button>
+        <button
+          onClick={signoutClicked}
+          hidden={authState !== AuthorizedState.Authorized}>
+          signout
+          </button>
+
         <div className="player-wrapper">
           <ReactPlayer
             ref={this.ref}
