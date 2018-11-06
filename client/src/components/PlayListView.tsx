@@ -10,7 +10,7 @@ export class PlayListView extends React.Component {
         sampleUrls.map((u, idx): PlayListItem => ({
           url: u,
           title: `title-${idx}`,
-          seconds: 123,
+          milliseconds: 123000,
         }))
       } />
     );

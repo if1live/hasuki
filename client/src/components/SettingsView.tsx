@@ -1,18 +1,58 @@
 import * as React from 'react';
 import { SheetProviderProps, AuthorizedState } from 'src/SheetProvider';
 import { Button, Divider } from 'semantic-ui-react';
+import { SHEET_ID } from 'src/settings';
+import { PlayListItem } from 'src/models';
 
 interface Props {
 
 }
+
+const makeSheetFetchPromise = (): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const gapi = window.gapi;
+    gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: 'default!A2:C',
+    }).then(
+      (response: any) => resolve(response),
+      (response: any) => reject(response),
+    );
+  });
+};
+
+const makePlayListItem = (row: any[]): PlayListItem => {
+  const url = row[0] as (string);
+  const title = row[1] as (string | undefined);
+  const duration = row[2] as (string | undefined);
+  let milliseconds: (number | undefined);
+  if (duration) {
+    milliseconds = parseInt(duration, 10);
+  }
+
+  return {
+    url, title, milliseconds,
+  };
+};
 
 export class SettingsView extends React.Component<Props & SheetProviderProps> {
   private resetDB = () => {
     console.log('TODO reset db');
   }
 
-  private syncPlaylist = () => {
-    console.log('TODO sync db');
+  private syncPlaylist = async () => {
+    try {
+      const response = await makeSheetFetchPromise();
+      const range = response.result;
+      if (range.values.length > 0) {
+        const items = range.values.map(makePlayListItem);
+        console.log(items);
+      }
+      alert(`loaded item: ${range.values.length}`);
+
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   private shufflePlaylist = () => {

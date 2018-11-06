@@ -13,9 +13,9 @@ const itemDetailStyle = {
 
 export class PlayListItemComponent extends React.Component<Props> {
   private get length() {
-    const { seconds } = this.props.item;
-    return seconds
-      ? secondsToDisplay(seconds)
+    const { milliseconds } = this.props.item;
+    return milliseconds
+      ? secondsToDisplay(milliseconds / 1000)
       : '?:??';
   }
 
