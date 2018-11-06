@@ -4,6 +4,8 @@ import ytdl, {
   videoInfo,
   videoFormat,
 } from 'ytdl-core';
+import 'express-async-errors';
+
 
 export const app = express();
 app.use(cors());
@@ -44,10 +46,15 @@ app.get('/youtube/audio-url', async (req, res) => {
   }
 
   const youtubeUrl = toYoutubeUrl(videoId);
-  const info = await fetchYoutubeInfo(youtubeUrl);
-  const formats = info.formats
-    .filter(isAudioFormat)
-    .sort(compareHighBitrate)
-    .map(stripUnusedData);
-  res.send(formats);
+  try {
+    const info = await fetchYoutubeInfo(youtubeUrl);
+    const formats = info.formats
+      .filter(isAudioFormat)
+      .sort(compareHighBitrate)
+      .map(stripUnusedData);
+    res.send(formats);
+
+  } catch (err) {
+    throw err;
+  }
 });
