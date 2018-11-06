@@ -4,7 +4,7 @@ import ReactPlayer from 'react-player';
 
 import { ControlButtonGroup, PlayerStatusViewer, VolumeControl, SeekControl, PlayListComponent } from './components';
 import { PlayListItem } from './models';
-import { AuthorizedState } from './Root';
+import { AuthorizedState, SheetProviderProps } from './SheetProvider';
 
 const sampleUrls = [
   'https://soundcloud.com/kaochan194/sets/yosuga-no-sora-ost',
@@ -13,13 +13,7 @@ const sampleUrls = [
   'http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav',
 ];
 
-interface Props {
-  authState: AuthorizedState;
-  authClicked: () => void;
-  signoutClicked: () => void;
-}
-
-class App extends React.Component<Props> {
+class App extends React.Component<SheetProviderProps> {
   private player: ReactPlayer;
 
   public state = {
