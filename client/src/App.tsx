@@ -9,14 +9,15 @@ import {
 } from './components';
 import { SheetProviderProps } from './SheetProvider';
 import { Header, Icon, Menu } from 'semantic-ui-react';
+import { PlayListItem } from './models';
 
 // TODO local db로 옮기기
-export const sampleUrls = [
-  'http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav',
-  'https://soundcloud.com/kaochan194/sets/yosuga-no-sora-ost',
-  'https://www.youtube.com/watch?v=xxOcLcPrs2w',
-  'http://www.largesound.com/ashborytour/sound/brobob.mp3',
-];
+// export const sampleUrls = [
+//   'http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav',
+//   'https://soundcloud.com/kaochan194/sets/yosuga-no-sora-ost',
+//   'https://www.youtube.com/watch?v=xxOcLcPrs2w',
+//   'http://www.largesound.com/ashborytour/sound/brobob.mp3',
+// ];
 
 type MenuKeys = 'playlist' | 'settings' | 'dev';
 
@@ -34,6 +35,8 @@ interface State {
   // TODO
   playIndex: number;
   activeItem: MenuKeys;
+
+  playlist: PlayListItem[];
 }
 
 export type PlayerState = State;
@@ -51,6 +54,7 @@ class App extends React.Component<SheetProviderProps, State> {
     loop: false,
     playIndex: 0,
     activeItem: 'playlist',
+    playlist: [],
   };
 
   public componentDidMount() {
@@ -64,7 +68,7 @@ class App extends React.Component<SheetProviderProps, State> {
     }
 
     // 첫번째 곡 연결시키기
-    this.load(sampleUrls[0]);
+    // this.load(sampleUrls[0]);
   }
 
   public componentWillUnmount() {
@@ -76,11 +80,11 @@ class App extends React.Component<SheetProviderProps, State> {
     }
   }
 
-  public load = (url: string) => {
+  public load = async (item: PlayListItem) => {
     // 유튜브는 비디오 링크, 오디오 링크를 쪼개야한다
     this.setState({
-      url,
-      baseUrl: url,
+      url: item.url,
+      baseUrl: item.url,
       played: 0,
       loaded: 0,
     });
@@ -165,34 +169,51 @@ class App extends React.Component<SheetProviderProps, State> {
 
   private nextTrack = () => {
     this.setState({ url: undefined, playing: false });
-    const curr = this.state.playIndex;
+
+    const { playIndex: curr, playlist } = this.state;
     const next = curr + 1;
-    const url = sampleUrls[next % sampleUrls.length];
-    this.load(url);
+
+    const item = playlist[next % playlist.length];
+    this.load(item);
+
     this.setState({ playIndex: next, playing: true });
   }
 
   private previousTrack = () => {
     this.setState({ url: undefined, playing: false });
-    const curr = this.state.playIndex;
+
+    const { playIndex: curr, playlist } = this.state;
     const next = curr - 1;
-    const url = sampleUrls[next % sampleUrls.length];
-    this.load(url);
+
+    const item = playlist[next % playlist.length];
+    this.load(item);
+
     this.setState({ playIndex: next, playing: true });
   }
 
   private onEnded = () => {
     console.log('onEnded');
-    const curr = this.state.playIndex;
+
+    const { playIndex: curr, playlist } = this.state;
     const next = curr + 1;
-    const url = sampleUrls[next % sampleUrls.length];
-    this.load(url);
+
+    const item = playlist[next % playlist.length];
+    this.load(item);
+
     this.setState({ playIndex: next, playing: true });
   }
 
   private onDuration = (duration: number) => {
     console.log('onDuration', duration);
     this.setState({ duration });
+  }
+
+  private updatePlaylist = (playlist: PlayListItem[]) => {
+    this.setState({ playlist });
+
+    if (playlist.length > 0) {
+      this.load(playlist[0]);
+    }
   }
 
   // private renderLoadButton = (url: string, label: string) => {
@@ -220,6 +241,7 @@ class App extends React.Component<SheetProviderProps, State> {
       muted,
       loop,
       activeItem,
+      playlist,
     } = this.state;
 
     return (
@@ -269,7 +291,7 @@ class App extends React.Component<SheetProviderProps, State> {
             name="playlist"
             active={activeItem === 'playlist'}
             onClick={this.handleMenuItemClick}>
-            <Icon name="play" />
+            <Icon name="list" />
           </Menu.Item>
           <Menu.Item
             name="settings"
@@ -286,11 +308,12 @@ class App extends React.Component<SheetProviderProps, State> {
         </Menu>
 
         <div hidden={activeItem !== 'playlist'}>
-          <PlayListView />
+          <PlayListView items={playlist} />
         </div>
 
         <div hidden={activeItem !== 'settings'}>
-          <SettingsView {...this.props} />
+          <SettingsView {...this.props}
+            updatePlaylist={this.updatePlaylist} />
         </div>
 
         <div hidden={activeItem !== 'dev'}>

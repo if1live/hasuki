@@ -29,11 +29,12 @@ export class PlayListItemComponent extends React.Component<Props> {
     const linktype = getLinkType(url);
 
     const SEPARATOR = ' · ';
+    const displayTitle = title ? title : '[BLANK]';
 
     return (
       <List.Item>
         <List.Content>
-          <List.Header as="a" onClick={this.onPlayClick}>{title}</List.Header>
+          <List.Header as="a" onClick={this.onPlayClick}>{displayTitle}</List.Header>
           <List.Description style={itemDetailStyle}>
             <ExternalLink url={url} />
             {(() => linktype !== LinkType.None ? SEPARATOR : null)()}

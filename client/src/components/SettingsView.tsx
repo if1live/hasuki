@@ -4,10 +4,6 @@ import { Button, Divider } from 'semantic-ui-react';
 import { SHEET_ID } from 'src/settings';
 import { PlayListItem } from 'src/models';
 
-interface Props {
-
-}
-
 const makeSheetFetchPromise = (): Promise<any> => {
   return new Promise((resolve, reject) => {
     const gapi = window.gapi;
@@ -35,24 +31,40 @@ const makePlayListItem = (row: any[]): PlayListItem => {
   };
 };
 
-export class SettingsView extends React.Component<Props & SheetProviderProps> {
+interface Props {
+  updatePlaylist: (playlist: PlayListItem[]) => void;
+}
+
+interface State {
+  syncing: boolean;
+}
+
+export class SettingsView extends React.Component<Props & SheetProviderProps, State> {
+  public state = {
+    syncing: false,
+  };
+
   private resetDB = () => {
     console.log('TODO reset db');
   }
 
   private syncPlaylist = async () => {
+    this.setState({ syncing: true });
+
+    const { updatePlaylist } = this.props;
     try {
       const response = await makeSheetFetchPromise();
       const range = response.result;
       if (range.values.length > 0) {
         const items = range.values.map(makePlayListItem);
-        console.log(items);
+        updatePlaylist(items);
       }
-      alert(`loaded item: ${range.values.length}`);
 
     } catch (err) {
       console.error(err);
     }
+
+    this.setState({ syncing: false });
   }
 
   private shufflePlaylist = () => {
@@ -65,6 +77,7 @@ export class SettingsView extends React.Component<Props & SheetProviderProps> {
       authClicked,
       signoutClicked,
     } = this.props;
+    const { syncing } = this.state;
 
     return (
       <div>
@@ -81,7 +94,10 @@ export class SettingsView extends React.Component<Props & SheetProviderProps> {
 
         <h2>playlist</h2>
         <div hidden={authState !== AuthorizedState.Authorized}>
-          <Button onClick={this.syncPlaylist}>sync playlist</Button>
+          <Button onClick={this.syncPlaylist}
+            loading={syncing}>
+            sync playlist
+          </Button>
         </div>
         <Button onClick={this.shufflePlaylist}>shuffle playlist</Button>
 
