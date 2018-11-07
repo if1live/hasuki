@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { List } from 'semantic-ui-react';
-import { PlayListItemComponent } from './PlayListItemComponent';
+import { PlayListItemComponent } from './PlaylistItemComponent1';
 import { PlayListItem } from 'src/models';
 
 interface Props {
