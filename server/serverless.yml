@@ -16,5 +16,8 @@ functions:
   simple:
     handler: index.handler
     events:
-      - http: ANY /
-      - http: 'ANY {proxy+}'
+      - http:
+        path: youtube/audio-url
+        method: get
+        cors: true
+
