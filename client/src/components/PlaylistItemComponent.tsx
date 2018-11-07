@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { secondsToDisplay, getLinkType, LinkType } from 'src/helpers';
 import { List } from 'semantic-ui-react';
-import { PlayListItem } from 'src/models';
+import { PlaylistItem } from 'src/models';
 
 interface Props {
-  item: PlayListItem;
+  item: PlaylistItem;
 }
 
 const itemDetailStyle = {
   textAlign: 'right',
 };
 
-export class PlayListItemComponent extends React.Component<Props> {
+export class PlaylistItemComponent extends React.Component<Props> {
   private get length() {
     const { milliseconds } = this.props.item;
     return milliseconds

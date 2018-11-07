@@ -2,7 +2,7 @@ import * as React from 'react';
 import { SheetProviderProps, AuthorizedState } from 'src/SheetProvider';
 import { Button, Divider } from 'semantic-ui-react';
 import { SHEET_ID, API_SERVER } from 'src/settings';
-import { PlayListItem } from 'src/models';
+import { PlaylistItem } from 'src/models';
 import { videoFormat } from 'ytdl-core';
 
 const makeSheetFetchPromise = (): Promise<any> => {
@@ -18,7 +18,7 @@ const makeSheetFetchPromise = (): Promise<any> => {
   });
 };
 
-const makePlayListItem = (row: any[]): PlayListItem => {
+const makePlaylistItem = (row: any[]): PlaylistItem => {
   const url = row[0] as (string);
   const title = row[1] as (string | undefined);
   const duration = row[2] as (string | undefined);
@@ -33,7 +33,7 @@ const makePlayListItem = (row: any[]): PlayListItem => {
 };
 
 interface Props {
-  updatePlaylist: (playlist: PlayListItem[]) => void;
+  updatePlaylist: (Playlist: PlaylistItem[]) => void;
 }
 
 interface State {
@@ -57,7 +57,7 @@ export class SettingsView extends React.Component<Props & SheetProviderProps, St
       const response = await makeSheetFetchPromise();
       const range = response.result;
       if (range.values.length > 0) {
-        const items = range.values.map(makePlayListItem);
+        const items = range.values.map(makePlaylistItem);
         updatePlaylist(items);
       }
 
@@ -102,14 +102,14 @@ export class SettingsView extends React.Component<Props & SheetProviderProps, St
 
         <Divider />
 
-        <h2>playlist</h2>
+        <h2>Playlist</h2>
         <div hidden={authState !== AuthorizedState.Authorized}>
           <Button onClick={this.syncPlaylist}
             loading={syncing}>
-            sync playlist
+            sync Playlist
           </Button>
         </div>
-        <Button onClick={this.shufflePlaylist}>shuffle playlist</Button>
+        <Button onClick={this.shufflePlaylist}>shuffle Playlist</Button>
 
         <Divider />
 

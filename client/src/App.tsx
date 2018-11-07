@@ -4,12 +4,12 @@ import ReactPlayer from 'react-player';
 import {
   SettingsView,
   DebugView,
-  PlayListView,
+  PlaylistView,
   PlayerView,
 } from './components';
 import { SheetProviderProps } from './SheetProvider';
 import { Header, Icon, Menu } from 'semantic-ui-react';
-import { PlayListItem } from './models';
+import { PlaylistItem } from './models';
 
 // TODO local db로 옮기기
 // export const sampleUrls = [
@@ -19,7 +19,7 @@ import { PlayListItem } from './models';
 //   'http://www.largesound.com/ashborytour/sound/brobob.mp3',
 // ];
 
-type MenuKeys = 'playlist' | 'settings' | 'dev';
+type MenuKeys = 'Playlist' | 'settings' | 'dev';
 
 interface State {
   url?: string;
@@ -36,7 +36,7 @@ interface State {
   playIndex: number;
   activeItem: MenuKeys;
 
-  playlist: PlayListItem[];
+  Playlist: PlaylistItem[];
 }
 
 export type PlayerState = State;
@@ -53,8 +53,8 @@ class App extends React.Component<SheetProviderProps, State> {
     duration: 0,
     loop: false,
     playIndex: 0,
-    activeItem: 'playlist',
-    playlist: [],
+    activeItem: 'Playlist',
+    Playlist: [],
   };
 
   public componentDidMount() {
@@ -80,7 +80,7 @@ class App extends React.Component<SheetProviderProps, State> {
     }
   }
 
-  public load = async (item: PlayListItem) => {
+  public load = async (item: PlaylistItem) => {
     // 유튜브는 비디오 링크, 오디오 링크를 쪼개야한다
     this.setState({
       url: item.url,
@@ -170,10 +170,10 @@ class App extends React.Component<SheetProviderProps, State> {
   private nextTrack = () => {
     this.setState({ url: undefined, playing: false });
 
-    const { playIndex: curr, playlist } = this.state;
+    const { playIndex: curr, Playlist } = this.state;
     const next = curr + 1;
 
-    const item = playlist[next % playlist.length];
+    const item = Playlist[next % Playlist.length];
     this.load(item);
 
     this.setState({ playIndex: next, playing: true });
@@ -182,10 +182,10 @@ class App extends React.Component<SheetProviderProps, State> {
   private previousTrack = () => {
     this.setState({ url: undefined, playing: false });
 
-    const { playIndex: curr, playlist } = this.state;
+    const { playIndex: curr, Playlist } = this.state;
     const next = curr - 1;
 
-    const item = playlist[next % playlist.length];
+    const item = Playlist[next % Playlist.length];
     this.load(item);
 
     this.setState({ playIndex: next, playing: true });
@@ -194,10 +194,10 @@ class App extends React.Component<SheetProviderProps, State> {
   private onEnded = () => {
     console.log('onEnded');
 
-    const { playIndex: curr, playlist } = this.state;
+    const { playIndex: curr, Playlist } = this.state;
     const next = curr + 1;
 
-    const item = playlist[next % playlist.length];
+    const item = Playlist[next % Playlist.length];
     this.load(item);
 
     this.setState({ playIndex: next, playing: true });
@@ -208,11 +208,11 @@ class App extends React.Component<SheetProviderProps, State> {
     this.setState({ duration });
   }
 
-  private updatePlaylist = (playlist: PlayListItem[]) => {
-    this.setState({ playlist });
+  private updatePlaylist = (Playlist: PlaylistItem[]) => {
+    this.setState({ Playlist });
 
-    if (playlist.length > 0) {
-      this.load(playlist[0]);
+    if (Playlist.length > 0) {
+      this.load(Playlist[0]);
     }
   }
 
@@ -241,7 +241,7 @@ class App extends React.Component<SheetProviderProps, State> {
       muted,
       loop,
       activeItem,
-      playlist,
+      Playlist,
     } = this.state;
 
     return (
@@ -288,8 +288,8 @@ class App extends React.Component<SheetProviderProps, State> {
 
         <Menu pointing secondary icon size="mini">
           <Menu.Item
-            name="playlist"
-            active={activeItem === 'playlist'}
+            name="Playlist"
+            active={activeItem === 'Playlist'}
             onClick={this.handleMenuItemClick}>
             <Icon name="list" />
           </Menu.Item>
@@ -307,8 +307,8 @@ class App extends React.Component<SheetProviderProps, State> {
           </Menu.Item>
         </Menu>
 
-        <div hidden={activeItem !== 'playlist'}>
-          <PlayListView items={playlist} />
+        <div hidden={activeItem !== 'Playlist'}>
+          <PlaylistView items={Playlist} />
         </div>
 
         <div hidden={activeItem !== 'settings'}>

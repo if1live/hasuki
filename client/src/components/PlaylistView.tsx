@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { PlayListComponent } from './PlayListComponent';
-import { PlayListItem } from 'src/models';
+import { PlaylistComponent } from './PlaylistComponent';
+import { PlaylistItem } from 'src/models';
 
 interface Props {
-  items: PlayListItem[];
+  items: PlaylistItem[];
 }
-export class PlayListView extends React.Component<Props> {
+export class PlaylistView extends React.Component<Props> {
   public render() {
     const { items } = this.props;
     return (
-      <PlayListComponent items={items} />
+      <PlaylistComponent items={items} />
     );
   }
 }
