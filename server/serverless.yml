@@ -9,9 +9,12 @@ provider:
   runtime: nodejs8.10
   region: ap-northeast-2
 
+plugins:
+  - serverless-webpack
+
 functions:
-  hello:
-    handler: index.handler
+  simple:
+    handler: main.handler
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
