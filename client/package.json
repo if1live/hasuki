@@ -2,6 +2,7 @@
   "name": "hasuki",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://hasuki.libsora.so",
   "dependencies": {
     "dexie": "^2.0.4",
     "react": "^16.6.0",
@@ -18,8 +19,7 @@
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
     "lint": "tslint -c tslint.json -p tsconfig.json -t verbose",
-    "publish": "yarn run build",
-    "postpublish": "mvy build ../docs"
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "@types/jest": "^23.3.9",
@@ -27,7 +27,7 @@
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
     "@types/wicg-mediasession": "^1.0.2",
-    "mvy": "^0.1.0",
+    "gh-pages": "^2.0.1",
     "tslint": "^5.11.0",
     "typescript": "^3.1.6"
   }
