@@ -4,12 +4,13 @@ import { Playlist } from 'src/models';
 
 interface Props {
   playlist: Playlist;
+  cursor?: number;
+  updatePlaylistCursor: (cursor: number) => void;
 }
 export class PlaylistContainer extends React.Component<Props> {
   public render() {
-    const { playlist } = this.props;
     return (
-      <PlaylistComponent playlist={playlist} />
+      <PlaylistComponent {...this.props} />
     );
   }
 }

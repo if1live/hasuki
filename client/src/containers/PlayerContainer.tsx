@@ -3,18 +3,31 @@ import { PlayerState } from 'src/App';
 import { ControlButtonGroup } from '../components/player';
 import { Progress, Segment } from 'semantic-ui-react';
 import Duration from 'src/Duration';
-import { PlaylistItemHolder } from 'src/models';
+import { PlaylistItemHolder, Playlist } from 'src/models';
 
 interface Props {
+  playlist: Playlist;
   stop: () => void;
   playPause: () => void;
   previousTrack: () => void;
   nextTrack: () => void;
+  updatePlaylistCursor: (cursor: number) => void;
 }
 
 export class PlayerContainer extends React.Component<Props & PlayerState> {
   private random = () => {
-    console.log('TODO random');
+    const { playlist, updatePlaylistCursor } = this.props;
+    const len = playlist.length;
+    const cursor = Math.floor(Math.random() * (len + 1));
+    updatePlaylistCursor(cursor);
+  }
+
+  private getItem = () => {
+    const {
+      cursor,
+      playlist,
+    } = this.props;
+    return cursor === undefined ? undefined : playlist.get(cursor);
   }
 
   public render() {
@@ -23,8 +36,6 @@ export class PlayerContainer extends React.Component<Props & PlayerState> {
       played,
       loaded,
       duration,
-      cursor,
-      playlist,
     } = this.props;
 
     const percentPlayed = played * 100;
@@ -33,8 +44,8 @@ export class PlayerContainer extends React.Component<Props & PlayerState> {
     const colorPlayed = playing ? 'green' : 'yellow';
     const colorLoaded = loaded === 1 ? 'blue' : 'orange';
 
-    const item = playlist.get(cursor);
-    let title = 'NULL';
+    const item = this.getItem();
+    let title = 'NO AUDIO';
     if (item) {
       const holder = new PlaylistItemHolder(item);
       title = holder.displayTitle;

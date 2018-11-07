@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button } from 'semantic-ui-react';
 import { getLinkType, LinkType, openTab } from 'src/helpers';
+import { Playlist } from 'src/models';
 
 interface Props {
   stop: () => void;
@@ -8,6 +9,8 @@ interface Props {
   previousTrack: () => void;
   nextTrack: () => void;
   random: () => void;
+  playlist: Playlist;
+  cursor?: number;
   playing: boolean;
   baseUrl?: string;
 }
@@ -16,7 +19,7 @@ export class ControlButtonGroup extends React.Component<Props> {
   private openUrl = () => {
     if (this.isExternalUrl()) {
       const { baseUrl } = this.props;
-      if (baseUrl) { openTab(baseUrl); }
+      if (baseUrl !== undefined) { openTab(baseUrl); }
     }
   }
 
@@ -33,6 +36,9 @@ export class ControlButtonGroup extends React.Component<Props> {
 
   public render() {
     const {
+      cursor,
+      playlist,
+      baseUrl,
       playing,
       stop,
       playPause,
@@ -41,13 +47,25 @@ export class ControlButtonGroup extends React.Component<Props> {
       random,
     } = this.props;
 
+    const hasItems = playlist.length > 0;
+
     return (
       <Button.Group icon widths="6">
-        <Button icon="stop" onClick={stop} />
-        <Button icon={playing ? 'pause' : 'play'} onClick={playPause}></Button>
-        <Button icon="step backward" onClick={previousTrack} />
-        <Button icon="step forward" onClick={nextTrack} />
-        <Button icon="random" onClick={random} />
+        <Button icon="stop"
+          onClick={stop}
+          disabled={cursor !== undefined} />
+        <Button icon={playing ? 'pause' : 'play'}
+          onClick={playPause}
+          disabled={baseUrl === undefined} />
+        <Button icon="step backward"
+          onClick={previousTrack}
+          disabled={!hasItems} />
+        <Button icon="step forward"
+          onClick={nextTrack}
+          disabled={!hasItems} />
+        <Button icon="random"
+          onClick={random}
+          disabled={!hasItems} />
         <Button icon="external" onClick={this.openUrl}
           disabled={!this.isExternalUrl()} />
       </Button.Group>

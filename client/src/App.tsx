@@ -27,8 +27,8 @@ import {
 type MenuKeys = 'playlist' | 'settings' | 'dev';
 
 interface State {
+  // player
   url?: string;
-  baseUrl?: string;
   playing: boolean;
   volume: number;
   muted: boolean;
@@ -37,10 +37,16 @@ interface State {
   duration: number;
   loop: boolean;
   seeking?: boolean;
-  // TODO
-  cursor: number;
+
+  // 유튜브는 재생URL와 외부URL이 다르다
+  baseUrl?: string;
+
+  // menu
   activeItem: MenuKeys;
 
+  // playlist
+  // 플레이리스트가 비어있거나 stop하면 선택된 정보가 날라갈수 있다
+  cursor?: number;
   playlist: Playlist;
 }
 
@@ -57,17 +63,17 @@ class App extends React.Component<SheetProviderProps, State> {
     loaded: 0,
     duration: 0,
     loop: false,
-    cursor: 0,
+    cursor: undefined,
     activeItem: 'playlist',
     playlist: makeBlank(),
   };
 
   public componentDidMount() {
     if (navigator.mediaSession) {
-      // navigator.mediaSession.setActionHandler('play', () => { /**/});
-      // navigator.mediaSession.setActionHandler('pause', () => { /**/ });
-      navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
-      navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
+      navigator.mediaSession.setActionHandler('play', this.playPause);
+      navigator.mediaSession.setActionHandler('pause', this.playPause);
+      // navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
+      // navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
       navigator.mediaSession.setActionHandler('previoustrack', this.previousTrack);
       navigator.mediaSession.setActionHandler('nexttrack', this.nextTrack);
     }
@@ -78,6 +84,8 @@ class App extends React.Component<SheetProviderProps, State> {
 
   public componentWillUnmount() {
     if (navigator.mediaSession) {
+      navigator.mediaSession.setActionHandler('play', null);
+      navigator.mediaSession.setActionHandler('pause', null);
       navigator.mediaSession.setActionHandler('seekbackward', null);
       navigator.mediaSession.setActionHandler('seekforward', null);
       navigator.mediaSession.setActionHandler('previoustrack', null);
@@ -101,9 +109,12 @@ class App extends React.Component<SheetProviderProps, State> {
   }
 
   public load = async (item?: PlaylistItem) => {
-    if (!item) { return; }
-    const holder = new PlaylistItemHolder(item);
+    if (!item) {
+      this.stop();
+      return;
+    }
 
+    const holder = new PlaylistItemHolder(item);
     const url = await this.getUrl(item);
     this.setState({
       url,
@@ -116,8 +127,9 @@ class App extends React.Component<SheetProviderProps, State> {
     if (navigator.mediaSession) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: holder.displayTitle,
-        artist: 'todo-artist',
-        album: 'todo-album',
+        // 제목 이상의 정보는 믿을게 없더라
+        // artist: 'todo-artist',
+        // album: 'todo-album',
         artwork: [
           { src: `https://fakeimg.pl/96x96/?text=${r}`, sizes: '96x96', type: 'image/png' },
           { src: `https://fakeimg.pl/128x128/?text=${r}`, sizes: '128x128', type: 'image/png' },
@@ -133,47 +145,57 @@ class App extends React.Component<SheetProviderProps, State> {
   private playPause = () => {
     this.setState({ playing: !this.state.playing });
   }
+
   private stop = () => {
     this.setState({
       url: undefined,
       baseUrl: undefined,
       playing: false,
+      played: 0,
+      loaded: 0,
+      cursor: undefined,
     });
+
+    if (navigator.mediaSession) {
+      navigator.mediaSession.metadata = null;
+    }
   }
+
   // private toggleLoop = () => {
   //   this.setState({ loop: !this.state.loop });
   // }
+
   private setVolume = (volume: number) => {
     this.setState({ volume });
   }
+
   private toggleMuted = () => {
     this.setState({ muted: !this.state.muted });
   }
+
   private onPlay = () => {
     console.log('onPlay');
     this.setState({ playing: true });
-
-    if (navigator.mediaSession) {
-      navigator.mediaSession.setActionHandler('seekbackward', () => { /* Code excerpted. */ });
-      navigator.mediaSession.setActionHandler('seekforward', () => { /* Code excerpted. */ });
-      navigator.mediaSession.setActionHandler('previoustrack', this.previousTrack);
-      navigator.mediaSession.setActionHandler('nexttrack', this.nextTrack);
-    }
   }
+
   private onPause = () => {
     console.log('onPause');
     this.setState({ playing: false });
   }
+
   private onSeekMouseDown = (e: React.MouseEvent<HTMLInputElement>) => {
     this.setState({ seeking: true });
   }
+
   private onSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ played: parseFloat(e.target.value) });
   }
+
   private onSeekMouseUp = (e: any) => {
     this.setState({ seeking: false });
     this.player.seekTo(parseFloat(e.target.value));
   }
+
   private onProgress = (state: {
     played: number,
     playedSeconds: number,
@@ -190,37 +212,42 @@ class App extends React.Component<SheetProviderProps, State> {
     }
   }
 
-  private nextTrack = () => {
-    this.setState({ url: undefined, playing: false });
-
-    const { cursor, playlist } = this.state;
-    const next = cursor + 1;
-    const item = playlist.get(next);
+  private updatePlaylistCursor = (cursor: number) => {
+    const { playlist } = this.state;
+    const item = playlist.get(cursor);
     this.load(item);
+    this.setState({ cursor, playing: true });
+  }
 
-    this.setState({ cursor: next, playing: true });
+  private nextTrack = () => {
+    this.stop();
+    const { cursor } = this.state;
+    if (cursor === undefined) {
+      this.updatePlaylistCursor(0);
+    } else {
+      this.updatePlaylistCursor(cursor + 1);
+    }
   }
 
   private previousTrack = () => {
-    this.setState({ url: undefined, playing: false });
-
-    const { cursor, playlist } = this.state;
-    const next = cursor - 1;
-    const item = playlist.get(next);
-    this.load(item);
-
-    this.setState({ cursor: next, playing: true });
+    this.stop();
+    const { cursor } = this.state;
+    if (cursor === undefined) {
+      this.updatePlaylistCursor(0);
+    } else {
+      this.updatePlaylistCursor(cursor - 1);
+    }
   }
 
   private onEnded = () => {
     console.log('onEnded');
 
-    const { cursor, playlist } = this.state;
-    const next = cursor + 1;
-    const item = playlist.get(next);
-    this.load(item);
-
-    this.setState({ cursor: next, playing: true });
+    const { cursor } = this.state;
+    if (cursor === undefined) {
+      this.updatePlaylistCursor(0);
+    } else {
+      this.updatePlaylistCursor(cursor + 1);
+    }
   }
 
   private onDuration = (duration: number) => {
@@ -229,21 +256,13 @@ class App extends React.Component<SheetProviderProps, State> {
   }
 
   private updatePlaylist = (playlist: Playlist) => {
-    this.setState({ playlist });
+    this.setState({ playlist, cursor: 0 });
 
     if (playlist.length > 0) {
       const item = playlist.get(0);
       this.load(item);
     }
   }
-
-  // private renderLoadButton = (url: string, label: string) => {
-  //   return (
-  //     <button onClick={() => this.load(url)}>
-  //       {label}
-  //     </button>
-  //   );
-  // }
 
   private handleMenuItemClick = (
     e: any,
@@ -263,7 +282,6 @@ class App extends React.Component<SheetProviderProps, State> {
       muted,
       loop,
       activeItem,
-      playlist,
     } = this.state;
 
     const linktype = baseUrl ? getLinkType(baseUrl) : LinkType.None;
@@ -285,8 +303,8 @@ class App extends React.Component<SheetProviderProps, State> {
           <ReactPlayer
             ref={this.ref}
             className="react-player"
-            width={playerHeight}
-            height="0"
+            width="100%"
+            height={playerHeight}
             url={url}
             playing={playing}
             loop={loop}
@@ -311,6 +329,7 @@ class App extends React.Component<SheetProviderProps, State> {
           playPause={this.playPause}
           previousTrack={this.previousTrack}
           nextTrack={this.nextTrack}
+          updatePlaylistCursor={this.updatePlaylistCursor}
         />
 
         <Menu pointing secondary icon size="mini">
@@ -335,7 +354,8 @@ class App extends React.Component<SheetProviderProps, State> {
         </Menu>
 
         <div hidden={activeItem !== 'playlist'}>
-          <PlaylistContainer playlist={playlist} />
+          <PlaylistContainer {...this.state}
+            updatePlaylistCursor={this.updatePlaylistCursor} />
         </div>
 
         <div hidden={activeItem !== 'settings'}>

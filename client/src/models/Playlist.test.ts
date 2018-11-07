@@ -11,6 +11,7 @@ describe('Playlist#cursorToIndex', () => {
     makeItem('bar'),
     makeItem('spam'),
   ]);
+  const len = playlist.length;
 
   test('simple', () => {
     expect(playlist.cursorToIndex(0)).toEqual(0);
@@ -22,13 +23,23 @@ describe('Playlist#cursorToIndex', () => {
     expect(playlist.cursorToIndex(-1)).toEqual(2);
     expect(playlist.cursorToIndex(-2)).toEqual(1);
     expect(playlist.cursorToIndex(-3)).toEqual(0);
-    expect(playlist.cursorToIndex(-4)).toEqual(2);
+  });
+
+  test('minus - cycle', () => {
+    for (let i = 0; i < 4; i++) {
+      expect(playlist.cursorToIndex(-2 - len * i)).toEqual(1);
+    }
   });
 
   test('overflow', () => {
     expect(playlist.cursorToIndex(3)).toEqual(0);
     expect(playlist.cursorToIndex(4)).toEqual(1);
     expect(playlist.cursorToIndex(5)).toEqual(2);
-    expect(playlist.cursorToIndex(6)).toEqual(0);
+  });
+
+  test('overflow - cycle', () => {
+    for (let i = 0; i < 4; i++) {
+      expect(playlist.cursorToIndex(4 + len * i)).toEqual(1);
+    }
   });
 });

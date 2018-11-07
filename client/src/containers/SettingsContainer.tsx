@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SheetProviderProps, AuthorizedState } from 'src/SheetProvider';
-import { Button, Divider } from 'semantic-ui-react';
+import { Button, Divider, Icon } from 'semantic-ui-react';
 import { Playlist, fetchPlaylist, DEFAULT_PLAYLIST_NAME } from 'src/models';
 
 
@@ -33,6 +33,7 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
   }
 
   private shufflePlaylist = () => {
+    // TODO get playlist
     console.log('TODO shuffle db');
   }
 
@@ -47,24 +48,35 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
     return (
       <div>
         <h2>google sheet</h2>
-        <div hidden={authState !== AuthorizedState.NotAuthorized}>
-          <Button onClick={authClicked}>authorize</Button>
-        </div>
+        <div >
+          <Button onClick={authClicked}
+            disabled={authState !== AuthorizedState.NotAuthorized}>
+            authorize
+          </Button>
 
-        <div hidden={authState !== AuthorizedState.Authorized}>
-          <Button onClick={signoutClicked}>signout</Button>
+          <Button onClick={signoutClicked}
+            disabled={authState !== AuthorizedState.Authorized}>
+            signout
+          </Button>
         </div>
 
         <Divider />
 
-        <h2>Playlist</h2>
-        <div hidden={authState !== AuthorizedState.Authorized}>
+        <h2>playlist</h2>
+
+        <div>
           <Button onClick={this.syncPlaylist}
-            loading={syncing}>
-            sync Playlist
+            loading={syncing}
+            disabled={authState !== AuthorizedState.Authorized}
+            icon labelPosition="left">
+            <Icon name="sync" />
+            sync
           </Button>
+          <Button onClick={this.shufflePlaylist} icon labelPosition="left">
+            <Icon name="shuffle" />
+            shuffle
+            </Button>
         </div>
-        <Button onClick={this.shufflePlaylist}>shuffle Playlist</Button>
 
         <Divider />
 
@@ -74,7 +86,7 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
         <Divider />
 
         <h2>dev</h2>
-      </div>
+      </div >
     );
   }
 }

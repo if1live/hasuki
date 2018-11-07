@@ -4,7 +4,7 @@ import {
   getLinkType,
   LinkType,
 } from 'src/helpers';
-import { List } from 'semantic-ui-react';
+import { List, Icon } from 'semantic-ui-react';
 import {
   PlaylistItem,
   PlaylistItemHolder,
@@ -14,6 +14,8 @@ import { ExternalLink } from './ExternalLink';
 
 interface Props {
   item: PlaylistItem;
+  active: boolean;
+  play: () => void;
 }
 
 const itemDetailStyle = {
@@ -28,12 +30,9 @@ export class PlaylistItemComponent extends React.Component<Props> {
       : '?:??';
   }
 
-  private onPlayClick = () => {
-    console.log(`todo play audio`);
-  }
-
   public render() {
     // TODO 긴 문자열 대응하기
+    const { active, play } = this.props;
     const { url } = this.props.item;
     const linktype = getLinkType(url);
 
@@ -43,7 +42,11 @@ export class PlaylistItemComponent extends React.Component<Props> {
     return (
       <List.Item>
         <List.Content>
-          <List.Header as="a" onClick={this.onPlayClick}>{holder.displayTitle}</List.Header>
+          <List.Header as="a" onClick={play}>
+            {active ? <Icon name="play" /> : null}
+            {holder.displayTitle}
+          </List.Header>
+
           <List.Description style={itemDetailStyle}>
             <ExternalLink url={url} />
             {linktype !== LinkType.None ? SEPARATOR : null}

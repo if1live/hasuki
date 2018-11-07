@@ -8,6 +8,7 @@ interface Props {
   played: number;
   loaded: number;
   duration: number;
+  cursor?: number;
 }
 
 export class PlayerStatusViewer extends React.Component<Props> {
@@ -19,6 +20,7 @@ export class PlayerStatusViewer extends React.Component<Props> {
       played,
       loaded,
       duration,
+      cursor,
     } = this.props;
 
     return (
@@ -46,6 +48,9 @@ export class PlayerStatusViewer extends React.Component<Props> {
 
         <dt>remaining</dt>
         <dd><Duration seconds={duration * (1 - played)} /></dd>
+
+        <dt>cursor</dt>
+        <dd>{cursor !== undefined ? cursor : 'undefined'}</dd>
       </dl>
     );
   }
