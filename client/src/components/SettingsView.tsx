@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { SheetProviderProps, AuthorizedState } from 'src/SheetProvider';
 import { Button, Divider } from 'semantic-ui-react';
-import { SHEET_ID } from 'src/settings';
+import { SHEET_ID, API_SERVER } from 'src/settings';
 import { PlayListItem } from 'src/models';
+import { videoFormat } from 'ytdl-core';
 
 const makeSheetFetchPromise = (): Promise<any> => {
   return new Promise((resolve, reject) => {
@@ -71,6 +72,15 @@ export class SettingsView extends React.Component<Props & SheetProviderProps, St
     console.log('TODO shuffle db');
   }
 
+  private fetchYoutube = async () => {
+    // TODO 권한 붙이기
+    const url = `${API_SERVER}/youtube/audio-url?video_id=iJAxTaT8xJQ`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const formats = data as videoFormat[];
+    console.log(formats[0].url);
+  }
+
   public render() {
     const {
       authState,
@@ -105,6 +115,11 @@ export class SettingsView extends React.Component<Props & SheetProviderProps, St
 
         <h2>reset</h2>
         <Button onClick={this.resetDB}>reset db</Button>
+
+        <Divider />
+
+        <h2>dev</h2>
+        <Button onClick={this.fetchYoutube}>fetch youtube</Button>
       </div>
     );
   }
