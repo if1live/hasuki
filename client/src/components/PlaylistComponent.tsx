@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { List } from 'semantic-ui-react';
-import { PlaylistItemComponent } from './PlaylistItemComponent1';
-import { PlaylistItem } from 'src/models';
+import { PlaylistItemComponent } from './PlaylistItemComponent';
+import { Playlist } from 'src/models';
 
 interface Props {
-  items: PlaylistItem[];
+  playlist: Playlist;
 }
 
 export class PlaylistComponent extends React.Component<Props> {
   public render() {
-    const { items } = this.props;
+    const { playlist } = this.props;
+    const { items } = playlist;
+
     return (
       <List divided verticalAlign="middle">
         {items.map((item, idx) => {

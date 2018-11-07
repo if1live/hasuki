@@ -9,17 +9,18 @@ import {
 } from './components';
 import { SheetProviderProps } from './SheetProvider';
 import { Header, Icon, Menu } from 'semantic-ui-react';
-import { PlaylistItem } from './models';
+import { PlaylistItem, Playlist, getTitle } from './models';
+import { makeBlank } from './helpers/store';
+import {
+  getLinkType,
+  LinkType,
+  fetchYouTubeFormats,
+  getLowFormat,
+  getAudioUrl,
+  getYouTubeVideoId,
+} from './helpers';
 
-// TODO local db로 옮기기
-// export const sampleUrls = [
-//   'http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav',
-//   'https://soundcloud.com/kaochan194/sets/yosuga-no-sora-ost',
-//   'https://www.youtube.com/watch?v=xxOcLcPrs2w',
-//   'http://www.largesound.com/ashborytour/sound/brobob.mp3',
-// ];
-
-type MenuKeys = 'Playlist' | 'settings' | 'dev';
+type MenuKeys = 'playlist' | 'settings' | 'dev';
 
 interface State {
   url?: string;
@@ -33,10 +34,10 @@ interface State {
   loop: boolean;
   seeking?: boolean;
   // TODO
-  playIndex: number;
+  cursor: number;
   activeItem: MenuKeys;
 
-  Playlist: PlaylistItem[];
+  playlist: Playlist;
 }
 
 export type PlayerState = State;
@@ -52,9 +53,9 @@ class App extends React.Component<SheetProviderProps, State> {
     loaded: 0,
     duration: 0,
     loop: false,
-    playIndex: 0,
-    activeItem: 'Playlist',
-    Playlist: [],
+    cursor: 0,
+    activeItem: 'playlist',
+    playlist: makeBlank(),
   };
 
   public componentDidMount() {
@@ -80,10 +81,27 @@ class App extends React.Component<SheetProviderProps, State> {
     }
   }
 
-  public load = async (item: PlaylistItem) => {
-    // 유튜브는 비디오 링크, 오디오 링크를 쪼개야한다
+  private getUrl = async (item: PlaylistItem) => {
+    const linktype = getLinkType(item.url);
+    if (linktype === LinkType.YouTube) {
+      const videoId = getYouTubeVideoId(item.url) as string;
+      const formats = await fetchYouTubeFormats(videoId);
+      const format = getLowFormat(formats);
+
+      if (!format) { return; }
+      return getAudioUrl(format);
+
+    } else {
+      return item.url;
+    }
+  }
+
+  public load = async (item?: PlaylistItem) => {
+    if (!item) { return; }
+
+    const url = await this.getUrl(item);
     this.setState({
-      url: item.url,
+      url,
       baseUrl: item.url,
       played: 0,
       loaded: 0,
@@ -92,7 +110,7 @@ class App extends React.Component<SheetProviderProps, State> {
     const r = Math.floor(Math.random() * 100);
     if (navigator.mediaSession) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: 'todo-title',
+        title: getTitle(item),
         artist: 'todo-artist',
         album: 'todo-album',
         artwork: [
@@ -170,37 +188,34 @@ class App extends React.Component<SheetProviderProps, State> {
   private nextTrack = () => {
     this.setState({ url: undefined, playing: false });
 
-    const { playIndex: curr, Playlist } = this.state;
-    const next = curr + 1;
-
-    const item = Playlist[next % Playlist.length];
+    const { cursor, playlist } = this.state;
+    const next = cursor + 1;
+    const item = playlist.get(next);
     this.load(item);
 
-    this.setState({ playIndex: next, playing: true });
+    this.setState({ cursor: next, playing: true });
   }
 
   private previousTrack = () => {
     this.setState({ url: undefined, playing: false });
 
-    const { playIndex: curr, Playlist } = this.state;
-    const next = curr - 1;
-
-    const item = Playlist[next % Playlist.length];
+    const { cursor, playlist } = this.state;
+    const next = cursor - 1;
+    const item = playlist.get(next);
     this.load(item);
 
-    this.setState({ playIndex: next, playing: true });
+    this.setState({ cursor: next, playing: true });
   }
 
   private onEnded = () => {
     console.log('onEnded');
 
-    const { playIndex: curr, Playlist } = this.state;
-    const next = curr + 1;
-
-    const item = Playlist[next % Playlist.length];
+    const { cursor, playlist } = this.state;
+    const next = cursor + 1;
+    const item = playlist.get(next);
     this.load(item);
 
-    this.setState({ playIndex: next, playing: true });
+    this.setState({ cursor: next, playing: true });
   }
 
   private onDuration = (duration: number) => {
@@ -208,11 +223,12 @@ class App extends React.Component<SheetProviderProps, State> {
     this.setState({ duration });
   }
 
-  private updatePlaylist = (Playlist: PlaylistItem[]) => {
-    this.setState({ Playlist });
+  private updatePlaylist = (playlist: Playlist) => {
+    this.setState({ playlist });
 
-    if (Playlist.length > 0) {
-      this.load(Playlist[0]);
+    if (playlist.length > 0) {
+      const item = playlist.get(0);
+      this.load(item);
     }
   }
 
@@ -236,13 +252,19 @@ class App extends React.Component<SheetProviderProps, State> {
   public render() {
     const {
       url,
+      baseUrl,
       playing,
       volume,
       muted,
       loop,
       activeItem,
-      Playlist,
+      playlist,
     } = this.state;
+
+    const linktype = baseUrl ? getLinkType(baseUrl) : LinkType.None;
+    const playerHeight = linktype === LinkType.None || linktype === LinkType.YouTube
+      ? 0
+      : '100%';
 
     return (
       <div>
@@ -258,8 +280,8 @@ class App extends React.Component<SheetProviderProps, State> {
           <ReactPlayer
             ref={this.ref}
             className="react-player"
-            width="100%"
-            height="100%"
+            width={playerHeight}
+            height="0"
             url={url}
             playing={playing}
             loop={loop}
@@ -288,8 +310,8 @@ class App extends React.Component<SheetProviderProps, State> {
 
         <Menu pointing secondary icon size="mini">
           <Menu.Item
-            name="Playlist"
-            active={activeItem === 'Playlist'}
+            name="playlist"
+            active={activeItem === 'playlist'}
             onClick={this.handleMenuItemClick}>
             <Icon name="list" />
           </Menu.Item>
@@ -307,8 +329,8 @@ class App extends React.Component<SheetProviderProps, State> {
           </Menu.Item>
         </Menu>
 
-        <div hidden={activeItem !== 'Playlist'}>
-          <PlaylistView items={Playlist} />
+        <div hidden={activeItem !== 'playlist'}>
+          <PlaylistView playlist={playlist} />
         </div>
 
         <div hidden={activeItem !== 'settings'}>

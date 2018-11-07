@@ -1,5 +1,2 @@
-export interface PlaylistItem {
-  url: string;
-  title?: string;
-  milliseconds?: number;
-}
+export * from './Playlist';
+export * from './PlaylistItem';

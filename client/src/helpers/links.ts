@@ -23,3 +23,9 @@ export const getLinkType = (url: string) => {
   }
   return LinkType.None;
 };
+
+export const getYouTubeVideoId = (url: string) => {
+  const m = url.match(YT_MATCH_URL);
+  return m ? m[1] : undefined;
+};
+

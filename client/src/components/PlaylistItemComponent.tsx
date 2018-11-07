@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { secondsToDisplay, getLinkType, LinkType } from 'src/helpers';
 import { List } from 'semantic-ui-react';
-import { PlaylistItem } from 'src/models';
+import { PlaylistItem, getTitle } from 'src/models';
+
 
 interface Props {
   item: PlaylistItem;
@@ -25,11 +26,11 @@ export class PlaylistItemComponent extends React.Component<Props> {
 
   public render() {
     // TODO 긴 문자열 대응하기
-    const { title, url } = this.props.item;
+    const { url } = this.props.item;
     const linktype = getLinkType(url);
 
     const SEPARATOR = ' · ';
-    const displayTitle = title ? title : '[BLANK]';
+    const displayTitle = getTitle(this.props.item);
 
     return (
       <List.Item>

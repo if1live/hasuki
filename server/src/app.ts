@@ -10,12 +10,12 @@ import 'express-async-errors';
 export const app = express();
 app.use(cors());
 
-const toYoutubeUrl = (videoId: string) => {
+const toYouTubeUrl = (videoId: string) => {
   return `https://www.youtube.com/watch?v=${videoId}`;
 };
 
 
-const fetchYoutubeInfo = (url: string): Promise<videoInfo> => {
+const fetchYouTubeInfo = (url: string): Promise<videoInfo> => {
   return new Promise((resolve, reject) => {
     ytdl.getInfo(url, (err: Error, info: any) => {
       if (err) { reject(err); }
@@ -45,9 +45,9 @@ app.get('/youtube/audio-url', async (req, res) => {
     throw new Error('blank video id');
   }
 
-  const youtubeUrl = toYoutubeUrl(videoId);
+  const youtubeUrl = toYouTubeUrl(videoId);
   try {
-    const info = await fetchYoutubeInfo(youtubeUrl);
+    const info = await fetchYouTubeInfo(youtubeUrl);
     const formats = info.formats
       .filter(isAudioFormat)
       .sort(compareHighBitrate)

@@ -3,6 +3,7 @@ import { PlayerState } from 'src/App';
 import { ControlButtonGroup } from './ControlButtonGroup';
 import { Progress, Segment } from 'semantic-ui-react';
 import Duration from 'src/Duration';
+import { getTitle } from 'src/models';
 
 interface Props {
   stop: () => void;
@@ -22,6 +23,8 @@ export class PlayerView extends React.Component<Props & PlayerState> {
       played,
       loaded,
       duration,
+      cursor,
+      playlist,
     } = this.props;
 
     const percentPlayed = played * 100;
@@ -30,7 +33,8 @@ export class PlayerView extends React.Component<Props & PlayerState> {
     const colorPlayed = playing ? 'green' : 'yellow';
     const colorLoaded = loaded === 1 ? 'blue' : 'orange';
 
-    const title = 'TODO - title';
+    const item = playlist.get(cursor);
+    const title = getTitle(item);
 
     return (
       <div>
