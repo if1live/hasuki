@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { PlayerState } from 'src/App';
-import { ControlButtonGroup } from './ControlButtonGroup';
+import { ControlButtonGroup } from '../components/player';
 import { Progress, Segment } from 'semantic-ui-react';
 import Duration from 'src/Duration';
 import { PlaylistItemHolder } from 'src/models';
@@ -12,7 +12,7 @@ interface Props {
   nextTrack: () => void;
 }
 
-export class PlayerView extends React.Component<Props & PlayerState> {
+export class PlayerContainer extends React.Component<Props & PlayerState> {
   private random = () => {
     console.log('TODO random');
   }

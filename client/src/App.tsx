@@ -2,11 +2,11 @@ import * as React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import ReactPlayer from 'react-player';
 import {
-  SettingsView,
-  DebugView,
-  PlaylistView,
-  PlayerView,
-} from './components';
+  SettingsContainer,
+  DebugContainer,
+  PlaylistContainer,
+  PlayerContainer,
+} from './containers';
 import { SheetProviderProps } from './SheetProvider';
 import { Header, Icon, Menu } from 'semantic-ui-react';
 import {
@@ -305,7 +305,7 @@ class App extends React.Component<SheetProviderProps, State> {
           />
         </div>
 
-        <PlayerView
+        <PlayerContainer
           {...this.state}
           stop={this.stop}
           playPause={this.playPause}
@@ -335,16 +335,16 @@ class App extends React.Component<SheetProviderProps, State> {
         </Menu>
 
         <div hidden={activeItem !== 'playlist'}>
-          <PlaylistView playlist={playlist} />
+          <PlaylistContainer playlist={playlist} />
         </div>
 
         <div hidden={activeItem !== 'settings'}>
-          <SettingsView {...this.props}
+          <SettingsContainer {...this.props}
             updatePlaylist={this.updatePlaylist} />
         </div>
 
         <div hidden={activeItem !== 'dev'}>
-          <DebugView {...this.state}
+          <DebugContainer {...this.state}
             setVolume={this.setVolume}
             toggleMuted={this.toggleMuted}
             onSeekMouseDown={this.onSeekMouseDown}

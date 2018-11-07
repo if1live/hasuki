@@ -1,8 +1,10 @@
 import { PlayerState } from 'src/App';
 import * as React from 'react';
-import { VolumeControl } from './VolumeControl';
-import { SeekControl } from './SeekControl';
-import { PlayerStatusViewer } from './PlayerStateViewer';
+import {
+  VolumeControl,
+  SeekControl,
+  PlayerStatusViewer,
+} from '../components/debug';
 
 interface Props {
   setVolume: (volume: number) => void;
@@ -11,7 +13,7 @@ interface Props {
   onSeekChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSeekMouseUp: (e: any) => void;
 }
-export class DebugView extends React.Component<PlayerState & Props> {
+export class DebugContainer extends React.Component<PlayerState & Props> {
   public render() {
     return (
       <div>

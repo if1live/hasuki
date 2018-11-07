@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { PlaylistComponent } from './PlaylistComponent';
+import { PlaylistComponent } from '../components/playlist';
 import { Playlist } from 'src/models';
 
 interface Props {
   playlist: Playlist;
 }
-export class PlaylistView extends React.Component<Props> {
+export class PlaylistContainer extends React.Component<Props> {
   public render() {
     const { playlist } = this.props;
     return (

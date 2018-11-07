@@ -13,7 +13,7 @@ interface State {
   syncing: boolean;
 }
 
-export class SettingsView extends React.Component<Props & SheetProviderProps, State> {
+export class SettingsContainer extends React.Component<Props & SheetProviderProps, State> {
   public state = {
     syncing: false,
   };
