@@ -1,4 +1,4 @@
-import { secondsToDisplay } from '.';
+import { secondsToDisplay } from './display';
 
 describe('secondsToDisplay', () => {
   test('0:01', () => expect(secondsToDisplay(1)).toEqual('0:01'));
