@@ -1,5 +1,5 @@
 import { PlaylistItem } from './PlaylistItem';
-import { SHEET_ID } from 'src/settings';
+import { SHEET_ID } from '../settings';
 
 export const DEFAULT_PLAYLIST_NAME = 'default';
 
@@ -12,14 +12,20 @@ export class Playlist {
     this.items = [...items];
   }
 
-  private cursorToIndex(cursor: number) {
-    if (this.items.length === 0) {
+  public cursorToIndex(cursor: number) {
+    const len = this.items.length;
+    if (len === 0) {
       return undefined;
     }
-
     // js는 음수 % 를 하면 음수가 나온다
-    const idx = cursor % this.items.length;
-    return (idx < 0) ? idx + this.items.length : idx;
+    const idx = cursor % len;
+    const positiveIdx = (idx >= 0)
+      ? idx
+      : idx + len;
+    // -3 % 3 = -0
+    // -0 === 0 이긴한테 테스트 코드를 손보긴 싫으니
+    // 0으로 나오게 하고싶다
+    return Math.abs(positiveIdx);
   }
 
   public get(cursor: number) {
