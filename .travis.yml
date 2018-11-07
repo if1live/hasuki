@@ -1,0 +1,27 @@
+language: node_js
+
+node_js:
+  - 'node'
+  - '10'
+
+before_install:
+  - yarn global add codecov
+
+install:
+  - cd server && yarn install && cd -
+  - cd client && yarn install && cd -
+
+script:
+  - cd client && bash ../scripts/ci-client.sh && cd -
+  - cd server && bash ../scripts/ci-server.sh && cd -
+
+branches:
+  only:
+  - master
+
+after_success:
+  - cd server &&  bash <(curl -s https://codecov.io/bash) -cF javascript && cd -
+  - cd client &&  bash <(curl -s https://codecov.io/bash) -cF javascript && cd -
+
+notifications:
+  email: false

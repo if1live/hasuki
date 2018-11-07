@@ -7,7 +7,8 @@
     "start:dev": "ts-node src/index.ts",
     "start:prod": "node dist/index.js",
     "build": "tsc",
-    "watch": "nodemon -x yarn run start:dev"
+    "watch": "nodemon -x yarn run start:dev",
+    "lint": "tslint -c tslint.json -p tsconfig.json -t verbose"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -25,6 +26,7 @@
     "source-map-support": "^0.5.9",
     "ts-loader": "^5.3.0",
     "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
     "typescript": "^3.1.6",
     "webpack": "^4.25.1",
     "webpack-cli": "^3.1.2"
