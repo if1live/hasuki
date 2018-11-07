@@ -14,7 +14,7 @@ plugins:
 
 functions:
   simple:
-    handler: main.handler
+    handler: index.handler
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
