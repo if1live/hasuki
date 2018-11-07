@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button } from 'semantic-ui-react';
-import { getLinkType, LinkType } from 'src/helpers';
+import { getLinkType, LinkType, openTab } from 'src/helpers';
 
 interface Props {
   stop: () => void;
@@ -16,7 +16,7 @@ export class ControlButtonGroup extends React.Component<Props> {
   private openUrl = () => {
     if (this.isExternalUrl()) {
       const { baseUrl } = this.props;
-      window.open(baseUrl, '_blank');
+      if (baseUrl) { openTab(baseUrl); }
     }
   }
 

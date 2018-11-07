@@ -29,3 +29,6 @@ export const getYouTubeVideoId = (url: string) => {
   return m ? m[1] : undefined;
 };
 
+export const openTab = (url: string) => {
+  window.open(url, '_blank');
+};

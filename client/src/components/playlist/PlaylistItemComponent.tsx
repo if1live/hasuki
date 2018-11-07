@@ -1,10 +1,15 @@
 import * as React from 'react';
-import { secondsToDisplay, getLinkType, LinkType } from 'src/helpers';
+import {
+  secondsToDisplay,
+  getLinkType,
+  LinkType,
+} from 'src/helpers';
 import { List } from 'semantic-ui-react';
 import {
   PlaylistItem,
   PlaylistItemHolder,
 } from 'src/models';
+import { ExternalLink } from './ExternalLink';
 
 
 interface Props {
@@ -41,32 +46,11 @@ export class PlaylistItemComponent extends React.Component<Props> {
           <List.Header as="a" onClick={this.onPlayClick}>{holder.displayTitle}</List.Header>
           <List.Description style={itemDetailStyle}>
             <ExternalLink url={url} />
-            {(() => linktype !== LinkType.None ? SEPARATOR : null)()}
+            {linktype !== LinkType.None ? SEPARATOR : null}
             {this.length}
           </List.Description>
         </List.Content>
       </List.Item >
-    );
-  }
-}
-
-interface LinkProps {
-  url: string;
-}
-
-
-class ExternalLink extends React.PureComponent<LinkProps> {
-  private openUrl = () => {
-    window.open(this.props.url, '_blank');
-  }
-
-  public render() {
-    const ty = getLinkType(this.props.url);
-    return (
-      <span>
-        {(() => ty === LinkType.YouTube ? <a onClick={this.openUrl}>YouTube</a> : null)()}
-        {(() => ty === LinkType.SoundCloud ? <a onClick={this.openUrl}>SoundCloud</a> : null)()}
-      </span>
     );
   }
 }
