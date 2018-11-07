@@ -1,0 +1,17 @@
+service:
+  name: hasuki
+
+app: hasuki
+tenant: if1live
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: ap-northeast-2
+
+functions:
+  hello:
+    handler: index.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'

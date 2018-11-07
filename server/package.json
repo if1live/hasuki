@@ -13,6 +13,8 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-async-errors": "^3.1.1",
+    "serverless": "^1.32.0",
+    "serverless-http": "^1.8.0",
     "ytdl-core": "^0.27.1"
   },
   "devDependencies": {
