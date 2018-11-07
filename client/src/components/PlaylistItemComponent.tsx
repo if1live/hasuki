@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { secondsToDisplay, getLinkType, LinkType } from 'src/helpers';
 import { List } from 'semantic-ui-react';
-import { PlaylistItem, getTitle } from 'src/models';
+import {
+  PlaylistItem,
+  PlaylistItemHolder,
+} from 'src/models';
 
 
 interface Props {
@@ -30,12 +33,12 @@ export class PlaylistItemComponent extends React.Component<Props> {
     const linktype = getLinkType(url);
 
     const SEPARATOR = ' · ';
-    const displayTitle = getTitle(this.props.item);
+    const holder = new PlaylistItemHolder(this.props.item);
 
     return (
       <List.Item>
         <List.Content>
-          <List.Header as="a" onClick={this.onPlayClick}>{displayTitle}</List.Header>
+          <List.Header as="a" onClick={this.onPlayClick}>{holder.displayTitle}</List.Header>
           <List.Description style={itemDetailStyle}>
             <ExternalLink url={url} />
             {(() => linktype !== LinkType.None ? SEPARATOR : null)()}

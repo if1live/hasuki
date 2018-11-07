@@ -3,7 +3,7 @@ import { PlayerState } from 'src/App';
 import { ControlButtonGroup } from './ControlButtonGroup';
 import { Progress, Segment } from 'semantic-ui-react';
 import Duration from 'src/Duration';
-import { getTitle } from 'src/models';
+import { PlaylistItemHolder } from 'src/models';
 
 interface Props {
   stop: () => void;
@@ -34,7 +34,11 @@ export class PlayerView extends React.Component<Props & PlayerState> {
     const colorLoaded = loaded === 1 ? 'blue' : 'orange';
 
     const item = playlist.get(cursor);
-    const title = getTitle(item);
+    let title = 'NULL';
+    if (item) {
+      const holder = new PlaylistItemHolder(item);
+      title = holder.displayTitle;
+    }
 
     return (
       <div>

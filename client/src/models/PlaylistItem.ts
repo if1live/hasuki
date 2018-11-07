@@ -4,9 +4,17 @@ export interface PlaylistItem {
   milliseconds?: number;
 }
 
-// TODO interface + 함수 조합을 어떻게 하는게 나으려나
-export const getTitle = (item?: PlaylistItem) => {
-  const empty = '[BLANK]';
-  if (!item) { return empty; }
-  return item.title ? item.title : empty;
-};
+export class PlaylistItemHolder {
+  private item: PlaylistItem;
+
+  constructor(item: PlaylistItem) {
+    this.item = item;
+  }
+
+  public get displayTitle() {
+    const empty = '[BLANK]';
+    const title = this.item.title;
+    return title ? title : empty;
+  }
+}
+

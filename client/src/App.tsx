@@ -9,7 +9,11 @@ import {
 } from './components';
 import { SheetProviderProps } from './SheetProvider';
 import { Header, Icon, Menu } from 'semantic-ui-react';
-import { PlaylistItem, Playlist, getTitle } from './models';
+import {
+  PlaylistItem,
+  Playlist,
+  PlaylistItemHolder,
+} from './models';
 import { makeBlank } from './helpers/store';
 import {
   getLinkType,
@@ -98,6 +102,7 @@ class App extends React.Component<SheetProviderProps, State> {
 
   public load = async (item?: PlaylistItem) => {
     if (!item) { return; }
+    const holder = new PlaylistItemHolder(item);
 
     const url = await this.getUrl(item);
     this.setState({
@@ -110,7 +115,7 @@ class App extends React.Component<SheetProviderProps, State> {
     const r = Math.floor(Math.random() * 100);
     if (navigator.mediaSession) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: getTitle(item),
+        title: holder.displayTitle,
         artist: 'todo-artist',
         album: 'todo-album',
         artwork: [
