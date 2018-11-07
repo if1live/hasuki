@@ -4,7 +4,13 @@ node_js:
   - 'node'
   - '10'
 
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/server/node_modules
+    - $TRAVIS_BUILD_DIR/client/node_modules
+
 before_install:
+  - echo $TRAVIS_BUILD_DIR
   - yarn global add codecov
 
 install:
