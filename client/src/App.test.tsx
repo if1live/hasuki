@@ -1,14 +1,8 @@
-// import * as React from 'react';
-// import * as ReactDOM from 'react-dom';
-// import App from './App';
-
-// it('renders without crashing', () => {
-//   const div = document.createElement('div');
-//   ReactDOM.render(<App />, div);
-//   ReactDOM.unmountComponentAtNode(div);
-// });
-
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 it('blank', () => {
-  expect(1).toEqual(1);
+  const div = document.createElement('div');
+  ReactDOM.render(<span>todo</span>, div);
+  ReactDOM.unmountComponentAtNode(div);
 });
