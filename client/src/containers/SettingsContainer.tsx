@@ -2,7 +2,7 @@ import * as React from 'react';
 import { SheetProviderProps, AuthorizedState } from 'src/SheetProvider';
 import { Button, Divider, Icon } from 'semantic-ui-react';
 import { Playlist, fetchPlaylist, DEFAULT_PLAYLIST_NAME } from 'src/models';
-
+import * as store from 'src/helpers/store';
 
 
 interface Props {
@@ -18,8 +18,12 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
     syncing: false,
   };
 
-  private resetDB = () => {
-    console.log('TODO reset db');
+  private resetDB = async () => {
+    await store.clear();
+    const playlist = store.makeBlank();
+
+    const { updatePlaylist } = this.props;
+    updatePlaylist(playlist);
   }
 
   private syncPlaylist = async () => {
@@ -28,6 +32,7 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
     const { updatePlaylist } = this.props;
     const playlist = await fetchPlaylist(DEFAULT_PLAYLIST_NAME);
     updatePlaylist(playlist);
+    store.synchronize(playlist);
 
     this.setState({ syncing: false });
   }

@@ -23,6 +23,7 @@ import {
   getAudioUrl,
   getYouTubeVideoId,
 } from './helpers';
+import * as store from './helpers/store';
 
 type MenuKeys = 'playlist' | 'settings' | 'dev';
 
@@ -68,7 +69,7 @@ class App extends React.Component<SheetProviderProps, State> {
     playlist: makeBlank(),
   };
 
-  public componentDidMount() {
+  public async componentDidMount() {
     if (navigator.mediaSession) {
       navigator.mediaSession.setActionHandler('play', this.playPause);
       navigator.mediaSession.setActionHandler('pause', this.playPause);
@@ -78,8 +79,8 @@ class App extends React.Component<SheetProviderProps, State> {
       navigator.mediaSession.setActionHandler('nexttrack', this.nextTrack);
     }
 
-    // 첫번째 곡 연결시키기
-    // this.load(sampleUrls[0]);
+    const playlist = await store.load();
+    this.setState({ playlist });
   }
 
   public componentWillUnmount() {

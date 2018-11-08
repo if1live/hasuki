@@ -1,23 +1,38 @@
 import Dexie from 'dexie';
 import { Playlist, DEFAULT_PLAYLIST_NAME } from 'src/models/Playlist';
-import { delay } from './timeout';
+import { PlaylistItem } from 'src/models';
 
-const db = new Dexie('hasuki');
-db.version(1).stores({
-  playlist: '++id, url, title, milliseconds',
-});
+class PlaylistDatabase extends Dexie {
+  public items: Dexie.Table<PlaylistItem, number>;
 
-export const synchronize = (playlist: Playlist) => {
-  return 1;
+  constructor() {
+    super('playlist');
+    this.version(1).stores({
+      items: '++id, url, title, milliseconds',
+    });
+  }
+}
+
+const db = new PlaylistDatabase();
+
+export const synchronize = async (playlist: Playlist) => {
+  await db.items.clear();
+  await db.items.bulkAdd(playlist.items);
 };
 
 export const load = async () => {
-  const playlist = makeBlank();
-  await delay(100);
-  return await playlist;
+  console.log('todo load');
+  const items = await db.items.where('id').above(0).toArray();
+  return new Playlist(DEFAULT_PLAYLIST_NAME, items);
 };
+
+export const clear = async () => {
+  await db.items.clear();
+};
+
 
 export const makeBlank = () => {
   const playlist = new Playlist(DEFAULT_PLAYLIST_NAME, []);
   return playlist;
 };
+
