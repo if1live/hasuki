@@ -1,5 +1,6 @@
 import { PlaylistItem } from './PlaylistItem';
 import { SHEET_ID } from '../settings';
+import * as _ from 'lodash';
 
 export const DEFAULT_PLAYLIST_NAME = 'default';
 
@@ -39,23 +40,40 @@ export class Playlist {
   }
 }
 
-const isHidden = (row: Array<string | undefined>) => {
-  const hidden = row[3] as (string | undefined);
+export const shufflePlaylist = (playlist: Playlist) => {
+  const items = _.shuffle([...playlist.items]);
+  return new Playlist(playlist.name, items);
+};
+
+class Row {
+  private readonly arr: Array<string | undefined>;
+  constructor(arr: Array<string | undefined>) {
+    this.arr = arr;
+  }
+
+  public get url() { return this.arr[0] as string; }
+  public get title() { return this.arr[1]; }
+  public get duration() { return this.arr[2]; }
+  public get group() { return this.arr[3]; }
+  public get hidden() { return this.arr[4]; }
+}
+
+const isHidden = (row: Row) => {
+  const hidden = row.hidden;
   return (hidden && hidden.length > 0);
 };
 
-const makePlaylistItem = (row: Array<string | undefined>): PlaylistItem => {
-  const url = row[0] as (string);
-  const title = row[1] as (string | undefined);
-  const duration = row[2] as (string | undefined);
-
+const makePlaylistItem = (row: Row): PlaylistItem => {
+  const duration = row.duration;
   let milliseconds: (number | undefined);
   if (duration) {
     milliseconds = parseInt(duration, 10);
   }
 
   return {
-    url, title, milliseconds,
+    url: row.url,
+    title: row.title,
+    milliseconds,
   };
 };
 
@@ -64,7 +82,7 @@ const fetchSheet = (sheet: string): Promise<any> => {
     const gapi = window.gapi;
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: `${sheet}!A2:D`,
+      range: `${sheet}!A2:E`,
     }).then(
       (response: any) => resolve(response),
       (response: any) => reject(response),
@@ -77,7 +95,8 @@ export const fetchPlaylist = async (sheet: string) => {
     const resp = await fetchSheet(sheet);
     const range = resp.result;
     const values = range.values as Array<Array<string | undefined>>;
-    const items = values
+    const rows = values.map((x) => new Row(x));
+    const items = rows
       .filter((x) => !isHidden(x))
       .map(makePlaylistItem);
     const playlist = new Playlist(sheet, items);

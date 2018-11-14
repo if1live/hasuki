@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { SheetProviderProps, AuthorizedState } from 'src/SheetProvider';
 import { Button, Divider, Icon } from 'semantic-ui-react';
-import { Playlist, fetchPlaylist, DEFAULT_PLAYLIST_NAME } from 'src/models';
+import {
+  Playlist,
+  fetchPlaylist,
+  shufflePlaylist,
+  DEFAULT_PLAYLIST_NAME,
+} from 'src/models';
 import * as store from 'src/helpers/store';
 
 
@@ -11,11 +16,13 @@ interface Props {
 
 interface State {
   syncing: boolean;
+  shuffling: boolean;
 }
 
 export class SettingsContainer extends React.Component<Props & SheetProviderProps, State> {
   public state = {
     syncing: false,
+    shuffling: false,
   };
 
   private resetDB = async () => {
@@ -37,9 +44,16 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
     this.setState({ syncing: false });
   }
 
-  private shufflePlaylist = () => {
-    // TODO get playlist
-    console.log('TODO shuffle db');
+  private shufflePlaylist = async () => {
+    this.setState({ shuffling: true });
+
+    const { updatePlaylist } = this.props;
+    const prev = await store.load();
+    const playlist = shufflePlaylist(prev);
+    updatePlaylist(playlist);
+    store.synchronize(playlist);
+
+    this.setState({ shuffling: false });
   }
 
   public render() {
@@ -48,7 +62,7 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
       authClicked,
       signoutClicked,
     } = this.props;
-    const { syncing } = this.state;
+    const { syncing, shuffling } = this.state;
 
     return (
       <div>
@@ -77,10 +91,13 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
             <Icon name="sync" />
             sync
           </Button>
-          <Button onClick={this.shufflePlaylist} icon labelPosition="left">
+          <Button onClick={this.shufflePlaylist}
+            loading={shuffling}
+            icon
+            labelPosition="left">
             <Icon name="shuffle" />
             shuffle
-            </Button>
+          </Button>
         </div>
 
         <Divider />
