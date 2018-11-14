@@ -32,12 +32,13 @@ export class PlaylistItemComponent extends React.Component<Props> {
 
   public render() {
     // TODO 긴 문자열 대응하기
-    const { active, play } = this.props;
+    const { active, play, item } = this.props;
     const { url } = this.props.item;
     const linktype = getLinkType(url);
 
     const SEPARATOR = ' · ';
-    const holder = new PlaylistItemHolder(this.props.item);
+    const holder = new PlaylistItemHolder(item);
+    const group = item.group;
 
     return (
       <List.Item>
@@ -45,6 +46,7 @@ export class PlaylistItemComponent extends React.Component<Props> {
           <List.Header as="a" onClick={play}>
             {active ? <Icon name="play" /> : null}
             {holder.displayTitle}
+            {group ? `${SEPARATOR} ${group}` : null}
           </List.Header>
 
           <List.Description style={itemDetailStyle}>

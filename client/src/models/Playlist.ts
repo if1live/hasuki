@@ -73,6 +73,7 @@ const makePlaylistItem = (row: Row): PlaylistItem => {
   return {
     url: row.url,
     title: row.title,
+    group: row.group,
     milliseconds,
   };
 };

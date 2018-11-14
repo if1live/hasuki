@@ -10,6 +10,9 @@ class PlaylistDatabase extends Dexie {
     this.version(1).stores({
       items: '++id, url, title, milliseconds',
     });
+    this.version(2).stores({
+      items: '++id, url, title, milliseconds,group',
+    });
   }
 }
 

@@ -2,6 +2,7 @@ export interface PlaylistItem {
   url: string;
   title?: string;
   milliseconds?: number;
+  group?: string;
 }
 
 export class PlaylistItemHolder {
