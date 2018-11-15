@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { PlayerState } from 'src/App';
 import { ControlButtonGroup } from '../components/player';
-import { Progress, Segment } from 'semantic-ui-react';
+import { Progress, Segment, Image } from 'semantic-ui-react';
 import Duration from 'src/Duration';
 import { PlaylistItemHolder, Playlist } from 'src/models';
 
@@ -51,6 +51,8 @@ export class PlayerContainer extends React.Component<Props & PlayerState> {
       title = holder.displayTitle;
     }
 
+    const thumbnail = item ? item.thumbnail : undefined;
+
     return (
       <div>
         <Segment>
@@ -58,7 +60,11 @@ export class PlayerContainer extends React.Component<Props & PlayerState> {
             percent={percentPlayed}
             color={colorPlayed}
             attached="top" />
+
+          {thumbnail ? <Image src={thumbnail} floated="right" /> : null}
+
           {title}<br />
+
           duration=<Duration seconds={duration} /><br />
           elapsed=<Duration seconds={duration * played} /><br />
           remaining=<Duration seconds={duration * (1 - played)} />
