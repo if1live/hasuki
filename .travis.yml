@@ -1,7 +1,6 @@
 language: node_js
 
 node_js:
-  - 'node'
   - '10'
 
 cache:
@@ -28,6 +27,16 @@ branches:
 after_success:
   - cd server &&  bash <(curl -s https://codecov.io/bash) -cF javascript && cd -
   - cd client &&  bash <(curl -s https://codecov.io/bash) -cF javascript && cd -
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  local-dir: client/build
+  verbose: true
+  on:
+    branch: master
 
 notifications:
   email: false
