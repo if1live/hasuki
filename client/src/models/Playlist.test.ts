@@ -1,9 +1,11 @@
 import { Playlist } from './Playlist';
 import { PlaylistItem } from './PlaylistItem';
+import * as faker from 'faker';
 
 const makeItem = (url: string, order: number): PlaylistItem => ({
   url,
   order,
+  group: faker.random.alphaNumeric(8),
 });
 
 describe('Playlist#cursorToIndex', () => {

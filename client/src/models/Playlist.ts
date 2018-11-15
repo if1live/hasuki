@@ -55,7 +55,7 @@ class Row {
   public get url() { return this.arr[0] as string; }
   public get title() { return this.arr[1]; }
   public get duration() { return this.arr[2]; }
-  public get group() { return this.arr[3]; }
+  public get group() { return this.arr[3] || ''; }
   public get hidden() { return this.arr[4]; }
   public get thumbnail() { return this.arr[5]; }
 }

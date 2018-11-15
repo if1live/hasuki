@@ -52,6 +52,7 @@ export class PlayerContainer extends React.Component<Props & PlayerState> {
     }
 
     const thumbnail = item ? item.thumbnail : undefined;
+    const group = item ? item.group : 'default';
 
     return (
       <div>
@@ -64,6 +65,7 @@ export class PlayerContainer extends React.Component<Props & PlayerState> {
           {thumbnail ? <Image src={thumbnail} floated="right" /> : null}
 
           {title}<br />
+          group: {group}<br />
 
           duration=<Duration seconds={duration} /><br />
           elapsed=<Duration seconds={duration * played} /><br />

@@ -2,7 +2,7 @@ export interface PlaylistItem {
   url: string;
   title?: string;
   milliseconds?: number;
-  group?: string;
+  group: string;
   thumbnail?: string;
   order: number;
 }
