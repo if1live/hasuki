@@ -8,10 +8,7 @@ class PlaylistDatabase extends Dexie {
   constructor() {
     super('playlist');
     this.version(1).stores({
-      items: '++id, url, title, milliseconds',
-    });
-    this.version(2).stores({
-      items: '++id, url, title, milliseconds,group',
+      items: '++id, url, title, milliseconds, group, thumbnail',
     });
   }
 }
@@ -24,13 +21,13 @@ export const synchronize = async (playlist: Playlist) => {
 };
 
 export const load = async () => {
-  console.log('todo load');
   const items = await db.items.where('id').above(0).toArray();
   return new Playlist(DEFAULT_PLAYLIST_NAME, items);
 };
 
 export const clear = async () => {
-  await db.items.clear();
+  await db.delete();
+  location.reload();
 };
 
 

@@ -56,6 +56,7 @@ class Row {
   public get duration() { return this.arr[2]; }
   public get group() { return this.arr[3]; }
   public get hidden() { return this.arr[4]; }
+  public get thumbnail() { return this.arr[5]; }
 }
 
 const isHidden = (row: Row) => {
@@ -74,6 +75,7 @@ const makePlaylistItem = (row: Row): PlaylistItem => {
     url: row.url,
     title: row.title,
     group: row.group,
+    thumbnail: row.thumbnail,
     milliseconds,
   };
 };
@@ -83,7 +85,7 @@ const fetchSheet = (sheet: string): Promise<any> => {
     const gapi = window.gapi;
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: `${sheet}!A2:E`,
+      range: `${sheet}!A2:F`,
     }).then(
       (response: any) => resolve(response),
       (response: any) => reject(response),

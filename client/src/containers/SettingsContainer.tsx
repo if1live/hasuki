@@ -39,7 +39,7 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
     const { updatePlaylist } = this.props;
     const playlist = await fetchPlaylist(DEFAULT_PLAYLIST_NAME);
     updatePlaylist(playlist);
-    store.synchronize(playlist);
+    await store.synchronize(playlist);
 
     this.setState({ syncing: false });
   }
@@ -51,7 +51,7 @@ export class SettingsContainer extends React.Component<Props & SheetProviderProp
     const prev = await store.load();
     const playlist = shufflePlaylist(prev);
     updatePlaylist(playlist);
-    store.synchronize(playlist);
+    await store.synchronize(playlist);
 
     this.setState({ shuffling: false });
   }
