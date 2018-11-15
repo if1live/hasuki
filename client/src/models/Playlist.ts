@@ -42,6 +42,7 @@ export class Playlist {
 
 export const shufflePlaylist = (playlist: Playlist) => {
   const items = _.shuffle([...playlist.items]);
+  items.forEach((item, idx) => item.order = idx);
   return new Playlist(playlist.name, items);
 };
 
@@ -64,7 +65,7 @@ const isHidden = (row: Row) => {
   return (hidden && hidden.length > 0);
 };
 
-const makePlaylistItem = (row: Row): PlaylistItem => {
+const makePlaylistItem = (row: Row, order: number): PlaylistItem => {
   const duration = row.duration;
   let milliseconds: (number | undefined);
   if (duration) {
@@ -77,6 +78,7 @@ const makePlaylistItem = (row: Row): PlaylistItem => {
     group: row.group,
     thumbnail: row.thumbnail,
     milliseconds,
+    order,
   };
 };
 

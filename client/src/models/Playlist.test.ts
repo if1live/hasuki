@@ -1,15 +1,16 @@
 import { Playlist } from './Playlist';
 import { PlaylistItem } from './PlaylistItem';
 
-const makeItem = (url: string): PlaylistItem => ({
+const makeItem = (url: string, order: number): PlaylistItem => ({
   url,
+  order,
 });
 
 describe('Playlist#cursorToIndex', () => {
   const playlist = new Playlist('simple', [
-    makeItem('foo'),
-    makeItem('bar'),
-    makeItem('spam'),
+    makeItem('foo', 1),
+    makeItem('bar', 2),
+    makeItem('spam', 3),
   ]);
   const len = playlist.length;
 

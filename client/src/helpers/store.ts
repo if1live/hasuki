@@ -8,7 +8,7 @@ class PlaylistDatabase extends Dexie {
   constructor() {
     super('playlist');
     this.version(1).stores({
-      items: '++id, url, title, milliseconds, group, thumbnail',
+      items: '++id, url, title, milliseconds, group, thumbnail, order',
     });
   }
 }
@@ -21,7 +21,7 @@ export const synchronize = async (playlist: Playlist) => {
 };
 
 export const load = async () => {
-  const items = await db.items.where('id').above(0).toArray();
+  const items = await db.items.where('id').above(0).sortBy('order');
   return new Playlist(DEFAULT_PLAYLIST_NAME, items);
 };
 

@@ -4,6 +4,7 @@ export interface PlaylistItem {
   milliseconds?: number;
   group?: string;
   thumbnail?: string;
+  order: number;
 }
 
 export class PlaylistItemHolder {
