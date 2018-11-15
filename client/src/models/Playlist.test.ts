@@ -1,4 +1,7 @@
-import { Playlist } from './Playlist';
+import {
+  Playlist,
+  parseDuration,
+} from './Playlist';
 import { PlaylistItem } from './PlaylistItem';
 import * as faker from 'faker';
 
@@ -47,3 +50,9 @@ describe('Playlist#cursorToIndex', () => {
   });
 });
 
+describe('parseYouTubeDuration', () => {
+  test('PT19S', () => expect(parseDuration('PT19S')).toEqual(19));
+  test('PT3M52S', () => expect(parseDuration('PT3M52S')).toEqual(3 * 60 + 52));
+  test('PT1H7M50S', () => expect(parseDuration('PT1H7M50S')).toEqual(1 * 3600 + 7 * 60 + 50));
+  test('invalid', () => expect(parseDuration('invalid')).toBeUndefined());
+});

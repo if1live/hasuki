@@ -46,6 +46,40 @@ export const shufflePlaylist = (playlist: Playlist) => {
   return new Playlist(playlist.name, items);
 };
 
+interface YouTubeThumbnail {
+  width: number;
+  height: number;
+  url: string;
+}
+
+interface YouTubeThumbnails {
+  standard: YouTubeThumbnail;
+  medium: YouTubeThumbnail;
+  default: YouTubeThumbnail;
+  high: YouTubeThumbnail;
+  maxres: YouTubeThumbnail;
+}
+
+interface YouTubeContent {
+  title: string;
+  duration: string;
+  thumbnails: YouTubeThumbnails;
+}
+
+export const parseDuration = (duration: string) => {
+  // PT19S
+  // PT3M52S
+  // PT1H7M50S
+  const re = /PT(\d+H)?(\d+M)?(\d+S)?/;
+  const match = duration.match(re);
+  if (!match) { return undefined; }
+
+  const h = match[1] ? parseInt(match[1].replace('H', ''), 10) : 0;
+  const m = match[2] ? parseInt(match[2].replace('M', ''), 10) : 0;
+  const s = match[3] ? parseInt(match[3].replace('S', ''), 10) : 0;
+  return h * 3600 + m * 60 + s;
+};
+
 class Row {
   private readonly arr: Array<string | undefined>;
   constructor(arr: Array<string | undefined>) {
@@ -54,10 +88,9 @@ class Row {
 
   public get url() { return this.arr[0] as string; }
   public get title() { return this.arr[1]; }
-  public get duration() { return this.arr[2]; }
-  public get group() { return this.arr[3] || ''; }
-  public get hidden() { return this.arr[4]; }
-  public get thumbnail() { return this.arr[5]; }
+  public get group() { return this.arr[2] || ''; }
+  public get hidden() { return this.arr[3]; }
+  public get content() { return JSON.parse(this.arr[4] || '{}') as YouTubeContent; }
 }
 
 const isHidden = (row: Row) => {
@@ -66,17 +99,16 @@ const isHidden = (row: Row) => {
 };
 
 const makePlaylistItem = (row: Row, order: number): PlaylistItem => {
-  const duration = row.duration;
-  let milliseconds: (number | undefined);
-  if (duration) {
-    milliseconds = parseInt(duration, 10);
-  }
+  const content = row.content;
+  const durationStr = content.duration;
+  const duration = parseDuration(durationStr);
+  const milliseconds = duration ? duration * 1000 : undefined;
 
   return {
     url: row.url,
     title: row.title,
     group: row.group,
-    thumbnail: row.thumbnail,
+    thumbnail: content.thumbnails.default.url,
     milliseconds,
     order,
   };
