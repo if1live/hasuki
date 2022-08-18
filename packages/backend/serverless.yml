@@ -1,8 +1,8 @@
 service: hasuki
 
 # app and org for use with dashboard.serverless.com
-app: hasuki
-org: if1live
+# org: if1live
+# app: hasuki
 
 frameworkVersion: "3"
 
