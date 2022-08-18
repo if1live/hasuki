@@ -3,7 +3,7 @@ name: hasuki
 on: [push, pull_request]
 
 jobs:
-  deps:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,6 +38,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - run: echo hello
-
-
+      - run: cd ./packages/backend && pnpm build
+      - run: cd ./packages/backend && pnpm test
+      - run: cd ./packages/backend && pnpm package
