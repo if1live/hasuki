@@ -2,6 +2,17 @@ name: hasuki
 
 on: [push, pull_request]
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -9,6 +20,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v1
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -19,7 +33,7 @@ jobs:
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 6
+          version: 7
           run_install: false
 
       - name: Get pnpm store directory
@@ -40,6 +54,65 @@ jobs:
 
       - run: cd ./packages/backend && pnpm build
       - run: cd ./packages/backend && pnpm test
-      - run: cd ./packages/backend && pnpm package
+      - run: cd ./packages/backend && pnpm sls package
 
       - run: cd ./packages/frontend && pnpm build
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: frontend-artifact
+          path: ./packages/frontend/dist
+
+      - uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./packages/frontend/dist
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: backend-artifact
+          path: ./packages/backend/.serverless
+
+  deploy_frontend:
+    if: ${{ github.event_name == 'push' && (github.ref_name == 'main') }}
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+
+  deploy_backend:
+    if: ${{ github.event_name == 'push' && (github.ref_name == 'main') }}
+
+    needs: build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./packages/backend
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: backend-artifact
+          path: ./packages/backend/.serverless
+
+      # TODO: cache 두번 설정하긴 귀찮고 더 멀쩡한거 없나?
+      - run: npm i --location=global serverless@3.21.0
+      - run: npm i --location=global serverless-scriptable-plugin@1.2.2
+
+      # 환경변수 전체를 설정하지 않으려고 배포. 구성이 바뀔때는 손으로. ssm으로 교체?
+      # - run: sls deploy -f http_handle

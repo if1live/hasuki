@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "tsc && vite build --base=/hasuki/",
     "preview": "vite preview",
-    "predeploy": "pnpm run build",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
