@@ -48,4 +48,4 @@ plugins:
 
 custom:
   scriptHooks:
-    before:package:createDeploymentArtifacts: pnpm package
+    before:package:createDeploymentArtifacts: npm run package

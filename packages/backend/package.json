@@ -12,7 +12,7 @@
     "build": "tsc",
     "start:dev": "ts-node-esm ./src/dev.ts",
     "test": "cross-env NODE_ENV=test STAGE=test mocha",
-    "package": "pnpm ncc build ./src/handlers/mod.ts --external better-sqlite3 -o output"
+    "package": "ncc build ./src/handlers/mod.ts --external better-sqlite3 -o output"
   },
   "dependencies": {
     "@aws-sdk/client-rds-data": "^3.150.0",

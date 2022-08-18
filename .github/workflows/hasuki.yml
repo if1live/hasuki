@@ -2,6 +2,9 @@ name: hasuki
 
 on: [push, pull_request]
 
+env:
+  SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
@@ -110,9 +113,11 @@ jobs:
           name: backend-artifact
           path: ./packages/backend/.serverless
 
-      # TODO: cache 두번 설정하긴 귀찮고 더 멀쩡한거 없나?
-      - run: npm i --location=global serverless@3.21.0
-      - run: npm i --location=global serverless-scriptable-plugin@1.2.2
+      - name: serverless deploy
+        uses: serverless/github-action@v3.1
+        with:
+          args: -c "serverless plugin install --name serverless-scriptable-plugin && cd ./packages/backend && serverless deploy"
+          entrypoint: /bin/sh
 
       # 환경변수 전체를 설정하지 않으려고 배포. 구성이 바뀔때는 손으로. ssm으로 교체?
       # - run: sls deploy -f http_handle
