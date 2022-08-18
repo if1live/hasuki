@@ -121,7 +121,7 @@ app.get('/status/rds', async (req: Request, res: Response) => {
       parameters: [
         {
           name: 'a',
-          value: { longValue: 10 }
+          value: { longValue: 1 }
         },
         {
           name: 'b',
