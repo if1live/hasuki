@@ -1,0 +1,17 @@
+{
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[liquid]": {
+    "editor.defaultFormatter": "sissel.shopify-liquid",
+    "editor.formatOnSave": true
+  },
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "typescript.preferences.importModuleSpecifier": "project-relative"
+}
