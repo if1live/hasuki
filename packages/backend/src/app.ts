@@ -11,14 +11,12 @@ app.engine("liquid", engine.express());
 app.set("views", "./views");
 app.set("view engine", "liquid");
 
-/*
 // livereload는 개발 환경에서만 살아있도록 하고싶다
 // 번들링에서도 명시적으로 제외하고 싶다
 if (settings.NODE_ENV === "development") {
   const { default: livereloadMiddleware } = await import("connect-livereload");
   app.use(livereloadMiddleware());
 }
-*/
 
 const toYouTubeUrl = (videoId: string) => {
   return `https://www.youtube.com/watch?v=${videoId}`;
@@ -67,5 +65,5 @@ app.get("/playlist/:playlistId", async (req, res) => {
 });
 
 app.get("/", async (req, res) => {
-  res.render("index", { name: "foo1" });
+  res.render("index", { name: "foo11" });
 });
