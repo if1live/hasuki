@@ -1,0 +1,77 @@
+{% layout "layouts/base_site.liquid" %}
+
+{% block content %}
+  <section>
+    <h1>playlist</h1>
+    <p>
+      {{ playlistId }}
+    </p>
+
+    <dl>
+      <dt>title</dt>
+      <dd>{{ playlist.title }}</dd>
+      <dt>description</dt>
+      <dd>{{ playlist.description | default: "[BLANK]" }}</dd>
+      <dt>created at</dt>
+      <dd>{{ playlist.createdAt | date: "%Y-%m-%dT%H:%M:%S.%LZ" }}</dd>
+      <dt>updated at</dt>
+      <dd>{{ playlist.updatedAt | date: "%Y-%m-%dT%H:%M:%S.%LZ" }}</dd>
+    </dl>
+
+    <div class="ui ordered list">
+      {% for item in items %}
+        {% assign thumbnail = item.thumbnail %}
+        <div class="item">
+          <img
+            class="ui image"
+            src="{{ thumbnail.url }}"
+            width="{{ thumbnail.width }}"
+            height="{{ thumbnail.height }}">
+
+          <div class="content">
+            <div class="header">
+              <!-- TODO: player link -->
+              {{ item.title }}
+            </div>
+            <div class="description">
+              <dl>
+                <dt>duration</dt>
+                <dd>{{ item.duration | duration }}</dd>
+                <dt>youtube</dt>
+                <dd>
+                  <a href="{{ item.url }}" target="_blank">
+                    {{ item.naiveId }}
+                  </a>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <form class="ui form">
+
+      <input
+        type="hidden"
+        name="playlistId"
+        value="{{ playlistId }}">
+
+      <div class="ui buttons">
+        <button
+          class="ui mini button"
+          type="submit"
+          formmethod="post"
+          formaction="/playlist/synchronize/">synchronize</button>
+
+        <div class="or"></div>
+
+        <button
+          class="ui mini negative button"
+          type="submit"
+          formmethod="post"
+          formaction="/playlist/delete/">delete</button>
+      </div>
+    </form>
+  </section>
+{% endblock %}

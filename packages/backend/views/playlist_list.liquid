@@ -1,0 +1,52 @@
+{% layout "layouts/base_site.liquid" %}
+
+{% block content %}
+  <section>
+    <h1>playlist</h1>
+
+    <table class="ui compact selectable table">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>title</th>
+          <th>youtube</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for playlist in playlists %}
+          <tr>
+            <th>
+              <a href="/playlist/{{ playlist.naiveId }}/">
+                {{ playlist.id }}
+              </a>
+            </th>
+            <td>
+              <a href="/playlist/{{ playlist.naiveId }}/">
+                {{ playlist.title }}
+              </a>
+            </td>
+            <td>
+              <a href="{{ playlist.url }}" target="_blank">
+                {{ playlist.naiveId }}
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- url? -->
+    <form
+      class="ui form"
+      method="GET"
+      action="/playlist/view/">
+
+      <input
+        type="text"
+        name="naiveId"
+        placeholder="youtube playlist id">
+
+      <button type="submit" class="ui mini button">GoTo</button>
+    </form>
+  </section>
+{% endblock %}

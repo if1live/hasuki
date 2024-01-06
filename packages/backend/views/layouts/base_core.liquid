@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="content-language" content="ko-kr">
+
+  <!-- <link  rel="icon"href="/static/favicon.ico" sizes="any" /> -->
+  <!-- <link rel="apple-touch-icon" href="/static/icon.png" /> -->
+
+  <title>hasuki</title>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css"
+    integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer" />
+
+  <!-- https://www.srihash.org/: unpkg을 cdnjs 같은 형태로 만들떄 쓴거 -->
+  <script
+    src="https://unpkg.com/htmx.org@1.9.4"
+    integrity="sha384-zUfuhFKKZCbHTY6aRR46gxiqszMk5tcHjsVFxnUo8VMus4kHGVdIYVbOYYNlKmHV"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+  {% block body_content %}
+    BODY_CONTENT
+  {% endblock %}
+
+  {% block script_after_body %}{% endblock %}
+</body>

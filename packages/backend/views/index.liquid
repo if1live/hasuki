@@ -1,5 +1,11 @@
-<head></head>
-<body>
-  <h1>a{{ name }}</h1>
-  <p>{{ data | json: 2 }}</p>
-</body>
+{% layout "layouts/base_site.liquid" %}
+
+{% block content %}
+  <body>
+    <h1>hasuki</h1>
+    <img
+      class="ui large image"
+      src="/static/title.jpg"
+      alt="hazuki">
+  </body>
+{% endblock %}

@@ -20,6 +20,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@hono/node-server": "^1.4.0",
     "hono": "^3.12.0",
     "kysely": "^0.27.2",
     "kysely-plugin-prefix": "^1.1.0",

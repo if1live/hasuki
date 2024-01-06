@@ -30,6 +30,9 @@ importers:
 
   packages/backend:
     dependencies:
+      '@hono/node-server':
+        specifier: ^1.4.0
+        version: 1.4.0
       hono:
         specifier: ^3.12.0
         version: 3.12.0
@@ -1533,6 +1536,11 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@hono/node-server@1.4.0:
+    resolution: {integrity: sha512-bhDkhldW7w9VgjrX0gG1vJ2YyvTxFWd5WG9nHjSR4UauhVECQZC3qy7mVVuQ054I5NWhKttHfKzYfoPzmUzAjw==}
+    engines: {node: '>=18.14.1'}
+    dev: false
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}

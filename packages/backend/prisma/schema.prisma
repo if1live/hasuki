@@ -39,3 +39,76 @@ model User {
 
   @@map("hasuki_user")
 }
+
+model Playlist {
+  id Int @id @default(autoincrement())
+
+  // youtube에서 사용되는 playlist id 그대로 저장
+  naive_id String @unique
+  url      String
+  title    String
+
+  estimated_item_count Int
+  views                Int
+
+  // example: "Last updated on Dec 8, 2023"
+  last_updated String
+
+  description String?
+
+  // example: everyone
+  visibility String
+
+  // author: Author?
+  // author
+
+  payload Json
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(dbgenerated("CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)")) @updatedAt
+
+  @@map("hasuki_playlist")
+}
+
+model Author {
+  id Int @id @default(autoincrement())
+
+  url        String
+  channel_id String @unique
+  name       String
+
+  payload Json
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(dbgenerated("CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)")) @updatedAt
+
+  @@map("hasuki_author")
+}
+
+model PlaylistItem {
+  id Int @id @default(autoincrement())
+
+  playlist_id Int
+
+  title     String
+  index     Int
+  naive_id  String
+  short_url String
+  url       String
+
+  // Author?
+
+  is_live      Boolean
+  // example: "2:14"
+  duration     String
+  duration_sec Int
+  is_playable  Boolean
+
+  payload Json
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(dbgenerated("CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)")) @updatedAt
+
+  @@index([playlist_id])
+  @@map("hasuki_playlist_item")
+}

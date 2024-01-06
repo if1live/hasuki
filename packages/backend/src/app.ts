@@ -1,68 +1,34 @@
+import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
-import { sql } from "kysely";
-import ytdl, { videoFormat } from "ytdl-core";
-import ytpl from "ytpl";
+import { compress } from "hono/compress";
+import { cors } from "hono/cors";
+import { logger } from "hono/logger";
+import { prettyJSON } from "hono/pretty-json";
+import { audioRoot, playlistRoot, statusRoot } from "./controllers/index.js";
 import { engine } from "./instances/misc.js";
-import { db } from "./instances/rdbms.js";
 import { livereloadMiddleware } from "./middlewares.js";
 import * as settings from "./settings.js";
 
 export const app = new Hono();
 
+app.use("*", logger());
+app.get("*", prettyJSON());
+app.use("*", compress());
+app.use("*", cors());
+
+app.use("/static/*", serveStatic({ root: "./" }));
+
 // livereload는 개발 환경에서만 살아있도록 하고싶다
 // 번들링에서도 명시적으로 제외하고 싶다
 if (settings.NODE_ENV === "development") {
-	app.use(livereloadMiddleware());
+  app.use(livereloadMiddleware());
 }
 
-const toYouTubeUrl = (videoId: string) => {
-	return `https://www.youtube.com/watch?v=${videoId}`;
-};
-
-const compareHighBitrate = (a: videoFormat, b: videoFormat) => {
-	const a_val = a.audioBitrate ?? -1;
-	const b_val = b.audioBitrate ?? -1;
-	return b_val - a_val;
-};
-
-const isAudioFormat = (format: videoFormat) => !format.width && !format.height;
-
-async function main_audio(videoId: string) {
-	const youtubeUrl = toYouTubeUrl(videoId);
-	const info = await ytdl.getInfo(youtubeUrl);
-	const formats = info.formats
-		.filter((x) => x.hasAudio && !x.hasVideo)
-		.filter(isAudioFormat)
-		.sort(compareHighBitrate);
-	return formats;
-}
-
-async function main_playlist(playlistId: string) {
-	// 가공 없이 통으로 넘기기. 데이터 가공은 밖에서 수행
-	const playlist = await ytpl(playlistId);
-	return playlist;
-}
-
-app.get("/audio/:videoId", async (c) => {
-	const videoId = c.req.param("videoId");
-	const result = await main_audio(videoId);
-	return c.json(result);
-});
-
-app.get("/playlist/:playlistId", async (c) => {
-	const playlistId = c.req.param("playlistId");
-	const result = await main_playlist(playlistId);
-	return c.json(result);
-});
+app.route(statusRoot.prefix, statusRoot.app);
+app.route(playlistRoot.prefix, playlistRoot.app);
+app.route(audioRoot.prefix, audioRoot.app);
 
 app.get("/", async (c) => {
-	type Row = { v: number };
-	const compiledQuery = sql<Row>`select 1+2 as v`.compile(db);
-	const output = await db.executeQuery(compiledQuery);
-
-	const html = await engine.renderFileSync("index", {
-		name: "sample",
-		data: output,
-	});
-	return c.html(html);
+  const html = await engine.renderFileSync("index");
+  return c.html(html);
 });
