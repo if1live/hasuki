@@ -31,6 +31,8 @@ provider:
     STAGE: ${self:provider.stage}
     NODE_ENV: production
 
+    DATABASE_URL: ${env:DATABASE_URL}
+
 package:
   individually: true
   patterns:

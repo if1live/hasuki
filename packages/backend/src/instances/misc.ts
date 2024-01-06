@@ -1,5 +1,5 @@
 import { Liquid } from "liquidjs";
-import * as settings from "./settings.js";
+import * as settings from "../settings.js";
 
 export const engine = new Liquid({
   root: settings.viewPath,

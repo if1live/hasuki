@@ -1,7 +1,9 @@
 import { Hono } from "hono";
+import { sql } from "kysely";
 import ytdl, { videoFormat } from "ytdl-core";
 import ytpl from "ytpl";
-import { engine } from "./instances.js";
+import { engine } from "./instances/misc.js";
+import { db } from "./instances/rdbms.js";
 import { livereloadMiddleware } from "./middlewares.js";
 import * as settings from "./settings.js";
 
@@ -42,18 +44,25 @@ async function main_playlist(playlistId: string) {
 }
 
 app.get("/audio/:videoId", async (c) => {
-	const videoId = c.req.param('videoId');
+	const videoId = c.req.param("videoId");
 	const result = await main_audio(videoId);
 	return c.json(result);
 });
 
 app.get("/playlist/:playlistId", async (c) => {
-	const playlistId = c.req.param('playlistId');
+	const playlistId = c.req.param("playlistId");
 	const result = await main_playlist(playlistId);
 	return c.json(result);
 });
 
 app.get("/", async (c) => {
-	const html = await engine.renderFileSync("index", { name: "foo11" });
+	type Row = { v: number };
+	const compiledQuery = sql<Row>`select 1+2 as v`.compile(db);
+	const output = await db.executeQuery(compiledQuery);
+
+	const html = await engine.renderFileSync("index", {
+		name: "sample",
+		data: output,
+	});
 	return c.html(html);
 });

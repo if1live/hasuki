@@ -25,7 +25,9 @@ const opts_common: esbuild.BuildOptions = {
   treeShaking: true,
   platform: "node",
   external: [
+    "livereload",
     "connect-livereload",
+    "better-sqlite3",
     "@aws-sdk/client-apigatewaymanagementapi",
     "@aws-sdk/client-lambda",
     "@aws-sdk/client-sqs",

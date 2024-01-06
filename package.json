@@ -18,6 +18,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.4.1",
     "@types/node": "^20.10.6",
+    "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
   },
   "packageManager": "pnpm@8.14.0"
