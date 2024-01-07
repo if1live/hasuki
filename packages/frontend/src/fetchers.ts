@@ -14,7 +14,7 @@ const selectHost = (loc: Location) => {
   }
 
   // TODO: 배포 환경?
-  return "https://6z45tn65jrowivqzwvcgmxdno40gmwqp.lambda-url.ap-northeast-1.on.aws/";
+  return "https://6z45tn65jrowivqzwvcgmxdno40gmwqp.lambda-url.ap-northeast-1.on.aws";
 };
 const host = selectHost(window.location);
 
