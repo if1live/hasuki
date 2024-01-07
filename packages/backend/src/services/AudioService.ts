@@ -2,7 +2,7 @@ import { Redis } from "ioredis";
 import * as R from "remeda";
 import ytdl from "ytdl-core";
 
-const fetchYoutubeInfo = async (videoId: string) => {
+const fetchYouTube = async (videoId: string) => {
   const url = `https://www.youtube.com/watch?v=${videoId}`;
   const info = await ytdl.getInfo(url);
   return info;
@@ -108,7 +108,7 @@ export class AudioService {
   constructor(private redis: Redis) {}
 
   async load_immediate(videoId: string): Promise<AudioModel | null> {
-    const info = await fetchYoutubeInfo(videoId);
+    const info = await fetchYouTube(videoId);
     const model = AudioModel.from(info);
     await AudioCache.set(this.redis, model);
     return model;
