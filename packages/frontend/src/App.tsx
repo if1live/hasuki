@@ -22,7 +22,11 @@ import { PlaylistItem, fetcher_audio, fetcher_playlist } from "./fetchers";
 function App() {
   const ref = useRef<ReactPlayer>(null);
 
-  const [playlistId, setPlaylistId] = useQueryParam("id", StringParam);
+  // TODO: video 하나만 받는 경우는 어떻게 처리하지?
+  // 플레이어 구현이 2개가 되는게 낫나? 가짜 playlist 처리할까?
+  const [playlistId, setPlaylistId] = useQueryParam("playlist", StringParam);
+  const [videoId, setVideoId] = useQueryParam("video", StringParam);
+
   const { data, error, isLoading } = useSWR(playlistId, fetcher_playlist);
 
   // shuffle 필요해서 상세 목록은 data에서 직접 쓰지 않는다
@@ -34,6 +38,7 @@ function App() {
   const [played, setPlayed] = useState(0);
   const [loaded, setLoaded] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [seeking, setSeeking] = useState(false);
 
   type MediaMetadataOptions = Parameters<typeof useMediaMeta>[0];
   const [metadata, setMetadata] = useState<MediaMetadataOptions>({});
@@ -86,42 +91,73 @@ function App() {
       };
       setMetadata(m);
     }
+
     execute().then(
       () => {},
-      () => {},
+      (e) => {
+        console.error(e);
+      },
     );
   }, [currentAudioIndex, playlistItems]);
 
-  useMediaSession({
-    onSeekBackward: () => {
-      // ref.current.currentTime -= 15;
-      console.log("onSeekBackward");
-    },
-    onSeekForward: () => {
-      // ref.current.currentTime += 15;
-      console.log("onSeekForward");
-    },
-    onNextTrack: () => {
-      if (currentAudioIndex < playlistItems.length - 1) {
-        setCurrentAudioIndex(currentAudioIndex + 1);
-      }
-    },
-    onPreviousTrack: () => {
-      if (currentAudioIndex >= 1) {
-        setCurrentAudioIndex(currentAudioIndex - 1);
-      }
-    },
-    onPlay: () => {
-      setPlaying(true);
-    },
-    onPause: () => {
-      setPlaying(false);
-    },
-    onStop: () => {
-      setPlaying(false);
-    },
-  });
+  // 플레이어 구현
+  const handleNextTrack = () => {
+    if (currentAudioIndex < playlistItems.length - 1) {
+      setCurrentAudioIndex(currentAudioIndex + 1);
+    }
+  };
 
+  const handlePreviousTrack = () => {
+    if (currentAudioIndex >= 1) {
+      setCurrentAudioIndex(currentAudioIndex - 1);
+    }
+  };
+
+  const handleSeekBackward = () => {
+    if (!ref.current) return;
+
+    const t = ref.current.getCurrentTime();
+    ref.current.seekTo(t - 15, "seconds");
+  };
+
+  const handleSeekForward = () => {
+    if (!ref.current) return;
+
+    const t = ref.current.getCurrentTime();
+    ref.current.seekTo(t + 15, "seconds");
+  };
+
+  const handlePlayPauseToggle = () => {
+    setPlaying(!playing);
+  };
+
+  const handleShuffle = () => {
+    const items = R.pipe(data?.items ?? [], R.shuffle());
+    setPlaylistItems(items);
+
+    setCurrentAudioIndex(0);
+    setPlaying(false);
+  };
+
+  const handlePlayIndex = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    input: ButtonProps,
+  ) => {
+    const id = parseInt(input["data-id"], 10);
+    const idx = playlistItems.findIndex((x) => x.id === id);
+    setCurrentAudioIndex(idx);
+    setPlaying(true);
+  };
+
+  useMediaSession({
+    onSeekBackward: handleSeekBackward,
+    onSeekForward: handleSeekForward,
+    onNextTrack: handleNextTrack,
+    onPreviousTrack: handlePreviousTrack,
+    onPlay: () => setPlaying(true),
+    onPause: () => setPlaying(false),
+    // onStop: () => setPlaying(false),
+  });
   useMediaMeta(metadata);
 
   const onEnded = () => {
@@ -139,8 +175,11 @@ function App() {
   };
 
   const onProgress = (state: OnProgressProps) => {
-    setLoaded(state.loaded);
-    setPlayed(state.played);
+    // We only want to update time slider if we are not currently seeking
+    if (!seeking) {
+      setLoaded(state.loaded);
+      setPlayed(state.played);
+    }
   };
 
   const onSeek = (seconds: number) => {
@@ -164,59 +203,24 @@ function App() {
     setVolume(e.target.valueAsNumber);
   };
 
-  // TODO: seek?
   const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // setState({ played: parseFloat(e.target.value) });
+    const v = parseFloat(e.target.value);
+    setPlayed(v);
   };
 
-  // TODO: seek?
   const handleSeekMouseDown = (
     e: React.MouseEvent<HTMLInputElement, MouseEvent>,
   ) => {
-    // this.setState({ seeking: true });
+    setSeeking(true);
   };
 
-  // TODO: seek?
   const handleSeekMouseUp = (
     e: React.MouseEvent<HTMLInputElement, MouseEvent>,
   ) => {
-    // this.setState({ seeking: false });
-    // this.player.seekTo(parseFloat(e.target.value));
-  };
-
-  const handlePlayPause = () => {
-    setPlaying(!playing);
-  };
-
-  const handleBackward = () => {
-    console.log("handleBackward");
-  };
-  const handleForward = () => {
-    console.log("handleForward");
-  };
-
-  const handleStepBackward = () => {
-    console.log("handleStepBackward");
-  };
-  const handleStepForward = () => {
-    console.log("handleStepBackward");
-  };
-
-  const handleShuffle = () => {
-    const items = R.pipe(data?.items ?? [], R.shuffle());
-    setPlaylistItems(items);
-
-    // TODO: 처음곡부터 다시 재생?
-    setCurrentAudioIndex(0);
-  };
-
-  const handlePlay = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    input: ButtonProps,
-  ) => {
-    const id = parseInt(input["data-id"], 10);
-    const idx = playlistItems.findIndex((x) => x.id === id);
-    setCurrentAudioIndex(idx);
+    setSeeking(false);
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const v = parseFloat((e.target as any).value);
+    ref.current?.seekTo(v, "fraction");
   };
 
   if (error) {
@@ -230,13 +234,18 @@ function App() {
   return (
     <Container text>
       <h1>hasuki</h1>
-      <p>
-        {playlistId ? (
-          <span>{playlistId}</span>
-        ) : (
-          "require query string: id=[youtube_playlist_id]"
-        )}
-      </p>
+
+      {playlistId || videoId ? (
+        <ul>
+          <li>playlist: {playlistId ?? "[BLANK]"}</li>
+          <li>video: {videoId ?? "[BLANK]"}</li>
+        </ul>
+      ) : (
+        <ul>
+          <li>query: playlist=[youtube_playlist_id]</li>
+          <li>query: video=[youtube_video_id]</li>
+        </ul>
+      )}
 
       <ReactPlayer
         ref={ref}
@@ -299,20 +308,20 @@ function App() {
       </div>
 
       <ButtonGroup>
-        <Button icon onClick={handleBackward}>
-          <Icon name="backward" />
-        </Button>
-        <Button icon onClick={handleStepBackward}>
+        <Button icon onClick={handlePreviousTrack}>
           <Icon name="step backward" />
         </Button>
-        <Button icon positive onClick={handlePlayPause}>
+        <Button icon onClick={handleSeekBackward}>
+          <Icon name="backward" />
+        </Button>
+        <Button icon positive onClick={handlePlayPauseToggle}>
           {playing ? <Icon name="pause" /> : <Icon name="play" />}
         </Button>
-        <Button icon onClick={handleStepForward}>
-          <Icon name="step forward" />
-        </Button>
-        <Button icon onClick={handleForward}>
+        <Button icon onClick={handleSeekForward}>
           <Icon name="forward" />
+        </Button>
+        <Button icon onClick={handleNextTrack}>
+          <Icon name="step forward" />
         </Button>
         <Button icon onClick={handleShuffle}>
           <Icon name="shuffle" />
@@ -338,7 +347,7 @@ function App() {
                   <Button
                     size="mini"
                     icon
-                    onClick={handlePlay}
+                    onClick={handlePlayIndex}
                     data-id={item.id}
                   >
                     <Icon name="play" />

@@ -4,11 +4,13 @@ import ytpl from "ytpl";
 import * as z from "zod";
 import { engine } from "../instances/index.js";
 import { db } from "../instances/rdbms.js";
+import { parseYouTubeUrl } from "../links.js";
 import { PlaylistItemModel, PlaylistModel } from "../models.js";
 import {
   PlaylistItemRepository,
   PlaylistRepository,
 } from "../repositories/index.js";
+import * as settings from "../settings.js";
 
 const app = new Hono();
 
@@ -96,15 +98,53 @@ app.get("/api/:playlistId/", async (c) => {
   return c.json(model);
 });
 
-app.get("/view/", async (c) => {
+app.get("/redirect/", async (c) => {
   const schema = z.object({
-    naiveId: z.string(),
+    action: z.union([z.literal("inspect"), z.literal("player")]),
+    playlistId: z.string().optional(),
+    videoId: z.string().optional(),
+    url: z.string().optional(),
   });
-  const input = schema.parse(c.req.query());
+  const body = schema.parse(c.req.query());
+  const { action } = body;
 
-  const { naiveId } = input;
-  const output = await fn_view(c, naiveId);
-  return await render_view(c, output);
+  let playlistId = body.playlistId;
+  let videoId = body.videoId;
+  if (body.url) {
+    const parsed = parseYouTubeUrl(body.url);
+    if (parsed) {
+      playlistId = parsed.playlistId;
+      videoId = parsed.videoId;
+    }
+  }
+
+  if (playlistId) {
+    switch (action) {
+      case "inspect": {
+        const nextUrl = `/playlist/${playlistId}/`;
+        return c.redirect(nextUrl);
+      }
+      case "player": {
+        const nextUrl = `${settings.FRONTEND_URL}/?playlist=${playlistId}`;
+        return c.redirect(nextUrl);
+      }
+    }
+  }
+
+  if (videoId) {
+    switch (action) {
+      case "inspect":
+        // TODO:
+        break;
+      case "player": {
+        const nextUrl = `${settings.FRONTEND_URL}/?video=${videoId}`;
+        return c.redirect(nextUrl);
+      }
+    }
+  }
+
+  // else...
+  return c.redirect("/playlist/");
 });
 
 app.post("/synchronize/", async (c) => {
@@ -152,6 +192,12 @@ app.get("*", async (c) => {
   // 개인용이면 어차피 몇개 안될거니까
   const repo = new PlaylistRepository(db);
   const playlists = await repo.findAll();
+
+  // TODO: player url
+  for (const playlist of playlists) {
+    const url = `${settings.FRONTEND_URL}/?playlist=${playlist.naiveId}`;
+    (playlist as unknown as Record<string, string>).playerUrl = url;
+  }
 
   const html = await engine.renderFile("playlist_list", {
     playlists,

@@ -4,12 +4,68 @@
   <section>
     <h1>playlist</h1>
 
+    <!-- url, id 기반으로 이동하는게 맨앞에 있는게 나을듯 -->
+    <form
+      class="ui form"
+      method="GET"
+      action="/playlist/redirect/">
+
+      <div class="field">
+        <label>playlist id</label>
+        <input
+          type="text"
+          name="playlistId"
+          placeholder="youtube playlist id">
+      </div>
+
+      <div class="field">
+        <label>video id</label>
+        <input
+          type="text"
+          name="videoId"
+          placeholder="youtube video id">
+      </div>
+
+      <div class="field">
+        <label>youtube url</label>
+        <input
+          type="url"
+          name="url"
+          placeholder="youtube url">
+      </div>
+
+      <div class="ui mini buttons">
+        <button type="reset" class="ui button negative">reset</button>
+
+        <div class="or"></div>
+
+        <button
+          type="submit"
+          class="ui button"
+          name="action"
+          value="inspect">
+          inspect
+        </button>
+
+        <div class="or"></div>
+
+        <button
+          type="submit"
+          class="ui button"
+          name="action"
+          value="player">
+          player
+        </button>
+      </div>
+    </form>
+
     <table class="ui compact selectable table">
       <thead>
         <tr>
           <th>id</th>
           <th>title</th>
           <th>youtube</th>
+          <th>action</th>
         </tr>
       </thead>
       <tbody>
@@ -30,23 +86,13 @@
                 {{ playlist.naiveId }}
               </a>
             </td>
+            <td>
+              <a href="{{ playlist.playerUrl }}" target="_blank" class="ui mini button">
+                player
+            </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
-
-    <!-- url? -->
-    <form
-      class="ui form"
-      method="GET"
-      action="/playlist/view/">
-
-      <input
-        type="text"
-        name="naiveId"
-        placeholder="youtube playlist id">
-
-      <button type="submit" class="ui mini button">GoTo</button>
-    </form>
   </section>
 {% endblock %}
