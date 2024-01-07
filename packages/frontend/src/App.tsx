@@ -14,6 +14,7 @@ import {
 } from "semantic-ui-react";
 import useSWR from "swr";
 import { useMediaMeta, useMediaSession } from "use-media-session";
+import { StringParam, useQueryParam } from "use-query-params";
 import "./App.css";
 import { Duration } from "./Duration";
 import { PlaylistItem, fetcher_audio, fetcher_playlist } from "./fetchers";
@@ -21,10 +22,7 @@ import { PlaylistItem, fetcher_audio, fetcher_playlist } from "./fetchers";
 function App() {
   const ref = useRef<ReactPlayer>(null);
 
-  // TODO: video id/playlist id는 query string 같은거로 얻어야한다
-  const [videoId, setVideoId] = useState("video-id");
-  const [playlistId, setPlaylistId] = useState("PL0B01335F8E6D9F69");
-
+  const [playlistId, setPlaylistId] = useQueryParam("id", StringParam);
   const { data, error, isLoading } = useSWR(playlistId, fetcher_playlist);
 
   // shuffle 필요해서 상세 목록은 data에서 직접 쓰지 않는다
@@ -36,6 +34,9 @@ function App() {
   const [played, setPlayed] = useState(0);
   const [loaded, setLoaded] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  type MediaMetadataOptions = Parameters<typeof useMediaMeta>[0];
+  const [metadata, setMetadata] = useState<MediaMetadataOptions>({});
 
   // youtube audio url에는 유효시간이 있어서 낱개로 처리하는게 낫겠다.
   const [url, setUrl] = useState<string>("");
@@ -52,8 +53,38 @@ function App() {
     async function execute() {
       const item = playlistItems[currentAudioIndex];
       const resp = await fetcher_audio(item.naiveId);
-      const format = resp.formats[0];
+
+      // audio
+      const format = R.pipe(
+        resp.formats,
+        R.sortBy((x) => x.audioBitrate),
+        R.first(),
+      );
+      if (format === undefined) {
+        throw new Error("no audio format fond");
+      }
       setUrl(format.url);
+
+      // metadata
+      const artwork = resp.videoDetails.thumbnails.map((data) => {
+        let type = undefined;
+        if (data.url.endsWith(".png")) {
+          type = "image/png";
+        } else if (data.url.endsWith(".jpg") || data.url.endsWith(".jpeg")) {
+          type = "image/jpg";
+        }
+
+        return {
+          src: data.url,
+          sizes: `${data.width}x${data.height}`,
+          type,
+        };
+      });
+      const m: MediaMetadataOptions = {
+        title: resp.videoDetails.title,
+        artwork,
+      };
+      setMetadata(m);
     }
     execute().then(
       () => {},
@@ -71,48 +102,27 @@ function App() {
       console.log("onSeekForward");
     },
     onNextTrack: () => {
-      /*
-      if (currentVideoIndex < videos.length - 1) {
-        setCurrentVideoIndex(currentVideoIndex + 1);
-        ref.current.play();
+      if (currentAudioIndex < playlistItems.length - 1) {
+        setCurrentAudioIndex(currentAudioIndex + 1);
       }
-      */
-      console.log("onNextTrack");
     },
     onPreviousTrack: () => {
-      /*
-      if (currentVideoIndex) {
-        setCurrentVideoIndex(currentVideoIndex - 1);
-        ref.current.play();
+      if (currentAudioIndex >= 1) {
+        setCurrentAudioIndex(currentAudioIndex - 1);
       }
-      */
-      console.log("onPreviousTrack");
     },
     onPlay: () => {
-      // ref.current.play();
-      console.log("onPlay");
+      setPlaying(true);
     },
     onPause: () => {
-      // ref.current.pause();
-      console.log("onPause");
+      setPlaying(false);
     },
     onStop: () => {
-      // ref.current.pause();
-      console.log("onStop");
+      setPlaying(false);
     },
   });
 
-  /*
-  useMediaMeta({
-    title: "currentVideo.name",
-    artwork: [
-      {
-        src: "currentVideo.poster",
-        sizes: "100x150",
-      },
-    ],
-  });
-  */
+  useMediaMeta(metadata);
 
   const onEnded = () => {
     const nextIdx = currentAudioIndex + 1;
@@ -220,6 +230,13 @@ function App() {
   return (
     <Container text>
       <h1>hasuki</h1>
+      <p>
+        {playlistId ? (
+          <span>{playlistId}</span>
+        ) : (
+          "require query string: id=[youtube_playlist_id]"
+        )}
+      </p>
 
       <ReactPlayer
         ref={ref}

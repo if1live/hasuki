@@ -17,6 +17,7 @@
     "semantic-ui-react": "^2.1.5",
     "swr": "^2.2.4",
     "use-media-session": "^0.0.3",
+    "use-query-params": "^2.2.1",
     "ytdl-core": "^4.11.5"
   },
   "devDependencies": {

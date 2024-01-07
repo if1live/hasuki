@@ -136,6 +136,9 @@ importers:
       use-media-session:
         specifier: ^0.0.3
         version: 0.0.3(react@18.2.0)
+      use-query-params:
+        specifier: ^2.2.1
+        version: 2.2.1(react-dom@18.2.0)(react@18.2.0)
       ytdl-core:
         specifier: ^4.11.5
         version: 4.11.5
@@ -7161,6 +7164,10 @@ packages:
     resolution: {integrity: sha512-hr3Wtp/GZIc/6DAGPDcV4/9WoZhjrkXsi5B/07QgX8tsdc6ilr7BFM6PM6rbdAX1kFSDYeZGLipIZZKyQP0O5Q==}
     dev: false
 
+  /serialize-query-params@2.0.2:
+    resolution: {integrity: sha512-1chMo1dST4pFA9RDXAtF0Rbjaut4is7bzFbI1Z26IuMub68pNCILku85aYmeFhvnY//BXUPUhoRMjYcsT93J/Q==}
+    dev: false
+
   /serverless-scriptable-plugin@1.3.1:
     resolution: {integrity: sha512-4GJymuGS506klyZoqJYQ2Qx9mo7M/SPqZyflVB2k1acFCFPdkJ5VIyMf2d3ZMXcVzR+BGOcA/5zwXBjIzjNVRA==}
     dependencies:
@@ -7947,6 +7954,24 @@ packages:
       react: ^16.9.0
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /use-query-params@2.2.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-i6alcyLB8w9i3ZK3caNftdb+UnbfBRNPDnc89CNQWkGRmDrm/gfydHvMBfVsQJRq3NoHOM2dt/ceBWG2397v1Q==}
+    peerDependencies:
+      '@reach/router': ^1.2.1
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+      react-router-dom: '>=5'
+    peerDependenciesMeta:
+      '@reach/router':
+        optional: true
+      react-router-dom:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      serialize-query-params: 2.0.2
     dev: false
 
   /use-sync-external-store@1.2.0(react@18.2.0):
