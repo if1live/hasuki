@@ -17,5 +17,5 @@ export const rootPath = path.join(dirname, "..");
 export const viewPath = path.join(rootPath, "views");
 export const staticPath = path.join(rootPath, "static");
 
-const frontendUrl_localhost = "http://localhost:5173/hasuki";
+const frontendUrl_localhost = "http://localhost:5173/hasuki/";
 export const FRONTEND_URL = process.env.FRONTEND_URL || frontendUrl_localhost;

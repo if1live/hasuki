@@ -17,6 +17,7 @@ import { useMediaMeta, useMediaSession } from "use-media-session";
 import { StringParam, useQueryParam } from "use-query-params";
 import "./App.css";
 import { Duration } from "./Duration";
+import hasukiLogo from "./assets/hero.webp";
 import { PlaylistItem, fetcher_audio, fetcher_playlist } from "./fetchers";
 
 function App() {
@@ -234,6 +235,7 @@ function App() {
   return (
     <Container text>
       <h1>hasuki</h1>
+      <img src={hasukiLogo} className="ui large image" alt="hasuki" />
 
       {playlistId || videoId ? (
         <ul>
