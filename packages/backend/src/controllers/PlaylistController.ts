@@ -4,7 +4,7 @@ import ytpl from "ytpl";
 import * as z from "zod";
 import { engine } from "../instances/index.js";
 import { db } from "../instances/rdbms.js";
-import { PlaylistModel } from "../models.js";
+import { PlaylistItemModel, PlaylistModel } from "../models.js";
 import {
   PlaylistItemRepository,
   PlaylistRepository,
@@ -41,7 +41,13 @@ const fn_delete = async (c: Context, playlistId: string) => {
   return c.redirect(nextUrl);
 };
 
-const fn_view = async (c: Context, playlistId: string) => {
+interface ViewOutput {
+  playlistId: string;
+  playlist: PlaylistModel | undefined;
+  items: PlaylistItemModel[];
+}
+
+const fn_view = async (c: Context, playlistId: string): Promise<ViewOutput> => {
   const repo_playlist = new PlaylistRepository(db);
   const playlist = await repo_playlist.findByNaiveId(playlistId);
 
@@ -53,11 +59,6 @@ const fn_view = async (c: Context, playlistId: string) => {
 
   const items = playlist ? await fn_find(playlist) : [];
 
-  // liquid에서 tojson 쓰려면 필요 없는거 지우는게 좋다
-  if (playlist?.payload) {
-    playlist.payload = undefined;
-  }
-
   // thumbnail 선택 전략: 용량 최적화
   for (const item of items) {
     const payload = item.payload as ytpl.Item;
@@ -66,13 +67,34 @@ const fn_view = async (c: Context, playlistId: string) => {
     (item as unknown as Record<string, unknown>).thumbnail = image;
   }
 
-  const html = await engine.renderFile("playlist_view", {
+  // liquid에서 tojson 쓰려면 필요 없는거 지우는게 좋다
+  if (playlist?.payload) {
+    playlist.payload = undefined;
+  }
+  for (const item of items) {
+    item.payload = undefined;
+    (item as Partial<typeof item>).createdAt = undefined;
+    (item as Partial<typeof item>).updatedAt = undefined;
+  }
+
+  return {
     playlistId,
     playlist,
     items,
-  });
+  };
+};
+
+const render_view = async (c: Context, ctx: ViewOutput) => {
+  const html = await engine.renderFile("playlist_view", ctx);
   return c.html(html);
 };
+
+// TODO: frontend와의 통신 규격 관리는 뭐로 하지?
+app.get("/api/:playlistId/", async (c) => {
+  const playlistId = c.req.param("playlistId");
+  const model = await fn_view(c, playlistId);
+  return c.json(model);
+});
 
 app.get("/view/", async (c) => {
   const schema = z.object({
@@ -81,7 +103,8 @@ app.get("/view/", async (c) => {
   const input = schema.parse(c.req.query());
 
   const { naiveId } = input;
-  return await fn_view(c, naiveId);
+  const output = await fn_view(c, naiveId);
+  return await render_view(c, output);
 });
 
 app.post("/synchronize/", async (c) => {
@@ -110,7 +133,8 @@ app.post("/delete/", async (c) => {
 
 app.get("/:playlistId/", async (c) => {
   const playlistId = c.req.param("playlistId");
-  return await fn_view(c, playlistId);
+  const output = await fn_view(c, playlistId);
+  return await render_view(c, output);
 });
 
 app.post("/:playlistId/synchronize", async (c) => {
