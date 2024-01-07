@@ -14,7 +14,7 @@ export const createRedis_real = async (): Promise<Redis> => {
 export const createRedis_mock = async (): Promise<Redis> => {
   const RedisMock = await import("ioredis-mock");
   type MockConstructor = typeof RedisMock.redisMock;
-  const Mock = RedisMock.default as any as MockConstructor;
+  const Mock = RedisMock.default as unknown as MockConstructor;
   const redis: Redis = new Mock();
   return redis;
 };
