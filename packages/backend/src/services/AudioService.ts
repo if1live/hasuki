@@ -54,7 +54,7 @@ const AudioModel = {
 
 const AudioCache = {
   createKey(string: string) {
-    return `hasuki:video:${string}`;
+    return `hasuki:audio:${string}`;
   },
 
   async get(redis: Redis, videoId: string): Promise<AudioModel | null> {
