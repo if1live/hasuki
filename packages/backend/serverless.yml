@@ -33,6 +33,7 @@ provider:
 
     DATABASE_URL: ${env:DATABASE_URL}
     REDIS_URL: ${env:REDIS_URL}
+    FRONTEND_URL: ${env:FRONTEND_URL}
 
 package:
   individually: true
