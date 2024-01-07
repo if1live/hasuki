@@ -39,9 +39,9 @@
                 <dd>{{ item.duration | duration }}</dd>
                 <dt>youtube</dt>
                 <dd>
-                  <a href="{{ item.shortUrl }}" target="_blank">
-                    {{ item.naiveId }}
-                  </a>
+                  <a href="{{ item.shortUrl }}" target="_blank">{{ item.naiveId }}</a>
+                  |
+                  <a href="{{ item.url }}" target="_blank">detail</a>
                 </dd>
               </dl>
             </div>
