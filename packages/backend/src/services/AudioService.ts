@@ -69,7 +69,7 @@ const AudioCache = {
 
     const durationSeconds = parseInt(model.videoDetails.lengthSeconds, 10);
 
-    // URL 만료 예정 시간 (millis)
+    // URL 만료 예정 시간
     const expire_found = R.pipe(
       model.formats,
       R.map((format) => new URL(format.url)),
@@ -82,11 +82,18 @@ const AudioCache = {
       R.minBy((x) => x),
     );
 
-    const expire_default = Date.now() + 24 * 3600;
-    const expire = expire_found
-      ? expire_found - durationSeconds
-      : expire_default;
+    const fn_expire = () => {
+      if (!expire_found) {
+        // URL에서 만료 시간을 얻을수 없으면 임의로 24시간
+        const expire_default = Math.floor(Date.now() / 1000) + 24 * 3600;
+        return expire_default;
+      }
 
+      // 일시정지까지 생각해서 재생될 시간은 실제 영상보다 길어야한다.
+      return expire_found - durationSeconds * 2;
+    };
+
+    const expire = fn_expire();
     const text = JSON.stringify(model);
     await redis.set(key, text, "EXAT", expire);
   },
