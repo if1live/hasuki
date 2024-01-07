@@ -56,7 +56,7 @@ export interface PlaylistSnapshot {
 export interface AudioFormat {
   url: string;
   mimeType: string;
-  audioQuality: string;
+  audioQuality: "AUDIO_QUALITY_MEDIUM" | "AUDIO_QUALITY_LOW";
   audioBitrate: number;
 }
 

@@ -63,6 +63,7 @@ function App() {
       // audio
       const format = R.pipe(
         resp.formats,
+        R.filter((x) => x.audioQuality === "AUDIO_QUALITY_MEDIUM"),
         R.sortBy((x) => x.audioBitrate),
         R.first(),
       );
