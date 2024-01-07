@@ -21,7 +21,7 @@ app.use("/static/*", serveStatic({ root: "./" }));
 // livereload는 개발 환경에서만 살아있도록 하고싶다
 // 번들링에서도 명시적으로 제외하고 싶다
 if (settings.NODE_ENV === "development") {
-  app.use(livereloadMiddleware());
+  app.use("*", livereloadMiddleware());
 }
 
 app.route(statusRoot.prefix, statusRoot.app);
