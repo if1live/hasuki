@@ -28,6 +28,7 @@ const opts_common: esbuild.BuildOptions = {
     "livereload",
     "connect-livereload",
     "better-sqlite3",
+    "ioredis-mock",
     "@aws-sdk/client-apigatewaymanagementapi",
     "@aws-sdk/client-lambda",
     "@aws-sdk/client-sqs",

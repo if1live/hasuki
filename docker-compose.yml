@@ -11,7 +11,19 @@ services:
     ports:
       - 3306:3306
 
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - 6379:6379
+
   adminer:
     image: adminer:latest
     ports:
       - 8080:8080
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"

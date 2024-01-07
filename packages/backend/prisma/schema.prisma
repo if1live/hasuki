@@ -92,6 +92,8 @@ model PlaylistItem {
 
   title     String
   index     Int
+
+  // 플레이리스트에 같은 곡이 2번 들어갈수 있다.
   naive_id  String
   short_url String
   url       String
