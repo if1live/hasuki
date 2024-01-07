@@ -24,7 +24,7 @@ datasource db {
   // https://www.prisma.io/docs/guides/development-environment/environment-variables/managing-env-files-and-setting-variables
   // cp .env.development .env
   // dotenv-cli 같은거 쓰는것도 방법인데 db 주소는 자주 안바뀔거니까 무식하게 대응
-  url = env("DATABASE_URL")
+  url = env("PRISMA_DATABASE_URL")
 }
 
 // TODO: 유저 인증을 공유할 방법이 있을까?
