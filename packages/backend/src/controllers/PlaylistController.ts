@@ -101,9 +101,9 @@ app.get("/api/:playlistId/", async (c) => {
 app.get("/redirect/", async (c) => {
   const schema = z.object({
     action: z.union([z.literal("inspect"), z.literal("player")]),
-    playlistId: z.string().optional(),
-    videoId: z.string().optional(),
-    url: z.string().optional(),
+    playlistId: z.string().trim().optional(),
+    videoId: z.string().trim().optional(),
+    url: z.string().trim().optional(),
   });
   const body = schema.parse(c.req.query());
   const { action } = body;
