@@ -57,10 +57,9 @@ export const ListPlayer = (props: Props) => {
     }
 
     async function execute() {
-      const item = items[currentAudioIndex];
-      if (!item.id) {
-        throw new Error("no video id");
-      }
+      const item = items.at(currentAudioIndex);
+      if (!item) throw new Error("no item");
+      if (!item.id) throw new Error("no video id");
 
       const resp = await fetcher_audio(item.id);
 
@@ -249,7 +248,7 @@ export const ListPlayer = (props: Props) => {
     return <div>loading...</div>;
   }
 
-  const currentAudio = items[currentAudioIndex];
+  const currentAudio = items.at(currentAudioIndex);
 
   return (
     <>
@@ -274,13 +273,18 @@ export const ListPlayer = (props: Props) => {
 
       <div>
         <h2>{data?.title}</h2>
-        <h3>{currentAudio.title}</h3>
-        {currentAudio.thumbnail?.url ? (
-          <Image
-            size="medium"
-            src={currentAudio.thumbnail.url}
-            alt="thumbnail"
-          />
+
+        {currentAudio ? (
+          <>
+            <h3>{currentAudio.title}</h3>
+            {currentAudio.thumbnail?.url ? (
+              <Image
+                size="medium"
+                src={currentAudio.thumbnail.url}
+                alt="thumbnail"
+              />
+            ) : null}
+          </>
         ) : null}
       </div>
 
