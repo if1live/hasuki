@@ -13,6 +13,7 @@
         ".serverless/**/*",
         "artifact/**/*",
         "dist/**/*",
+        ".eslintrc.cjs",
         "biome.json"
       ]
     },

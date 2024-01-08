@@ -7,31 +7,31 @@ import {
   Button,
   ButtonGroup,
   ButtonProps,
-  Container,
   Icon,
+  Image,
   Table,
   TableRow,
 } from "semantic-ui-react";
 import useSWR from "swr";
 import { useMediaMeta, useMediaSession } from "use-media-session";
-import { StringParam, useQueryParam } from "use-query-params";
+import { Video } from "youtube-sr";
 import "./App.css";
 import { Duration } from "./Duration";
-import hasukiLogo from "./assets/hero.webp";
-import { PlaylistItem, fetcher_audio, fetcher_playlist } from "./fetchers";
+import { fetcher_audio, fetcher_playlist } from "./fetchers";
 
-export const ListPlayer = () => {
+interface Props {
+  playlistId: string;
+}
+
+export const ListPlayer = (props: Props) => {
+  const { playlistId } = props;
+
   const ref = useRef<ReactPlayer>(null);
-
-  // TODO: video 하나만 받는 경우는 어떻게 처리하지?
-  // 플레이어 구현이 2개가 되는게 낫나? 가짜 playlist 처리할까?
-  const [playlistId, setPlaylistId] = useQueryParam("playlist", StringParam);
-  const [videoId, setVideoId] = useQueryParam("video", StringParam);
 
   const { data, error, isLoading } = useSWR(playlistId, fetcher_playlist);
 
   // shuffle 필요해서 상세 목록은 data에서 직접 쓰지 않는다
-  const [playlistItems, setPlaylistItems] = useState<PlaylistItem[]>([]);
+  const [items, setItems] = useState<Video[]>([]);
   const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
 
   const [playing, setPlaying] = useState(false);
@@ -48,48 +48,64 @@ export const ListPlayer = () => {
   const [url, setUrl] = useState<string>("");
 
   useEffect(() => {
-    setPlaylistItems(data?.items ?? []);
+    setItems(data?.videos ?? []);
   }, [data]);
 
   useEffect(() => {
-    if (playlistItems.length === 0) {
+    if (items.length === 0) {
       return;
     }
 
     async function execute() {
-      const item = playlistItems[currentAudioIndex];
-      const resp = await fetcher_audio(item.naiveId);
+      const item = items[currentAudioIndex];
+      if (!item.id) {
+        throw new Error("no video id");
+      }
+
+      const resp = await fetcher_audio(item.id);
 
       // audio
       const format = R.pipe(
-        resp.formats,
+        resp.adaptiveFormats,
         R.filter((x) => x.audioQuality === "AUDIO_QUALITY_MEDIUM"),
-        R.sortBy((x) => x.audioBitrate),
+        R.sortBy((x) => x.bitrate),
         R.first(),
       );
       if (format === undefined) {
-        throw new Error("no audio format fond");
+        throw new Error("no audio format found");
       }
-      setUrl(format.url);
+      // 타입에는 url이 없는데 실제로 찍으면 나온다
+      const url = (format as unknown as Record<string, string>).url;
+      if (!url) {
+        throw new Error("no audio url found");
+      }
+      setUrl(url);
 
-      // metadata
-      const artwork = resp.videoDetails.thumbnails.map((data) => {
+      const fn_artwork = (data: NonNullable<Video["thumbnail"]>) => {
+        const url = data.url;
+        if (!url) {
+          return null;
+        }
+
         let type = undefined;
-        if (data.url.endsWith(".png")) {
+        if (url.endsWith(".png")) {
           type = "image/png";
-        } else if (data.url.endsWith(".jpg") || data.url.endsWith(".jpeg")) {
+        } else if (url.endsWith(".jpg") || url.endsWith(".jpeg")) {
           type = "image/jpg";
         }
 
         return {
-          src: data.url,
+          src: url,
           sizes: `${data.width}x${data.height}`,
           type,
         };
-      });
+      };
+
+      const artwork = resp.thumbnail ? fn_artwork(resp.thumbnail) : null;
+
       const m: MediaMetadataOptions = {
-        title: resp.videoDetails.title,
-        artwork,
+        title: resp.title,
+        artwork: artwork ? [artwork] : undefined,
       };
       setMetadata(m);
     }
@@ -100,11 +116,11 @@ export const ListPlayer = () => {
         console.error(e);
       },
     );
-  }, [currentAudioIndex, playlistItems]);
+  }, [currentAudioIndex, items]);
 
   // 플레이어 구현
   const handleNextTrack = () => {
-    if (currentAudioIndex < playlistItems.length - 1) {
+    if (currentAudioIndex < items.length - 1) {
       setCurrentAudioIndex(currentAudioIndex + 1);
     }
   };
@@ -134,8 +150,8 @@ export const ListPlayer = () => {
   };
 
   const handleShuffle = () => {
-    const items = R.pipe(data?.items ?? [], R.shuffle());
-    setPlaylistItems(items);
+    const items = R.pipe(data?.videos ?? [], R.shuffle());
+    setItems(items);
 
     setCurrentAudioIndex(0);
     setPlaying(false);
@@ -145,8 +161,8 @@ export const ListPlayer = () => {
     event: React.MouseEvent<HTMLButtonElement>,
     input: ButtonProps,
   ) => {
-    const id = parseInt(input["data-id"], 10);
-    const idx = playlistItems.findIndex((x) => x.id === id);
+    const id = input["data-id"];
+    const idx = items.findIndex((x) => x.id === id);
     setCurrentAudioIndex(idx);
     setPlaying(true);
   };
@@ -164,7 +180,7 @@ export const ListPlayer = () => {
 
   const onEnded = () => {
     const nextIdx = currentAudioIndex + 1;
-    if (nextIdx >= playlistItems.length) {
+    if (nextIdx >= items.length) {
       // 플레이리스트 loop는 고려하지 않았다.
       setPlaying(false);
     } else {
@@ -233,23 +249,10 @@ export const ListPlayer = () => {
     return <div>loading...</div>;
   }
 
+  const currentAudio = items[currentAudioIndex];
+
   return (
-    <Container text>
-      <h1>hasuki</h1>
-      <img src={hasukiLogo} className="ui large image" alt="hasuki" />
-
-      {playlistId || videoId ? (
-        <ul>
-          <li>playlist: {playlistId ?? "[BLANK]"}</li>
-          <li>video: {videoId ?? "[BLANK]"}</li>
-        </ul>
-      ) : (
-        <ul>
-          <li>query: playlist=[youtube_playlist_id]</li>
-          <li>query: video=[youtube_video_id]</li>
-        </ul>
-      )}
-
+    <>
       <ReactPlayer
         ref={ref}
         playing={playing}
@@ -268,6 +271,39 @@ export const ListPlayer = () => {
           },
         }}
       />
+
+      <div>
+        <h2>{data?.title}</h2>
+        <h3>{currentAudio.title}</h3>
+        {currentAudio.thumbnail?.url ? (
+          <Image
+            size="medium"
+            src={currentAudio.thumbnail.url}
+            alt="thumbnail"
+          />
+        ) : null}
+      </div>
+
+      <ButtonGroup>
+        <Button icon onClick={handlePreviousTrack}>
+          <Icon name="step backward" />
+        </Button>
+        <Button icon onClick={handleSeekBackward}>
+          <Icon name="backward" />
+        </Button>
+        <Button icon positive onClick={handlePlayPauseToggle}>
+          {playing ? <Icon name="pause" /> : <Icon name="play" />}
+        </Button>
+        <Button icon onClick={handleSeekForward}>
+          <Icon name="forward" />
+        </Button>
+        <Button icon onClick={handleNextTrack}>
+          <Icon name="step forward" />
+        </Button>
+        <Button icon onClick={handleShuffle}>
+          <Icon name="shuffle" />
+        </Button>
+      </ButtonGroup>
 
       <div>
         <div>
@@ -310,42 +346,23 @@ export const ListPlayer = () => {
         </div>
       </div>
 
-      <ButtonGroup>
-        <Button icon onClick={handlePreviousTrack}>
-          <Icon name="step backward" />
-        </Button>
-        <Button icon onClick={handleSeekBackward}>
-          <Icon name="backward" />
-        </Button>
-        <Button icon positive onClick={handlePlayPauseToggle}>
-          {playing ? <Icon name="pause" /> : <Icon name="play" />}
-        </Button>
-        <Button icon onClick={handleSeekForward}>
-          <Icon name="forward" />
-        </Button>
-        <Button icon onClick={handleNextTrack}>
-          <Icon name="step forward" />
-        </Button>
-        <Button icon onClick={handleShuffle}>
-          <Icon name="shuffle" />
-        </Button>
-      </ButtonGroup>
-
       <Table compact="very" size="small" selectable>
         <Table.Header>
           <TableRow>
-            <th>title</th>
+            <th>
+              title ({currentAudioIndex + 1}/{items.length})
+            </th>
             <th>duration</th>
             <th>action</th>
           </TableRow>
         </Table.Header>
         <Table.Body>
-          {playlistItems.map((item, idx) => {
+          {items.map((item, idx) => {
             const active = currentAudioIndex === idx;
             return (
               <TableRow key={item.id} positive={active}>
                 <td>{item.title}</td>
-                <td>{item.duration}</td>
+                <td>{item.durationFormatted}</td>
                 <td>
                   <Button
                     size="mini"
@@ -419,6 +436,6 @@ export const ListPlayer = () => {
           </tr>
         </tbody>
       </table>
-    </Container>
+    </>
   );
 };

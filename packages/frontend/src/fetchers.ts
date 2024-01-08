@@ -1,5 +1,8 @@
-// TODO: host?
+import YouTube from "youtube-sr";
 
+/*
+TODO: host?
+TODO: 로컬 개발 서버 필요하면 추가
 const selectHost = (loc: Location) => {
   const hosts_localhost = ["localhost", "127.0.0.1"];
   if (hosts_localhost.includes(loc.hostname)) {
@@ -12,80 +15,21 @@ const selectHost = (loc: Location) => {
   if (loc.host.startsWith("10.0.")) {
     return `http://${loc.hostname}:3000`;
   }
-
-  // TODO: 배포 환경?
-  return "https://6z45tn65jrowivqzwvcgmxdno40gmwqp.lambda-url.ap-northeast-1.on.aws";
 };
 const host = selectHost(window.location);
+*/
 
-// TODO: 타입 정의 노가다? monorepo로 분리?
-export interface Thumbnail {
-  url: string;
-  width: number;
-  height: number;
-}
-
-export interface PlaylistItem {
-  id: number;
-  playlistId: number;
-  title: string;
-  index: number;
-  naiveId: string;
-  shortUrl: string;
-  url: string;
-  duration: string;
-  durationSec: number;
-  thumbnail: Thumbnail;
-}
-
-export interface Playlist {
-  id: number;
-  naiveId: string;
-  url: string;
-  title: string;
-  description: string;
-  visibility: string;
-}
-
-export interface PlaylistSnapshot {
-  playlistId: string;
-  playlist: Playlist;
-  items: PlaylistItem[];
-}
-
-export interface AudioFormat {
-  url: string;
-  mimeType: string;
-  audioQuality: "AUDIO_QUALITY_MEDIUM" | "AUDIO_QUALITY_LOW";
-  audioBitrate: number;
-}
-
-export interface VideoDetails {
-  lengthSeconds: string;
-  thumbnails: Thumbnail[];
-  title: string;
-  videoId: string;
-}
-
-export interface AudioSnapshot {
-  formats: AudioFormat[];
-  videoDetails: VideoDetails;
-}
-
-export const fetcher_playlist = async (
-  ...args: string[]
-): Promise<PlaylistSnapshot> => {
+export const fetcher_playlist = async (...args: string[]) => {
   const [id, ...rest] = args;
-  const url = `${host}/playlist/api/${id}/`;
-  const res = await fetch(url);
-  return await res.json();
+  const url = `https://www.youtube.com/playlist?list=${id}`;
+  // TODO: pagination은 고려 안한다
+  const playlist = await YouTube.getPlaylist(url, { limit: 200 });
+  return playlist;
 };
 
-export const fetcher_audio = async (
-  ...args: string[]
-): Promise<AudioSnapshot> => {
+export const fetcher_audio = async (...args: string[]) => {
   const [id, ...rest] = args;
-  const url = `${host}/audio/api/${id}/`;
-  const res = await fetch(url);
-  return await res.json();
+  const url = `https://www.youtube.com/watch?v=${id}`;
+  const video = await YouTube.getVideo(url);
+  return video;
 };
