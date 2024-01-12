@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "check:watch": "tsc --watch --noEmit",
     "fix": "biome check --apply-unsafe .",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
@@ -21,6 +22,7 @@
     "use-media-session": "^0.0.3",
     "use-query-params": "^2.2.1",
     "youtube-sr": "^4.3.10",
+    "ytdl-core": "^4.11.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {

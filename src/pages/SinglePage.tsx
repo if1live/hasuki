@@ -4,6 +4,7 @@ import { fetcher_video } from "../fetchers.js";
 
 interface Props {
   videoId: string;
+  player: string;
 }
 
 export const SinglePage = (props: Props) => {
@@ -32,5 +33,5 @@ export const SinglePage = (props: Props) => {
   }
 
   const { playlist } = data;
-  return <MyPlayer playlist={playlist} />;
+  return <MyPlayer playlist={playlist} player={props.player} />;
 };

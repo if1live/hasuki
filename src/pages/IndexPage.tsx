@@ -40,15 +40,17 @@ export const IndexPage = () => {
   };
 
   // TODO: query string? redirect?
-  const fn_playlist = (id: string) => {
+  const fn_playlist = (id: string, player: "react-player" | "manual") => {
     const search = new URLSearchParams();
     search.append("list", id);
+    search.append("player", player);
     return fn_redirect(search);
   };
 
-  const fn_video = (id: string) => {
+  const fn_video = (id: string, player: "react-player" | "manual") => {
     const search = new URLSearchParams();
     search.append("v", id);
+    search.append("player", player);
     return fn_redirect(search);
   };
 
@@ -59,7 +61,7 @@ export const IndexPage = () => {
     window.location.href = nextUrl;
   };
 
-  const handlePlay = () => {
+  const handlePlay = (player: "react-player" | "manual") => {
     let value_playlistId: string | null = playlistId;
     let value_videoId: string | null = videoId;
     if (youtubeUrl) {
@@ -71,14 +73,17 @@ export const IndexPage = () => {
     }
 
     if (value_playlistId) {
-      return fn_playlist(value_playlistId);
+      return fn_playlist(value_playlistId, player);
     }
     if (value_videoId) {
-      return fn_video(value_videoId);
+      return fn_video(value_videoId, player);
     }
     // TODO: 입력 에러를 밖으로 보여주기?
     console.log("no input");
   };
+
+  const handlePlay_ReactPlayer = () => handlePlay("react-player");
+  const handlePlay_Manual = () => handlePlay("manual");
 
   return (
     <>
@@ -116,8 +121,14 @@ export const IndexPage = () => {
         </FormField>
 
         <ButtonGroup>
-          <Button positive onClick={handlePlay}>
-            play
+          <Button positive onClick={handlePlay_ReactPlayer}>
+            ReactPlayer
+          </Button>
+
+          <ButtonOr />
+
+          <Button positive onClick={handlePlay_Manual}>
+            Manual
           </Button>
 
           <ButtonOr />

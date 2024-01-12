@@ -21,6 +21,7 @@ const ReactPlayer = ReactPlayerPkg as unknown as typeof ReactPlayerPkg.default;
 
 type Props = {
   playlist: Playlist;
+  player: string;
 };
 
 export const MyPlayer = (props: Props) => {
@@ -203,6 +204,31 @@ export const MyPlayer = (props: Props) => {
 
   return (
     <div>
+      <div className="player-wrapper">
+        <ReactPlayer
+          className="react-player"
+          ref={ref}
+          playing={playing}
+          url={video.url}
+          volume={volume}
+          onEnded={onEnded}
+          onReady={onReady}
+          onProgress={onProgress}
+          onSeek={onSeek}
+          onError={onError}
+          onDuration={onDuration}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          config={{
+            file: {
+              forceAudio: true,
+            },
+          }}
+          width="100%"
+          height="100%"
+        />
+      </div>
+
       <div>
         <h3>{video.title}</h3>
         <Image size="large" src={video.thumbnail.url} alt="thumbnail" />
@@ -307,31 +333,6 @@ export const MyPlayer = (props: Props) => {
           })}
         </Table.Body>
       </Table>
-
-      <div className="player-wrapper">
-        <ReactPlayer
-          className="react-player"
-          ref={ref}
-          playing={playing}
-          url={video.url}
-          volume={volume}
-          onEnded={onEnded}
-          onReady={onReady}
-          onProgress={onProgress}
-          onSeek={onSeek}
-          onError={onError}
-          onDuration={onDuration}
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
-          config={{
-            file: {
-              forceAudio: true,
-            },
-          }}
-          width="100%"
-          height="100%"
-        />
-      </div>
     </div>
   );
 };

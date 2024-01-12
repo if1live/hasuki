@@ -4,6 +4,7 @@ import { fetcher_playlist } from "../fetchers.js";
 
 interface Props {
   playlistId: string;
+  player: string;
 }
 
 export const PlaylistPage = (props: Props) => {
@@ -32,5 +33,5 @@ export const PlaylistPage = (props: Props) => {
   }
 
   const { playlist } = data;
-  return <MyPlayer playlist={playlist} />;
+  return <MyPlayer playlist={playlist} player={props.player} />;
 };
