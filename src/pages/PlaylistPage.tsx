@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 import { MyPlayer } from "../components/MyPlayer.js";
 import { fetcher_playlist } from "../fetchers.js";
 import { PlayerTag } from "../types.js";
@@ -11,7 +11,10 @@ interface Props {
 export const PlaylistPage = (props: Props) => {
   const { playlistId } = props;
 
-  const { data, error, isLoading } = useSWR(playlistId, fetcher_playlist);
+  const { data, error, isLoading } = useSWRImmutable(
+    playlistId,
+    fetcher_playlist,
+  );
 
   if (error) {
     const err = error as Error;
