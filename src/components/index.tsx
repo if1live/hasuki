@@ -1,3 +1,3 @@
-export { Duration } from "./Duration";
-export { PlaylistLink, VideoLink } from "./links";
-export { PlayerButtonGroup } from "./PlayerButtonGroup";
+export { Duration } from "./Duration.js";
+export { PlaylistLink, VideoLink } from "./links.js";
+export { PlayerButtonGroup } from "./PlayerButtonGroup.js";

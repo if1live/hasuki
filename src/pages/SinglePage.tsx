@@ -1,7 +1,7 @@
 import useSWR from "swr";
-import { MyPlayer } from "../components/MyPlayer";
-import { fetcher_video } from "../fetchers";
-import { parse_video } from "../types";
+import { MyPlayer } from "../components/MyPlayer.js";
+import { fetcher_video } from "../fetchers.js";
+import { parse_video } from "../types.js";
 
 interface Props {
   videoId: string;

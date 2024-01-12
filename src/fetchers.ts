@@ -1,4 +1,4 @@
-import YouTube from "youtube-sr";
+import { YouTube } from "youtube-sr";
 
 export const fetcher_playlist = async (...args: string[]) => {
   const [id, ...rest] = args;

@@ -1,11 +1,11 @@
 import { Container } from "semantic-ui-react";
 import { StringParam, useQueryParam } from "use-query-params";
 import "./App.css";
-import { PlaylistLink, VideoLink } from "./components";
-import { ExamplePage } from "./pages/ExamplePage";
-import { IndexPage } from "./pages/IndexPage";
-import { PlaylistPage } from "./pages/PlaylistPage";
-import { SinglePage } from "./pages/SinglePage";
+import { PlaylistLink, VideoLink } from "./components/index.js";
+import { ExamplePage } from "./pages/ExamplePage.js";
+import { IndexPage } from "./pages/IndexPage.js";
+import { PlaylistPage } from "./pages/PlaylistPage.js";
+import { SinglePage } from "./pages/SinglePage.js";
 
 function App() {
   // youtube와 동일한 key 사용

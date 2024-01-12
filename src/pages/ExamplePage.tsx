@@ -1,7 +1,9 @@
-import ReactPlayer from "react-player";
+import ReactPlayerModule from "react-player";
 import useSWR from "swr";
-import { VideoLink } from "../components";
-import { fetcher_video } from "../fetchers";
+import { VideoLink } from "../components/index.js";
+import { fetcher_video } from "../fetchers.js";
+
+const { default: ReactPlayer } = ReactPlayerModule;
 
 export const ExamplePage = () => {
   return (

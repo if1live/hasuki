@@ -7,7 +7,7 @@ import {
   FormField,
 } from "semantic-ui-react";
 import hasukiLogo from "../assets/hero.webp";
-import { parseYouTubeUrl } from "../links";
+import { parseYouTubeUrl } from "../links.js";
 
 export const IndexPage = () => {
   // TODO: form library?

@@ -1,7 +1,7 @@
 import useSWR from "swr";
-import { MyPlayer } from "../components/MyPlayer";
-import { fetcher_playlist } from "../fetchers";
-import { parse_playlist } from "../types";
+import { MyPlayer } from "../components/MyPlayer.js";
+import { fetcher_playlist } from "../fetchers.js";
+import { parse_playlist } from "../types.js";
 
 interface Props {
   playlistId: string;

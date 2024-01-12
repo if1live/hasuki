@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import ReactPlayer from "react-player";
-import { OnProgressProps } from "react-player/base";
+import ReactPlayerModule from "react-player";
+import { OnProgressProps } from "react-player/base.js";
+// import { OnProgressProps } from "react-player/base";
 import * as R from "remeda";
 import {
   Button,
@@ -11,10 +12,12 @@ import {
   TableRow,
 } from "semantic-ui-react";
 import { useMediaMeta, useMediaSession } from "use-media-session";
-import { VideoLink } from ".";
-import { Playlist, Thumbnail } from "../types";
-import { Duration } from "./Duration";
-import { PlayerButtonGroup } from "./PlayerButtonGroup";
+import { Playlist, Thumbnail } from "../types.js";
+import { Duration } from "./Duration.js";
+import { PlayerButtonGroup } from "./PlayerButtonGroup.js";
+import { VideoLink } from "./links.js";
+
+const { default: ReactPlayer } = ReactPlayerModule;
 
 type Props = {
   playlist: Playlist;
@@ -23,7 +26,7 @@ type Props = {
 export const MyPlayer = (props: Props) => {
   const { playlist } = props;
 
-  const ref = useRef<ReactPlayer>(null);
+  const ref = useRef<ReactPlayerModule.default | null>(null);
 
   // shuffle 필요해서 상세 목록은 data에서 직접 쓰지 않는다
   const [videos, setVideos] = useState(playlist.videos);
@@ -140,7 +143,7 @@ export const MyPlayer = (props: Props) => {
     }
   };
 
-  const onReady = (player: ReactPlayer) => {
+  const onReady = (player: ReactPlayerModule.default) => {
     console.log("onReady");
   };
 
