@@ -33,5 +33,6 @@ export const SinglePage = (props: Props) => {
   }
 
   const parsed = parse_video(data);
-  return <MyPlayer playlist={parsed} />;
+  const { playlist } = parsed;
+  return <MyPlayer playlist={playlist} />;
 };

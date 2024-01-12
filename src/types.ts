@@ -62,7 +62,13 @@ export const parse_playlist = (data: YouTube.Playlist): Playlist => {
   });
 };
 
-export const parse_video = (data: YouTube.Video): Playlist => {
+export const parse_video = (
+  data: YouTube.Video,
+): {
+  playlist: Playlist;
+  adaptiveFormats: YouTube.VideoStreamingFormatAdaptive[];
+  formats: YouTube.VideoStreamingFormat[];
+} => {
   const videos = [data].map((video) => {
     return {
       id: video.id,
@@ -76,12 +82,18 @@ export const parse_video = (data: YouTube.Video): Playlist => {
     };
   });
 
-  return Playlist.parse({
+  const playlist = Playlist.parse({
     id: "",
-    title: data.title,
+    title: "",
     thumbnail: data.thumbnail,
     channel: data.channel,
     url: data.url,
     videos,
   });
+
+  return {
+    playlist,
+    formats: data.formats,
+    adaptiveFormats: data.adaptiveFormats,
+  };
 };

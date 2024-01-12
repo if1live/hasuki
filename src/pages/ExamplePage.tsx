@@ -1,16 +1,61 @@
 import ReactPlayer from "react-player";
+import useSWR from "swr";
 import { VideoLink } from "../components";
+import { fetcher_video } from "../fetchers";
 
 export const ExamplePage = () => {
-  const fn_notWorkingInMobile = () => {
-    const videoId = "Sc8RTc6vKPE";
+  return (
+    <>
+      <Example_NotWorkingInMobile />
+      <Example_FetchVideo videoId="Sc8RTc6vKPE" />
+    </>
+  );
+};
+
+const Example_NotWorkingInMobile = () => {
+  const videoId = "Sc8RTc6vKPE";
+  return (
+    <div>
+      모바일에서 안나오는 영상
+      <VideoLink videoId={videoId} />
+      <ReactPlayer url={`https://www.youtube.com/watch?v=${videoId}`} />
+    </div>
+  );
+};
+
+const Example_FetchVideo = (props: {
+  videoId: string;
+}) => {
+  const { videoId } = props;
+  const { data, error, isLoading } = useSWR(videoId, fetcher_video);
+
+  if (error) {
+    const err = error as Error;
     return (
-      <div>
-        모바일에서 안나오는 영상
-        <VideoLink videoId={videoId} />
-        <ReactPlayer url={`https://www.youtube.com/watch?v=${videoId}`} />
-      </div>
+      <>
+        <h2>
+          {err.name}: {err.message}
+        </h2>
+        <pre>{err.stack}</pre>
+      </>
     );
-  };
-  return <>{fn_notWorkingInMobile()}</>;
+  }
+
+  if (isLoading) {
+    return <div>loading...</div>;
+  }
+
+  if (!data) {
+    return <div>no data</div>;
+  }
+
+  return (
+    <>
+      <h2>
+        dump: <VideoLink videoId={videoId} />
+      </h2>
+      <pre>{JSON.stringify(data.adaptiveFormats, null, 2)}</pre>
+      <pre>{JSON.stringify(data.formats, null, 2)}</pre>
+    </>
+  );
 };
