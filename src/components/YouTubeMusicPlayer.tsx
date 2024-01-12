@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { MutableRefObject, Ref } from "react";
 import ReactPlayerPkg from "react-player";
 import * as R from "remeda";
 import useSWR from "swr";
@@ -19,10 +19,11 @@ export type PlayerProps = {
   "onEnded" | "onReady" | "onProgress" | "onSeek" | "onError" | "onDuration"
 >;
 
-export const YouTubeMusicPlayer = (props: PlayerProps) => {
+export const YouTubeMusicPlayer = React.forwardRef<
+  MutableRefObject<ReactPlayerPkg.default | null>,
+  PlayerProps
+>((props, ref) => {
   const { video } = props;
-
-  const ref = useRef<ReactPlayerPkg.default | null>(null);
 
   const url = `/api/video?id=${video.id}`;
   const { data, error, isLoading } = useSWR(url, fetcher_ytdl, {});
@@ -61,7 +62,7 @@ export const YouTubeMusicPlayer = (props: PlayerProps) => {
 
   return (
     <ReactPlayer
-      ref={ref}
+      ref={ref as any}
       playing={props.playing}
       url={format.url}
       volume={props.volume}
@@ -82,4 +83,4 @@ export const YouTubeMusicPlayer = (props: PlayerProps) => {
       height="100%"
     />
   );
-};
+});

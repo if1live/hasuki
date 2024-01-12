@@ -1,19 +1,20 @@
-import { useRef } from "react";
+import React, { MutableRefObject } from "react";
 import ReactPlayerPkg from "react-player";
 import { PlayerProps } from "./YouTubeMusicPlayer.js";
 
 const ReactPlayer = ReactPlayerPkg as unknown as typeof ReactPlayerPkg.default;
 
-export const PlainPlayer = (props: PlayerProps) => {
+export const PlainPlayer = React.forwardRef<
+  MutableRefObject<ReactPlayerPkg.default | null>,
+  PlayerProps
+>((props, ref) => {
   const { video } = props;
-
-  const ref = useRef<ReactPlayerPkg.default | null>(null);
 
   return (
     <div className="player-wrapper">
       <ReactPlayer
         className="react-player"
-        ref={ref}
+        ref={ref as any}
         playing={props.playing}
         url={video.url}
         volume={props.volume}
@@ -35,4 +36,4 @@ export const PlainPlayer = (props: PlayerProps) => {
       />
     </div>
   );
-};
+});

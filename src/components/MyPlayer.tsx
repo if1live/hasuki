@@ -223,9 +223,11 @@ export const MyPlayer = (props: Props) => {
 
   return (
     <div>
-      {player === playerTag_plain ? <PlainPlayer {...playerProps} /> : null}
+      {player === playerTag_plain ? (
+        <PlainPlayer ref={ref as any} {...playerProps} />
+      ) : null}
       {player === playerTag_music ? (
-        <YouTubeMusicPlayer {...playerProps} />
+        <YouTubeMusicPlayer ref={ref as any} {...playerProps} />
       ) : null}
 
       <div>
