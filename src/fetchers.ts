@@ -1,20 +1,60 @@
-import { YouTube } from "youtube-sr";
+import * as YouTube from "youtube-sr";
+import { Playlist, parse_playlist, parse_video } from "./types.js";
 
-export const fetcher_playlist = async (...args: string[]) => {
+export const fetcher_playlist = async (
+  ...args: string[]
+): Promise<{ playlist: Playlist }> => {
   const [id, ...rest] = args;
-  const url = `https://www.youtube.com/playlist?list=${id}`;
 
-  // TODO: pagination 적용?
-  const playlist = await YouTube.getPlaylist(url, { fetchAll: true });
-  return playlist;
+  const fn_direct = async () => {
+    const url = `https://www.youtube.com/playlist?list=${id}`;
+    const playlist = await YouTube.YouTube.getPlaylist(url, { fetchAll: true });
+    const parsed = parse_playlist(playlist);
+    return {
+      playlist: parsed,
+    };
+  };
+
+  const fn_vercel = async () => {
+    const url = `/api/simple?action=playlist&id=${id}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    console.log("data", data);
+    return data;
+  };
+
+  // return await fn_direct();
+  return await fn_vercel();
 };
 
-export const fetcher_video = async (...args: string[]) => {
+export const fetcher_video = async (
+  ...args: string[]
+): Promise<{
+  playlist: Playlist;
+  adaptiveFormats: YouTube.VideoStreamingFormatAdaptive[];
+  formats: YouTube.VideoStreamingFormat[];
+}> => {
   const [id, ...rest] = args;
-  const url = `https://www.youtube.com/watch?v=${id}`;
 
-  const video = await YouTube.getVideo(url);
-  return video;
+  const fn_direct = async () => {
+    const url = `https://www.youtube.com/watch?v=${id}`;
+    const video = await YouTube.YouTube.getVideo(url);
+    const parsed = parse_video(video);
+    return {
+      playlist: parsed.playlist,
+      adaptiveFormats: parsed.adaptiveFormats,
+      formats: parsed.formats,
+    };
+  };
+
+  const fn_vercel = async () => {
+    const url = `/api/simple?action=video&id=${id}`;
+    const res = await fetch(url);
+    return await res.json();
+  };
+
+  // return await fn_direct();
+  return await fn_vercel();
 };
 
 type FetchFn = (typeof globalThis)["fetch"];

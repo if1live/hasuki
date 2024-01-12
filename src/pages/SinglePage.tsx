@@ -1,7 +1,6 @@
 import useSWR from "swr";
 import { MyPlayer } from "../components/MyPlayer.js";
 import { fetcher_video } from "../fetchers.js";
-import { parse_video } from "../types.js";
 
 interface Props {
   videoId: string;
@@ -32,7 +31,6 @@ export const SinglePage = (props: Props) => {
     return <div>no data</div>;
   }
 
-  const parsed = parse_video(data);
-  const { playlist } = parsed;
+  const { playlist } = data;
   return <MyPlayer playlist={playlist} />;
 };

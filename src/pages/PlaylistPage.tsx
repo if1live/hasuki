@@ -1,7 +1,6 @@
 import useSWR from "swr";
 import { MyPlayer } from "../components/MyPlayer.js";
 import { fetcher_playlist } from "../fetchers.js";
-import { parse_playlist } from "../types.js";
 
 interface Props {
   playlistId: string;
@@ -32,6 +31,6 @@ export const PlaylistPage = (props: Props) => {
     return <div>no data</div>;
   }
 
-  const parsed = parse_playlist(data);
-  return <MyPlayer playlist={parsed} />;
+  const { playlist } = data;
+  return <MyPlayer playlist={playlist} />;
 };

@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { YouTube } from "youtube-sr";
+import * as YouTube from "youtube-sr";
 import { z } from "zod";
+import { Playlist, parse_playlist, parse_video } from "../src/types.js";
 
 const schema = z.object({
   action: z.enum(["playlist", "video"]),
@@ -30,14 +31,28 @@ export default async function handler(
   }
 }
 
-const fn_playlist = async (id: string) => {
+const fn_playlist = async (id: string): Promise<{ playlist: Playlist }> => {
   const url = `https://www.youtube.com/playlist?list=${id}`;
-  const playlist = await YouTube.getPlaylist(url, { fetchAll: true });
-  return playlist;
+  const playlist = await YouTube.YouTube.getPlaylist(url, { fetchAll: true });
+  const parsed = parse_playlist(playlist);
+  return {
+    playlist: parsed,
+  };
 };
 
-const fn_video = async (id: string) => {
+const fn_video = async (
+  id: string,
+): Promise<{
+  playlist: Playlist;
+  adaptiveFormats: YouTube.VideoStreamingFormatAdaptive[];
+  formats: YouTube.VideoStreamingFormat[];
+}> => {
   const url = `https://www.youtube.com/watch?v=${id}`;
-  const video = await YouTube.getVideo(url);
-  return video;
+  const video = await YouTube.YouTube.getVideo(url);
+  const parsed = parse_video(video);
+  return {
+    playlist: parsed.playlist,
+    adaptiveFormats: parsed.adaptiveFormats,
+    formats: parsed.formats,
+  };
 };

@@ -17,7 +17,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 */
 
-const proxy = "corsproxy";
+const proxy = "none";
 const fetch_factory = fetch_proxy(proxy);
 const fetch_base = globalThis.fetch;
 const fetch_next = fetch_factory(fetch_base);
