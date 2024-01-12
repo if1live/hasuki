@@ -18,7 +18,7 @@ function App() {
 
   const page_index = !playlistId && !videoId;
   const player =
-    playerTag === playerTag_music ? playerTag_music : playerTag_plain;
+    playerTag === playerTag_plain ? playerTag_plain : playerTag_music;
 
   if (flag === "example") {
     return (
