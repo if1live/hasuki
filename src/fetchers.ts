@@ -1,4 +1,5 @@
 import * as YouTube from "youtube-sr";
+import { VideoModel } from "../api/video.js";
 import { Playlist, parse_playlist, parse_video } from "./types.js";
 
 export const fetcher_playlist = async (
@@ -54,6 +55,13 @@ export const fetcher_video = async (
 
   // return await fn_direct();
   return await fn_vercel();
+};
+
+export const fetcher_ytdl = async (...args: string[]): Promise<VideoModel> => {
+  const [id, ...rest] = args;
+  const url = `/api/video?id=${id}`;
+  const res = await fetch(url);
+  return await res.json();
 };
 
 type FetchFn = (typeof globalThis)["fetch"];

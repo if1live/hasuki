@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ReactPlayerPkg from "react-player";
 import { OnProgressProps } from "react-player/base.js";
-// import { OnProgressProps } from "react-player/base";
 import * as R from "remeda";
 import {
   Button,
@@ -12,6 +11,8 @@ import {
   TableRow,
 } from "semantic-ui-react";
 import { useMediaMeta, useMediaSession } from "use-media-session";
+import { VideoModel } from "../../api/video.js";
+import { fetcher_ytdl } from "../fetchers.js";
 import { Playlist, Thumbnail } from "../types.js";
 import { Duration } from "./Duration.js";
 import { PlayerButtonGroup } from "./PlayerButtonGroup.js";
@@ -33,6 +34,10 @@ export const MyPlayer = (props: Props) => {
   const [videos, setVideos] = useState(playlist.videos);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
+  type VideoFormat = VideoModel["formats"][number];
+  const [format, setFormat] = useState<VideoFormat | undefined>(undefined);
+  const [model, setModel] = useState<VideoModel | undefined>(undefined);
+
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(1.0);
   const [played, setPlayed] = useState(0);
@@ -43,6 +48,7 @@ export const MyPlayer = (props: Props) => {
   type MediaMetadataOptions = Parameters<typeof useMediaMeta>[0];
   const [metadata, setMetadata] = useState<MediaMetadataOptions>({});
 
+  // metadata 교체
   useEffect(() => {
     const video = videos.at(currentVideoIndex);
     if (!video) {
@@ -74,15 +80,53 @@ export const MyPlayer = (props: Props) => {
     setMetadata(m);
   }, [currentVideoIndex, videos]);
 
+  useEffect(() => {
+    if (videos.length === 0) {
+      return;
+    }
+
+    async function execute() {
+      const vide = videos.at(currentVideoIndex);
+      if (!vide) throw new Error("no item");
+      if (!vide.id) throw new Error("no video id");
+
+      const resp = await fetcher_ytdl(vide.id);
+
+      // audio
+      const format = R.pipe(
+        resp.formats,
+        R.filter((x) => x.hasAudio && !x.hasVideo),
+        R.filter((x) => x.audioQuality === "AUDIO_QUALITY_MEDIUM"),
+        R.sortBy((x) => x.audioBitrate ?? Infinity),
+        R.first(),
+      );
+      if (format === undefined) {
+        throw new Error("no audio format found");
+      }
+
+      setModel(resp);
+      setFormat(format);
+    }
+
+    execute().then(
+      () => {},
+      (e) => {
+        console.error(e);
+      },
+    );
+  }, [currentVideoIndex, videos]);
+
   // 플레이어 구현
   const handleNextTrack = () => {
     if (currentVideoIndex < videos.length - 1) {
+      setModel(undefined);
       setCurrentVideoIndex(currentVideoIndex + 1);
     }
   };
 
   const handlePreviousTrack = () => {
     if (currentVideoIndex >= 1) {
+      setModel(undefined);
       setCurrentVideoIndex(currentVideoIndex - 1);
     }
   };
@@ -110,6 +154,7 @@ export const MyPlayer = (props: Props) => {
     setVideos(items);
 
     setPlaying(false);
+    setModel(undefined);
     setCurrentVideoIndex(0);
   };
 
@@ -119,6 +164,8 @@ export const MyPlayer = (props: Props) => {
   ) => {
     const id = input["data-id"];
     const idx = videos.findIndex((x) => x.id === id);
+
+    setModel(undefined);
     setCurrentVideoIndex(idx);
     setPlaying(true);
   };
@@ -140,6 +187,7 @@ export const MyPlayer = (props: Props) => {
       // 플레이리스트 loop는 고려하지 않았다.
       setPlaying(false);
     } else {
+      setModel(undefined);
       setCurrentVideoIndex(nextIdx);
     }
   };
@@ -204,7 +252,7 @@ export const MyPlayer = (props: Props) => {
 
   return (
     <div>
-      <div className="player-wrapper">
+      {/* <div className="player-wrapper">
         <ReactPlayer
           className="react-player"
           ref={ref}
@@ -227,7 +275,33 @@ export const MyPlayer = (props: Props) => {
           width="100%"
           height="100%"
         />
-      </div>
+      </div> */}
+
+      {format && model ? (
+        <ReactPlayer
+          ref={ref}
+          playing={playing}
+          url={format.url}
+          volume={volume}
+          onEnded={onEnded}
+          onReady={onReady}
+          onProgress={onProgress}
+          onSeek={onSeek}
+          onError={onError}
+          onDuration={onDuration}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          config={{
+            file: {
+              forceAudio: true,
+            },
+          }}
+          width="100%"
+          height="100%"
+        />
+      ) : (
+        <div>loading...</div>
+      )}
 
       <div>
         <h3>{video.title}</h3>

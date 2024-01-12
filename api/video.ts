@@ -19,21 +19,35 @@ const pick_videoDetails = (x: ytdl.MoreVideoDetails) => {
 
 const pick_format = (x: ytdl.videoFormat) => {
   return R.pick(x, [
-    "mimeType",
-    "audioBitrate",
     "url",
-    "audioQuality",
+    "mimeType",
     "approxDurationMs",
+    "contentLength",
+
+    "bitrate",
+    "audioBitrate",
+    "averageBitrate",
+    "quality",
+    "qualityLabel",
+    "audioQuality",
+    "audioSampleRate",
+    "audioChannels",
+
+    "width",
+    "height",
+
+    "hasVideo",
+    "hasAudio",
+
     "isHLS",
   ]);
 };
 
-interface VideoModel {
+export interface VideoModel {
   formats: ReturnType<typeof pick_format>[];
   videoDetails: ReturnType<typeof pick_videoDetails>;
 }
-
-const VideoModel = {
+export const VideoModel = {
   from(info: ytdl.videoInfo): VideoModel {
     const formats = R.pipe(info.formats, R.map(pick_format));
 
