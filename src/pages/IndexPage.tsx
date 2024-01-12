@@ -96,6 +96,9 @@ export const IndexPage = () => {
           <input
             type="text"
             placeholder="youtube playlist id (ex: PLqeVDqAa1AFbY2JCCVapGggt_pbeMIlDX)"
+            autoComplete="false"
+            autoCapitalize="false"
+            autoCorrect="false"
             onChange={onChange_playlist}
             value={playlistId ?? ""}
           />
@@ -106,6 +109,9 @@ export const IndexPage = () => {
           <input
             type="text"
             placeholder="youtube video id (ex: P1cyCAUTWVg)"
+            autoComplete="false"
+            autoCapitalize="false"
+            autoCorrect="false"
             onChange={onChange_video}
             value={videoId ?? ""}
           />
@@ -116,6 +122,9 @@ export const IndexPage = () => {
           <input
             type="url"
             placeholder="youtube url"
+            autoComplete="false"
+            autoCapitalize="false"
+            autoCorrect="false"
             onChange={onChange_youtubeUrl}
             value={youtubeUrl ?? ""}
           />
