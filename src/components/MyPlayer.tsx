@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import ReactPlayerMod from "react-player";
+import ReactPlayerPkg from "react-player";
 import { OnProgressProps } from "react-player/base.js";
 // import { OnProgressProps } from "react-player/base";
 import * as R from "remeda";
@@ -17,7 +17,7 @@ import { Duration } from "./Duration.js";
 import { PlayerButtonGroup } from "./PlayerButtonGroup.js";
 import { VideoLink } from "./links.js";
 
-const ReactPlayer = ReactPlayerMod as unknown as typeof ReactPlayerMod.default;
+const ReactPlayer = ReactPlayerPkg as unknown as typeof ReactPlayerPkg.default;
 
 type Props = {
   playlist: Playlist;
@@ -26,7 +26,7 @@ type Props = {
 export const MyPlayer = (props: Props) => {
   const { playlist } = props;
 
-  const ref = useRef<ReactPlayerMod.default | null>(null);
+  const ref = useRef<ReactPlayerPkg.default | null>(null);
 
   // shuffle 필요해서 상세 목록은 data에서 직접 쓰지 않는다
   const [videos, setVideos] = useState(playlist.videos);
