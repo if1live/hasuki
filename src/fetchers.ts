@@ -25,10 +25,23 @@ type FetchOverrideFn = (fetch_base: FetchFn) => FetchFn;
  * 나중에 corsproxy.io 막히면 프록시만 교체하면 될듯
  */
 const fetch_corsproxy: FetchOverrideFn = (fetch_base) => {
+  // corsproxy는 user-agent 헤더가 없으면 cors 우회를 안해준다
+  const userAgent =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
   return async (url, init) => {
     if (typeof url === "string") {
       const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-      return await fetch_base(proxyUrl, init);
+
+      const headers: HeadersInit = {
+        ...init?.headers,
+        "user-agent": userAgent,
+      };
+
+      return await fetch_base(proxyUrl, {
+        ...init,
+        headers,
+      });
     }
 
     // else...
