@@ -26,7 +26,9 @@ export const YouTubeMusicPlayer = React.forwardRef<
   const { video } = props;
 
   const url = `/api/video?id=${video.id}`;
-  const { data, error, isLoading } = useSWR(url, fetcher_ytdl, {});
+  const { data, error, isLoading } = useSWR(url, fetcher_ytdl, {
+    revalidateOnFocus: false,
+  });
 
   if (error) {
     const err = error as Error;
