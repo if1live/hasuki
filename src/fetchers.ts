@@ -19,7 +19,6 @@ export const fetcher_playlist = async (
     const url = `/api/simple?action=playlist&id=${id}`;
     const res = await fetch(url);
     const data = await res.json();
-    console.log("data", data);
     return data;
   };
 
