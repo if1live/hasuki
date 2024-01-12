@@ -18,16 +18,20 @@ export default async function handler(
     return response.status(400).json(error);
   }
 
-  const { action, id } = input.data;
-  switch (action) {
-    case "playlist": {
-      const result = await fn_playlist(id);
-      return response.status(200).json(result);
+  try {
+    const { action, id } = input.data;
+    switch (action) {
+      case "playlist": {
+        const result = await fn_playlist(id);
+        return response.status(200).json(result);
+      }
+      case "video": {
+        const result = await fn_video(id);
+        return response.status(200).json(result);
+      }
     }
-    case "video": {
-      const result = await fn_video(id);
-      return response.status(200).json(result);
-    }
+  } catch (error) {
+    return response.status(400).json(error);
   }
 }
 

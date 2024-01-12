@@ -85,8 +85,12 @@ export default async function handler(
     return response.status(400).json(error);
   }
 
-  const { id } = input.data;
-  const s = new VideoService();
-  const data = await s.load(id);
-  return response.status(200).json(data);
+  try {
+    const { id } = input.data;
+    const s = new VideoService();
+    const data = await s.load(id);
+    return response.status(200).json(data);
+  } catch (e) {
+    return response.status(400).json(e);
+  }
 }
