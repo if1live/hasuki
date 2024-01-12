@@ -11,7 +11,7 @@
     "skipLibCheck": true,
     /* Bundler mode */
     "moduleResolution": "NodeNext",
-    "allowImportingTsExtensions": true,
+    // "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -23,7 +23,8 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src"
+    "src",
+    "api"
   ],
   "references": [
     {
