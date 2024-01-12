@@ -53,8 +53,9 @@ export const IndexPage = () => {
   };
 
   const fn_redirect = (search: URLSearchParams) => {
+    const baseUrl = import.meta.env.BASE_URL;
     const q = search.toString();
-    const nextUrl = `/?${q}`;
+    const nextUrl = `${baseUrl}?${q}`;
     window.location.href = nextUrl;
   };
 
