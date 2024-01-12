@@ -283,7 +283,11 @@ export const MyPlayer = (props: Props) => {
             const active = currentVideoIndex === idx;
             return (
               <TableRow key={item.id} positive={active}>
-                <td>{item.title}</td>
+                <td>
+                  {item.title}
+                  <br />
+                  <VideoLink videoId={item.id} />
+                </td>
                 <td>{item.durationFormatted}</td>
                 <td>
                   <Button
