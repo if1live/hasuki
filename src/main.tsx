@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import "semantic-ui-css/semantic.min.css";
 import { QueryParamProvider } from "use-query-params";
 import { WindowHistoryAdapter } from "use-query-params/adapters/window";
-import App from "./App.tsx";
-import { fetch_proxy } from "./fetchers.ts";
+import App from "./App.js";
+import { fetch_proxy } from "./fetchers.js";
 import "./index.css";
 
 // https://stackoverflow.com/a/71982736
