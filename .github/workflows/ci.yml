@@ -45,7 +45,6 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: frontend
-        working-directory: packages
         run: |
           pnpm build
 
