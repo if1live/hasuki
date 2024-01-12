@@ -58,8 +58,7 @@ export const fetcher_video = async (
 };
 
 export const fetcher_ytdl = async (...args: string[]): Promise<VideoModel> => {
-  const [id, ...rest] = args;
-  const url = `/api/video?id=${id}`;
+  const [url, ...rest] = args;
   const res = await fetch(url);
   return await res.json();
 };

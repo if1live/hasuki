@@ -1,10 +1,11 @@
 import useSWR from "swr";
 import { MyPlayer } from "../components/MyPlayer.js";
 import { fetcher_video } from "../fetchers.js";
+import { PlayerTag } from "../types.js";
 
 interface Props {
   videoId: string;
-  player: string;
+  player: PlayerTag;
 }
 
 export const SinglePage = (props: Props) => {

@@ -1,10 +1,11 @@
 import useSWR from "swr";
 import { MyPlayer } from "../components/MyPlayer.js";
 import { fetcher_playlist } from "../fetchers.js";
+import { PlayerTag } from "../types.js";
 
 interface Props {
   playlistId: string;
-  player: string;
+  player: PlayerTag;
 }
 
 export const PlaylistPage = (props: Props) => {

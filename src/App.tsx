@@ -6,6 +6,7 @@ import { ExamplePage } from "./pages/ExamplePage.js";
 import { IndexPage } from "./pages/IndexPage.js";
 import { PlaylistPage } from "./pages/PlaylistPage.js";
 import { SinglePage } from "./pages/SinglePage.js";
+import { playerTag_music, playerTag_plain } from "./types.js";
 
 function App() {
   // youtube와 동일한 key 사용
@@ -16,7 +17,8 @@ function App() {
   const [note, setNote] = useQueryParam("note", StringParam);
 
   const page_index = !playlistId && !videoId;
-  const player = playerTag || "react-player";
+  const player =
+    playerTag === playerTag_music ? playerTag_music : playerTag_plain;
 
   if (flag === "example") {
     return (

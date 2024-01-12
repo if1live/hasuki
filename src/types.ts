@@ -97,3 +97,7 @@ export const parse_video = (
     adaptiveFormats: data.adaptiveFormats,
   };
 };
+
+export const playerTag_plain = "plain";
+export const playerTag_music = "music";
+export type PlayerTag = typeof playerTag_plain | typeof playerTag_music;

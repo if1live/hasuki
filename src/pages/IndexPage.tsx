@@ -8,6 +8,7 @@ import {
 } from "semantic-ui-react";
 import hasukiLogo from "../assets/hero.webp";
 import { parseYouTubeUrl } from "../links.js";
+import { PlayerTag, playerTag_music, playerTag_plain } from "../types.js";
 
 export const IndexPage = () => {
   // TODO: form library?
@@ -40,14 +41,14 @@ export const IndexPage = () => {
   };
 
   // TODO: query string? redirect?
-  const fn_playlist = (id: string, player: "react-player" | "manual") => {
+  const fn_playlist = (id: string, player: PlayerTag) => {
     const search = new URLSearchParams();
     search.append("list", id);
     search.append("player", player);
     return fn_redirect(search);
   };
 
-  const fn_video = (id: string, player: "react-player" | "manual") => {
+  const fn_video = (id: string, player: PlayerTag) => {
     const search = new URLSearchParams();
     search.append("v", id);
     search.append("player", player);
@@ -61,7 +62,7 @@ export const IndexPage = () => {
     window.location.href = nextUrl;
   };
 
-  const handlePlay = (player: "react-player" | "manual") => {
+  const handlePlay = (player: PlayerTag) => {
     let value_playlistId: string | null = playlistId;
     let value_videoId: string | null = videoId;
     if (youtubeUrl) {
@@ -82,8 +83,8 @@ export const IndexPage = () => {
     console.log("no input");
   };
 
-  const handlePlay_ReactPlayer = () => handlePlay("react-player");
-  const handlePlay_Manual = () => handlePlay("manual");
+  const handlePlay_Plain = () => handlePlay(playerTag_plain);
+  const handlePlay_Music = () => handlePlay(playerTag_music);
 
   return (
     <>
@@ -121,14 +122,14 @@ export const IndexPage = () => {
         </FormField>
 
         <ButtonGroup>
-          <Button positive onClick={handlePlay_ReactPlayer}>
-            ReactPlayer
+          <Button positive onClick={handlePlay_Plain}>
+            plain
           </Button>
 
           <ButtonOr />
 
-          <Button positive onClick={handlePlay_Manual}>
-            Manual
+          <Button positive onClick={handlePlay_Music}>
+            music
           </Button>
 
           <ButtonOr />
