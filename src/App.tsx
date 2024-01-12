@@ -2,6 +2,7 @@ import { Container } from "semantic-ui-react";
 import { StringParam, useQueryParam } from "use-query-params";
 import "./App.css";
 import { PlaylistLink, VideoLink } from "./components";
+import { ExamplePage } from "./pages/ExamplePage";
 import { IndexPage } from "./pages/IndexPage";
 import { PlaylistPage } from "./pages/PlaylistPage";
 import { SinglePage } from "./pages/SinglePage";
@@ -10,9 +11,18 @@ function App() {
   // youtube와 동일한 key 사용
   const [playlistId, setPlaylistId] = useQueryParam("list", StringParam);
   const [videoId, setVideoId] = useQueryParam("v", StringParam);
+  const [flag, setFlag] = useQueryParam("flag", StringParam);
   const [note, setNote] = useQueryParam("note", StringParam);
 
   const page_index = !playlistId && !videoId;
+
+  if (flag === "example") {
+    return (
+      <Container text>
+        <ExamplePage />
+      </Container>
+    );
+  }
 
   return (
     <Container text>
