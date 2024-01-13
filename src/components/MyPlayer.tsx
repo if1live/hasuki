@@ -39,7 +39,9 @@ export const MyPlayer = (props: Props) => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
   // error는 진짜 error와 헷갈릴수 있어서 이름 바꿈
-  const [exception, setException] = useState<ErrorProps | undefined>(undefined);
+  // audio url에서 403 발생한 다음에 DOMException: Failed to load because no supported source was found 가 발생할수 있다.
+  // 에러는 배열이 되어야한다.
+  const [exceptions, setExceptions] = useState<ErrorProps[]>([]);
 
   const [playerMode, setPlayerMode] = useState<PlayerTag>(playerTag_music);
 
@@ -162,7 +164,7 @@ export const MyPlayer = (props: Props) => {
     };
     console.log("onReady", data);
 
-    setException(undefined);
+    setExceptions([]);
   };
 
   const onProgress = (state: OnProgressProps) => {
@@ -189,7 +191,8 @@ export const MyPlayer = (props: Props) => {
   ) => {
     const e = { error, data, hlsInstance, hlsGlobal };
     console.log("onError", e);
-    setException(e);
+
+    setExceptions([...exceptions, e]);
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,7 +238,10 @@ export const MyPlayer = (props: Props) => {
 
   return (
     <div>
-      {exception ? <ErrorView {...exception} /> : null}
+      {exceptions.map((m, idx) => {
+        const key = `${idx}`;
+        return <ErrorView key={key} {...m} />;
+      })}
 
       {playerMode === playerTag_plain ? (
         <PlainPlayer ref={ref as any} {...playerProps} />
