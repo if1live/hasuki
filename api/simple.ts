@@ -1,7 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import * as YouTube from "youtube-sr";
 import { z } from "zod";
-import { Playlist, parse_playlist, parse_video } from "../src/types.js";
+import { fetch_playlist, fetch_video } from "../src/apis.js";
 
 const schema = z.object({
   action: z.enum(["playlist", "video"]),
@@ -22,11 +21,11 @@ export default async function handler(
     const { action, id } = input.data;
     switch (action) {
       case "playlist": {
-        const result = await fn_playlist(id);
+        const result = await fetch_playlist(id);
         return response.status(200).json(result);
       }
       case "video": {
-        const result = await fn_video(id);
+        const result = await fetch_video(id);
         return response.status(200).json(result);
       }
     }
@@ -34,29 +33,3 @@ export default async function handler(
     return response.status(400).json(error);
   }
 }
-
-const fn_playlist = async (id: string): Promise<{ playlist: Playlist }> => {
-  const url = `https://www.youtube.com/playlist?list=${id}`;
-  const playlist = await YouTube.YouTube.getPlaylist(url, { fetchAll: true });
-  const parsed = parse_playlist(playlist);
-  return {
-    playlist: parsed,
-  };
-};
-
-const fn_video = async (
-  id: string,
-): Promise<{
-  playlist: Playlist;
-  adaptiveFormats: YouTube.VideoStreamingFormatAdaptive[];
-  formats: YouTube.VideoStreamingFormat[];
-}> => {
-  const url = `https://www.youtube.com/watch?v=${id}`;
-  const video = await YouTube.YouTube.getVideo(url);
-  const parsed = parse_video(video);
-  return {
-    playlist: parsed.playlist,
-    adaptiveFormats: parsed.adaptiveFormats,
-    formats: parsed.formats,
-  };
-};

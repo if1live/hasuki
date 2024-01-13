@@ -1,30 +1,26 @@
 import * as YouTube from "youtube-sr";
 import { VideoModel } from "../api/video.js";
-import { Playlist, parse_playlist, parse_video } from "./types.js";
+import { Playlist } from "./types.js";
 
 export const fetcher_playlist = async (
   ...args: string[]
 ): Promise<{ playlist: Playlist }> => {
   const [id, ...rest] = args;
 
-  const fn_direct = async () => {
-    const url = `https://www.youtube.com/playlist?list=${id}`;
-    const playlist = await YouTube.YouTube.getPlaylist(url, { fetchAll: true });
-    const parsed = parse_playlist(playlist);
-    return {
-      playlist: parsed,
-    };
-  };
+  const url = `/api/simple?action=playlist&id=${id}`;
+  const res = await fetch(url);
+  const data = await res.json();
 
-  const fn_vercel = async () => {
-    const url = `/api/simple?action=playlist&id=${id}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    return data;
-  };
-
-  // return await fn_direct();
-  return await fn_vercel();
+  if (!res.ok) {
+    throw new Error("fetcher_playlist failed", {
+      cause: {
+        id,
+        status: res.status,
+        data,
+      },
+    });
+  }
+  return data;
 };
 
 export const fetcher_video = async (
@@ -36,31 +32,37 @@ export const fetcher_video = async (
 }> => {
   const [id, ...rest] = args;
 
-  const fn_direct = async () => {
-    const url = `https://www.youtube.com/watch?v=${id}`;
-    const video = await YouTube.YouTube.getVideo(url);
-    const parsed = parse_video(video);
-    return {
-      playlist: parsed.playlist,
-      adaptiveFormats: parsed.adaptiveFormats,
-      formats: parsed.formats,
-    };
-  };
+  const url = `/api/simple?action=video&id=${id}`;
+  const res = await fetch(url);
+  const data = await res.json();
 
-  const fn_vercel = async () => {
-    const url = `/api/simple?action=video&id=${id}`;
-    const res = await fetch(url);
-    return await res.json();
-  };
-
-  // return await fn_direct();
-  return await fn_vercel();
+  if (!res.ok) {
+    throw new Error("fetcher_video failed", {
+      cause: {
+        id,
+        status: res.status,
+        data,
+      },
+    });
+  }
+  return data;
 };
 
 export const fetcher_ytdl = async (...args: string[]): Promise<VideoModel> => {
   const [url, ...rest] = args;
   const res = await fetch(url);
-  return await res.json();
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error("fetcher_ytdl failed", {
+      cause: {
+        url,
+        status: res.status,
+        data,
+      },
+    });
+  }
+  return data;
 };
 
 type FetchFn = (typeof globalThis)["fetch"];
