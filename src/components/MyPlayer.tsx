@@ -376,10 +376,10 @@ export const MyPlayer = (props: Props) => {
 
       <dl>
         <dt>fake</dt>
-        <dd>{playlist.fake}</dd>
+        <dd>{playlist.fake ? "true" : "false"}</dd>
 
         <dt>mix</dt>
-        <dd>{playlist.mix}</dd>
+        <dd>{playlist.mix ? "true" : "nil"}</dd>
       </dl>
     </div>
   );
