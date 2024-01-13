@@ -19,6 +19,7 @@ import {
   playerTag_plain,
 } from "../types.js";
 import { Duration } from "./Duration.js";
+import { ErrorProps, ErrorView } from "./ErrorView.js";
 import { PlainPlayer } from "./PlainPlayer.js";
 import { PlayerButtonGroup } from "./PlayerButtonGroup.js";
 import { PlayerProps, YouTubeMusicPlayer } from "./YouTubeMusicPlayer.js";
@@ -36,6 +37,9 @@ export const MyPlayer = (props: Props) => {
   // shuffle 필요해서 상세 목록은 data에서 직접 쓰지 않는다
   const [videos, setVideos] = useState(playlist.videos);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+  // error는 진짜 error와 헷갈릴수 있어서 이름 바꿈
+  const [exception, setException] = useState<ErrorProps | undefined>(undefined);
 
   const [playerMode, setPlayerMode] = useState<PlayerTag>(playerTag_music);
 
@@ -152,8 +156,13 @@ export const MyPlayer = (props: Props) => {
     }
   };
 
-  const onReady = () => {
-    console.log("onReady");
+  const onReady = (player: ReactPlayerPkg.default) => {
+    const data = {
+      url: player.props.url,
+    };
+    console.log("onReady", data);
+
+    setException(undefined);
   };
 
   const onProgress = (state: OnProgressProps) => {
@@ -178,7 +187,9 @@ export const MyPlayer = (props: Props) => {
     hlsInstance?: unknown,
     hlsGlobal?: unknown,
   ) => {
-    console.log("onError");
+    const e = { error, data, hlsInstance, hlsGlobal };
+    console.log("onError", e);
+    setException(e);
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -224,6 +235,8 @@ export const MyPlayer = (props: Props) => {
 
   return (
     <div>
+      {exception ? <ErrorView {...exception} /> : null}
+
       {playerMode === playerTag_plain ? (
         <PlainPlayer ref={ref as any} {...playerProps} />
       ) : null}

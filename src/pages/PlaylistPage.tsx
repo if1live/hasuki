@@ -1,4 +1,5 @@
 import useSWRImmutable from "swr/immutable";
+import { ErrorView } from "../components/ErrorView.js";
 import { MyPlayer } from "../components/MyPlayer.js";
 import { fetcher_playlist } from "../fetchers.js";
 
@@ -15,15 +16,7 @@ export const PlaylistPage = (props: Props) => {
   );
 
   if (error) {
-    const err = error as Error;
-    return (
-      <>
-        <h2>
-          {err.name}: {err.message}
-        </h2>
-        <pre>{err.stack}</pre>
-      </>
-    );
+    return <ErrorView error={error} />;
   }
 
   if (isLoading) {

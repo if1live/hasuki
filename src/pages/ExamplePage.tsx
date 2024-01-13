@@ -1,5 +1,6 @@
 import ReactPlayerPkg from "react-player";
 import useSWR from "swr";
+import { ErrorView } from "../components/ErrorView.js";
 import { VideoLink } from "../components/index.js";
 import { fetcher_video } from "../fetchers.js";
 
@@ -33,15 +34,7 @@ const Example_FetchVideo = (props: {
   const { data, error, isLoading } = useSWR(videoId, fetcher_video);
 
   if (error) {
-    const err = error as Error;
-    return (
-      <>
-        <h2>
-          {err.name}: {err.message}
-        </h2>
-        <pre>{err.stack}</pre>
-      </>
-    );
+    return <ErrorView error={error} />;
   }
 
   if (isLoading) {

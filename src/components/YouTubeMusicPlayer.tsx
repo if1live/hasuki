@@ -4,6 +4,7 @@ import * as R from "remeda";
 import useSWR from "swr";
 import { fetcher_ytdl } from "../fetchers.js";
 import { Video } from "../types.js";
+import { ErrorView } from "./ErrorView.js";
 
 const ReactPlayer = ReactPlayerPkg as unknown as typeof ReactPlayerPkg.default;
 
@@ -32,15 +33,7 @@ export const YouTubeMusicPlayer = React.forwardRef<
   });
 
   if (error) {
-    const err = error as Error;
-    return (
-      <>
-        <h2>
-          {err.name}: {err.message}
-        </h2>
-        <pre>{err.stack}</pre>
-      </>
-    );
+    return <ErrorView error={error} />;
   }
 
   if (isLoading) {

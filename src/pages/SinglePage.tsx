@@ -1,4 +1,5 @@
 import useSWRImmutable from "swr/immutable";
+import { ErrorView } from "../components/ErrorView.js";
 import { MyPlayer } from "../components/MyPlayer.js";
 import { fetcher_video } from "../fetchers.js";
 import { PlayerTag } from "../types.js";
@@ -13,15 +14,7 @@ export const SinglePage = (props: Props) => {
   const { data, error, isLoading } = useSWRImmutable(videoId, fetcher_video);
 
   if (error) {
-    const err = error as Error;
-    return (
-      <>
-        <h2>
-          {err.name}: {err.message}
-        </h2>
-        <pre>{err.stack}</pre>
-      </>
-    );
+    return <ErrorView error={error} />;
   }
 
   if (isLoading) {
