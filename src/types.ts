@@ -93,6 +93,9 @@ export const parse_video = (
     channel: data.channel,
     url: data.url,
     videos,
+    // video를 playlist처럼 취급하면 없는 속성
+    fake: true,
+    mix: false,
   });
 
   return {
