@@ -16,7 +16,7 @@ export const ErrorView = (props: ErrorProps) => {
   return (
     <Message negative>
       <MessageHeader>
-        Error: {model.name}, typeof={typeof error}
+        Error: {model.name}, type={model.type}
       </MessageHeader>
       <p>{model.message}</p>
       <pre>{model.stack}</pre>
