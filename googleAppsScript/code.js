@@ -191,7 +191,9 @@ function clearRecord(row) {
   const sheet = SpreadsheetApp.getActiveSheet();
 
   sheet.getRange(row, COL_CATEGORY).setValue("");
-  sheet.getRange(row, COL_ID).setValue("");
+  sheet.getRange(row, COL_VIDEO_ID).setValue("");
+  sheet.getRange(row, COL_PLAYLIST_ID).setValue("");
+
   sheet.getRange(row, COL_HASUKI).setValue("");
 
   sheet.getRange(row, COL_TITLE).setValue("");
