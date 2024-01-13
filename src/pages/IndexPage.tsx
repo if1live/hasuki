@@ -87,6 +87,7 @@ export const IndexPage = () => {
 
   return (
     <>
+      <h3>Free YouTube Audio Player</h3>
       <img src={hasukiLogo} className="ui large image" alt="hasuki" />
 
       <Form>

@@ -51,7 +51,13 @@ function App() {
       {videoId && <SinglePage videoId={videoId} />}
 
       <footer>
-        <a href="https://github.com/if1live/hasuki">github</a>
+        <a
+          href="https://github.com/if1live/hasuki"
+          target="_blank"
+          rel="noreferrer"
+        >
+          github
+        </a>
       </footer>
     </Container>
   );

@@ -14,8 +14,16 @@ export const parseYouTubeUrl = (url: string) => {
   const videoId = params.get("v") ?? undefined;
   const playlistId = params.get("list") ?? undefined;
 
+  if (videoId || playlistId) {
+    return {
+      videoId,
+      playlistId,
+    };
+  }
+
+  // query string으로 뜯을수 없으면 공유용 단축 url
   return {
-    videoId,
-    playlistId,
+    videoId: m[1],
+    playlistId: undefined,
   };
 };
