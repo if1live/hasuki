@@ -5,6 +5,7 @@ import {
   ButtonOr,
   Form,
   FormField,
+  Icon,
 } from "semantic-ui-react";
 import hasukiLogo from "../assets/hero.webp";
 import { parseYouTubeUrl } from "../links.js";
@@ -12,26 +13,36 @@ import { PlayerTag, playerTag_music, playerTag_plain } from "../types.js";
 
 export const IndexPage = () => {
   // TODO: form library?
-  const [playlistId, setPlaylistId] = useState<string | null>(null);
-  const [videoId, setVideoId] = useState<string | null>(null);
-  const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
+  const [playlistId, setPlaylistId] = useState<string>("");
+  const [videoId, setVideoId] = useState<string>("");
+  const [youtubeUrl, setYoutubeUrl] = useState<string>("");
 
   const onChange_playlist = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value.trim();
-    const v = text.length > 0 ? text : null;
-    setPlaylistId(v);
+    setPlaylistId(text);
   };
 
   const onChange_video = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value.trim();
-    const v = text.length > 0 ? text : null;
-    setVideoId(v);
+    setVideoId(text);
   };
 
   const onChange_youtubeUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value.trim();
-    const v = text.length > 0 ? text : null;
-    setYoutubeUrl(v);
+    setYoutubeUrl(text);
+
+    const parsed = parseYouTubeUrl(text);
+    if (parsed) {
+      if (parsed.playlistId) {
+        return setPlaylistId(parsed.playlistId);
+      }
+      if (parsed.videoId) {
+        return setVideoId(parsed.videoId);
+      }
+    }
+    // else...
+    setPlaylistId("");
+    setVideoId("");
   };
 
   const handleReset = () => {
@@ -61,31 +72,37 @@ export const IndexPage = () => {
   };
 
   const handlePlay = () => {
-    let value_playlistId: string | null = playlistId;
-    let value_videoId: string | null = videoId;
-    if (youtubeUrl) {
-      const parsed = parseYouTubeUrl(youtubeUrl);
-      if (parsed) {
-        value_playlistId = parsed.playlistId ?? null;
-        value_videoId = parsed.videoId ?? null;
-      }
+    if (playlistId) {
+      return fn_playlist(playlistId);
     }
-
-    if (value_playlistId) {
-      return fn_playlist(value_playlistId);
-    }
-    if (value_videoId) {
-      return fn_video(value_videoId);
+    if (videoId) {
+      return fn_video(videoId);
     }
     // TODO: 입력 에러를 밖으로 보여주기?
     console.log("no input");
   };
+
+  const enabled_play = playlistId || videoId;
+  const enabled_reset = playlistId || videoId || youtubeUrl;
 
   return (
     <>
       <img src={hasukiLogo} className="ui large image" alt="hasuki" />
 
       <Form>
+        <FormField>
+          <label>youtube url</label>
+          <input
+            type="url"
+            placeholder="youtube url"
+            autoComplete="false"
+            autoCapitalize="false"
+            autoCorrect="false"
+            onChange={onChange_youtubeUrl}
+            value={youtubeUrl}
+          />
+        </FormField>
+
         <FormField>
           <label>playlist id</label>
           <input
@@ -95,7 +112,7 @@ export const IndexPage = () => {
             autoCapitalize="false"
             autoCorrect="false"
             onChange={onChange_playlist}
-            value={playlistId ?? ""}
+            value={playlistId}
           />
         </FormField>
 
@@ -108,31 +125,25 @@ export const IndexPage = () => {
             autoCapitalize="false"
             autoCorrect="false"
             onChange={onChange_video}
-            value={videoId ?? ""}
-          />
-        </FormField>
-
-        <FormField>
-          <label>youtube url</label>
-          <input
-            type="url"
-            placeholder="youtube url"
-            autoComplete="false"
-            autoCapitalize="false"
-            autoCorrect="false"
-            onChange={onChange_youtubeUrl}
-            value={youtubeUrl ?? ""}
+            value={videoId}
           />
         </FormField>
 
         <ButtonGroup>
-          <Button positive onClick={handlePlay}>
-            music
+          <Button positive onClick={handlePlay} disabled={!enabled_play}>
+            <Icon name="music" />
+            play
           </Button>
 
           <ButtonOr />
 
-          <Button type="reset" negative onClick={handleReset}>
+          <Button
+            type="reset"
+            negative
+            onClick={handleReset}
+            disabled={!enabled_reset}
+          >
+            <Icon name="trash" />
             reset
           </Button>
         </ButtonGroup>
