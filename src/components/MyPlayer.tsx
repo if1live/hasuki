@@ -64,6 +64,9 @@ export const MyPlayer = (props: Props) => {
 
     const fn_artwork = (data: Thumbnail) => {
       const url = data.url;
+      if (!url) {
+        return;
+      }
 
       let type = undefined;
       if (url.endsWith(".png")) {
@@ -82,7 +85,7 @@ export const MyPlayer = (props: Props) => {
     const artwork = fn_artwork(video.thumbnail);
     const m: MediaMetadataOptions = {
       title: video.title,
-      artwork: [artwork],
+      artwork: artwork ? [artwork] : undefined,
     };
     setMetadata(m);
   }, [currentVideoIndex, videos]);

@@ -6,13 +6,13 @@ import { z } from "zod";
 export const Thumbnail = z.object({
   width: z.number(),
   height: z.number(),
-  url: z.string(),
+  url: z.string().nullable(),
 });
 export type Thumbnail = z.infer<typeof Thumbnail>;
 
 export const Channel = z.object({
-  name: z.string(),
-  id: z.string(),
+  name: z.string().optional(),
+  id: z.string().optional(),
 });
 export type Channel = z.infer<typeof Channel>;
 
