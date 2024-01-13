@@ -68,8 +68,6 @@ export const YouTubeMusicPlayer = React.forwardRef<
       onSeek={props.onSeek}
       onError={props.onError}
       onDuration={props.onDuration}
-      onPlay={() => props.setPlaying(true)}
-      onPause={() => props.setPlaying(false)}
       config={{
         file: {
           forceAudio: true,
