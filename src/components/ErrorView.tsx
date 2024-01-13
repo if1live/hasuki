@@ -21,7 +21,7 @@ export const ErrorView = (props: ErrorProps) => {
       <p>{model.message}</p>
       <pre>{model.stack}</pre>
 
-      <pre>{JSON.stringify(model.cause, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(model.cause, null, 2)}</pre> */}
       <pre>{JSON.stringify(props.data, null, 2)}</pre>
     </Message>
   );
