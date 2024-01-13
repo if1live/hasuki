@@ -56,6 +56,7 @@ const fromEventError = (error: Event): ErrorModel => {
 };
 
 const fromUnknownError = (error: unknown): ErrorModel => {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const x = error as any;
   return {
     type: typeof error,
@@ -67,6 +68,7 @@ const fromUnknownError = (error: unknown): ErrorModel => {
 };
 
 const from = (error: unknown): ErrorModel => {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   (window as any).g_error = error;
 
   if (typeof error === "string") {
