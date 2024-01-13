@@ -1,3 +1,4 @@
+import { Message, MessageHeader } from "semantic-ui-react";
 import { ErrorModel } from "../ErrorModel.js";
 
 // react-player onError
@@ -13,13 +14,15 @@ export const ErrorView = (props: ErrorProps) => {
 
   const model = ErrorModel.from(error);
   return (
-    <>
-      <h2>
-        {model.name}
-        <small>{model.message}</small>
-      </h2>
+    <Message negative>
+      <MessageHeader>
+        Error: {model.name}, typeof={typeof error}
+      </MessageHeader>
+      <p>{model.message}</p>
       <pre>{model.stack}</pre>
+
       <pre>{JSON.stringify(model.cause, null, 2)}</pre>
-    </>
+      <pre>{JSON.stringify(props.data, null, 2)}</pre>
+    </Message>
   );
 };
