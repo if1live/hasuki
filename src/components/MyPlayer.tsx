@@ -207,17 +207,13 @@ export const MyPlayer = (props: Props) => {
     setPlayed(v);
   };
 
-  const handleSeekMouseDown = (
-    e: React.MouseEvent<HTMLInputElement, MouseEvent>,
-  ) => {
+  const handleSeekStart = (target: HTMLInputElement) => {
     setSeeking(true);
   };
 
-  const handleSeekMouseUp = (
-    e: React.MouseEvent<HTMLInputElement, MouseEvent>,
-  ) => {
+  const handleSeekEnd = (target: HTMLInputElement) => {
     setSeeking(false);
-    const v = parseFloat((e.target as any).value);
+    const v = parseFloat(target.value);
     ref.current?.seekTo(v, "fraction");
   };
 
@@ -286,9 +282,11 @@ export const MyPlayer = (props: Props) => {
             max={0.999999}
             step="any"
             value={played}
-            onMouseDown={handleSeekMouseDown}
             onChange={handleSeekChange}
-            onMouseUp={handleSeekMouseUp}
+            onMouseDown={(e) => handleSeekStart(e.currentTarget)}
+            onMouseUp={(e) => handleSeekEnd(e.currentTarget)}
+            onTouchStart={(e) => handleSeekStart(e.currentTarget)}
+            onTouchEnd={(e) => handleSeekEnd(e.currentTarget)}
             style={{ width: "100%" }}
           />
         </div>
