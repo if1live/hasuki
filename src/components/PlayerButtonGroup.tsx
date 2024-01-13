@@ -88,7 +88,7 @@ export const PlayerButtonGroup = (props: Props) => {
         </div>
       </div>
 
-      <ButtonGroup icon size="large">
+      <ButtonGroup icon>
         <Button onClick={props.onPreviousTrack} disabled={isFirst}>
           <Icon name="step backward" />
         </Button>
@@ -114,9 +114,8 @@ export const PlayerButtonGroup = (props: Props) => {
         </Button>
       </ButtonGroup>
 
-      <ButtonGroup size="large" floated="right">
-        <Button icon labelPosition="left" onClick={props.onNextPlayerMode}>
-          <Icon name="sync" />
+      <ButtonGroup floated="right">
+        <Button icon onClick={props.onNextPlayerMode}>
           {props.playerMode}
         </Button>
       </ButtonGroup>
