@@ -317,6 +317,7 @@ export const MyPlayer = (props: Props) => {
           <progress max={1} value={loaded} style={{ width: "100%" }} />
         </div>
       </div>
+
       <Table compact="very" size="small" selectable unstackable>
         <Table.Header>
           <TableRow>
@@ -372,6 +373,14 @@ export const MyPlayer = (props: Props) => {
           </button>
         </p>
       </div>
+
+      <dl>
+        <dt>fake</dt>
+        <dd>{playlist.fake}</dd>
+
+        <dt>mix</dt>
+        <dd>{playlist.mix}</dd>
+      </dl>
     </div>
   );
 };

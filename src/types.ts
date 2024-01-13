@@ -35,6 +35,8 @@ export const Playlist = z.object({
   channel: Channel,
   url: z.string(),
   videos: z.array(Video),
+  fake: z.boolean(),
+  mix: z.boolean().optional(),
 });
 export type Playlist = z.infer<typeof Playlist>;
 
@@ -59,6 +61,8 @@ export const parse_playlist = (data: YouTube.Playlist): Playlist => {
     channel: data.channel,
     url: data.url,
     videos,
+    fake: data.fake,
+    mix: data.mix,
   });
 };
 
