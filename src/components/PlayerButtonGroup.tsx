@@ -9,6 +9,7 @@ import {
   Input,
   Menu,
 } from "semantic-ui-react";
+import { PlayerTag } from "../types.js";
 import { Duration } from "./Duration.js";
 
 interface Props {
@@ -28,6 +29,9 @@ interface Props {
   onSeekChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSeekStart: (target: HTMLInputElement) => void;
   onSeekEnd: (target: HTMLInputElement) => void;
+
+  playerMode: PlayerTag;
+  onNextPlayerMode: () => void;
 }
 
 export const PlayerButtonGroup = (props: Props) => {
@@ -84,7 +88,7 @@ export const PlayerButtonGroup = (props: Props) => {
         </div>
       </div>
 
-      <ButtonGroup icon size="huge">
+      <ButtonGroup icon size="large">
         <Button onClick={props.onPreviousTrack} disabled={isFirst}>
           <Icon name="step backward" />
         </Button>
@@ -108,9 +112,12 @@ export const PlayerButtonGroup = (props: Props) => {
         <Button onClick={props.onShuffle}>
           <Icon name="shuffle" />
         </Button>
+      </ButtonGroup>
 
-        <Button>
-          <Icon name="add" />
+      <ButtonGroup size="large" floated="right">
+        <Button icon labelPosition="left" onClick={props.onNextPlayerMode}>
+          <Icon name="sync" />
+          {props.playerMode}
         </Button>
       </ButtonGroup>
     </div>

@@ -218,6 +218,13 @@ export const MyPlayer = (props: Props) => {
     ref.current?.seekTo(v, "fraction");
   };
 
+  const swapPlayerMode = () => {
+    const list = [playerTag_music, playerTag_plain] as const;
+    const idx = list.findIndex((x) => x === playerMode) ?? 0;
+    const next = (idx + 1) % list.length;
+    setPlayerMode(list[next]);
+  };
+
   const video = videos.at(currentVideoIndex);
   if (!video) {
     return <div>no video</div>;
@@ -323,25 +330,6 @@ export const MyPlayer = (props: Props) => {
         </Table.Body>
       </Table>
 
-      <div>
-        <h2>preferences</h2>
-        <p>
-          current player mode: {playerMode}
-          <br />
-          <button
-            onClick={() => {
-              const list = [playerTag_music, playerTag_plain] as const;
-              const idx = list.findIndex((x) => x === playerMode) ?? 0;
-              const next = (idx + 1) % list.length;
-              setPlayerMode(list[next]);
-            }}
-            type="button"
-          >
-            switch
-          </button>
-        </p>
-      </div>
-
       <dl>
         <dt>fake</dt>
         <dd>{playlist.fake ? "true" : "false"}</dd>
@@ -349,6 +337,14 @@ export const MyPlayer = (props: Props) => {
         <dt>mix</dt>
         <dd>{playlist.mix ? "true" : "nil"}</dd>
       </dl>
+
+      {/* TODO: 귀찮아서 대충 때움 */}
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
 
       <PlayerButtonGroup
         onPreviousTrack={handlePreviousTrack}
@@ -366,6 +362,8 @@ export const MyPlayer = (props: Props) => {
         onSeekChange={handleSeekChange}
         onSeekStart={handleSeekStart}
         onSeekEnd={handleSeekEnd}
+        playerMode={playerMode}
+        onNextPlayerMode={swapPlayerMode}
       />
     </div>
   );
