@@ -1,4 +1,4 @@
-import React, { MutableRefObject, Ref } from "react";
+import React from "react";
 import ReactPlayerPkg from "react-player";
 import * as R from "remeda";
 import useSWR from "swr";
@@ -21,7 +21,7 @@ export type PlayerProps = {
 >;
 
 export const YouTubeMusicPlayer = React.forwardRef<
-  MutableRefObject<ReactPlayerPkg.default | null>,
+  ReactPlayerPkg.default,
   PlayerProps
 >((props, ref) => {
   const { video } = props;
@@ -58,7 +58,7 @@ export const YouTubeMusicPlayer = React.forwardRef<
 
   return (
     <ReactPlayer
-      ref={ref as any}
+      ref={ref}
       playing={props.playing}
       url={format.url}
       volume={props.volume}

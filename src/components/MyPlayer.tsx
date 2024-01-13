@@ -32,7 +32,7 @@ type Props = {
 export const MyPlayer = (props: Props) => {
   const { playlist } = props;
 
-  const ref = useRef<ReactPlayerPkg.default | null>(null);
+  const ref = useRef<ReactPlayerPkg.default>(null);
 
   // shuffle 필요해서 상세 목록은 data에서 직접 쓰지 않는다
   const [videos, setVideos] = useState(playlist.videos);
@@ -243,10 +243,10 @@ export const MyPlayer = (props: Props) => {
       })}
 
       {playerMode === playerTag_plain ? (
-        <PlainPlayer ref={ref as any} {...playerProps} />
+        <PlainPlayer ref={ref} {...playerProps} />
       ) : null}
       {playerMode === playerTag_music ? (
-        <YouTubeMusicPlayer ref={ref as any} {...playerProps} />
+        <YouTubeMusicPlayer ref={ref} {...playerProps} />
       ) : null}
 
       <div>
