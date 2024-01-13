@@ -1,11 +1,9 @@
 import useSWRImmutable from "swr/immutable";
 import { MyPlayer } from "../components/MyPlayer.js";
 import { fetcher_playlist } from "../fetchers.js";
-import { PlayerTag } from "../types.js";
 
 interface Props {
   playlistId: string;
-  player: PlayerTag;
 }
 
 export const PlaylistPage = (props: Props) => {
@@ -37,5 +35,5 @@ export const PlaylistPage = (props: Props) => {
   }
 
   const { playlist } = data;
-  return <MyPlayer playlist={playlist} player={props.player} />;
+  return <MyPlayer playlist={playlist} />;
 };

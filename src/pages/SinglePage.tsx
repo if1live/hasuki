@@ -5,7 +5,6 @@ import { PlayerTag } from "../types.js";
 
 interface Props {
   videoId: string;
-  player: PlayerTag;
 }
 
 export const SinglePage = (props: Props) => {
@@ -34,5 +33,5 @@ export const SinglePage = (props: Props) => {
   }
 
   const { playlist } = data;
-  return <MyPlayer playlist={playlist} player={props.player} />;
+  return <MyPlayer playlist={playlist} />;
 };

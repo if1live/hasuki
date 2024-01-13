@@ -26,17 +26,18 @@ import { VideoLink } from "./links.js";
 
 type Props = {
   playlist: Playlist;
-  player: PlayerTag;
 };
 
 export const MyPlayer = (props: Props) => {
-  const { playlist, player } = props;
+  const { playlist } = props;
 
   const ref = useRef<ReactPlayerPkg.default | null>(null);
 
   // shuffle 필요해서 상세 목록은 data에서 직접 쓰지 않는다
   const [videos, setVideos] = useState(playlist.videos);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+  const [playerMode, setPlayerMode] = useState<PlayerTag>(playerTag_music);
 
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(1.0);
@@ -223,10 +224,10 @@ export const MyPlayer = (props: Props) => {
 
   return (
     <div>
-      {player === playerTag_plain ? (
+      {playerMode === playerTag_plain ? (
         <PlainPlayer ref={ref as any} {...playerProps} />
       ) : null}
-      {player === playerTag_music ? (
+      {playerMode === playerTag_music ? (
         <YouTubeMusicPlayer ref={ref as any} {...playerProps} />
       ) : null}
 
@@ -330,6 +331,25 @@ export const MyPlayer = (props: Props) => {
           })}
         </Table.Body>
       </Table>
+
+      <div>
+        <h2>preferences</h2>
+        <p>
+          current player mode: {playerMode}
+          <br />
+          <button
+            onClick={() => {
+              const list = [playerTag_music, playerTag_plain] as const;
+              const idx = list.findIndex((x) => x === playerMode) ?? 0;
+              const next = (idx + 1) % list.length;
+              setPlayerMode(list[next]);
+            }}
+            type="button"
+          >
+            switch
+          </button>
+        </p>
+      </div>
     </div>
   );
 };
