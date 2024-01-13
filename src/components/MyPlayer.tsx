@@ -5,6 +5,7 @@ import * as R from "remeda";
 import {
   Button,
   ButtonProps,
+  Container,
   Icon,
   Image,
   Table,
@@ -257,40 +258,9 @@ export const MyPlayer = (props: Props) => {
         <span>
           video: <VideoLink videoId={video.id} />
         </span>
-        <br />
-        <Duration seconds={duration * played} /> |{" "}
-        <Duration seconds={duration * (1 - played)} /> |{" "}
-        <Duration seconds={duration} />
       </p>
-      <PlayerButtonGroup
-        onPreviousTrack={handlePreviousTrack}
-        onNextTrack={handleNextTrack}
-        onPlayPauseToggle={handlePlayPauseToggle}
-        onSeekForward={handleSeekForward}
-        onSeekBackward={handleSeekBackward}
-        onShuffle={handleShuffle}
-        playing={playing}
-        currentTrack={currentVideoIndex}
-        trackCount={videos.length}
-      />
-      <div>
-        <div>
-          <label>Seek</label>
-          <input
-            type="range"
-            min={0}
-            max={0.999999}
-            step="any"
-            value={played}
-            onChange={handleSeekChange}
-            onMouseDown={(e) => handleSeekStart(e.currentTarget)}
-            onMouseUp={(e) => handleSeekEnd(e.currentTarget)}
-            onTouchStart={(e) => handleSeekStart(e.currentTarget)}
-            onTouchEnd={(e) => handleSeekEnd(e.currentTarget)}
-            style={{ width: "100%" }}
-          />
-        </div>
 
+      <div>
         <div>
           <label>Volume: {volume.toFixed(3)}</label>
           <input
@@ -379,6 +349,24 @@ export const MyPlayer = (props: Props) => {
         <dt>mix</dt>
         <dd>{playlist.mix ? "true" : "nil"}</dd>
       </dl>
+
+      <PlayerButtonGroup
+        onPreviousTrack={handlePreviousTrack}
+        onNextTrack={handleNextTrack}
+        onPlayPauseToggle={handlePlayPauseToggle}
+        onSeekForward={handleSeekForward}
+        onSeekBackward={handleSeekBackward}
+        onShuffle={handleShuffle}
+        title={video.title}
+        playing={playing}
+        currentTrack={currentVideoIndex}
+        trackCount={videos.length}
+        played={played}
+        duration={duration}
+        onSeekChange={handleSeekChange}
+        onSeekStart={handleSeekStart}
+        onSeekEnd={handleSeekEnd}
+      />
     </div>
   );
 };
