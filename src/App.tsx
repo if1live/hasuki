@@ -69,11 +69,20 @@ function App() {
   };
   */
 
+  const handleHome = () =>
+    setQueryParams({
+      list: undefined,
+      v: undefined,
+    });
+
   return (
     <Container text>
       {/* TODO: react-router? */}
       <h1>
-        <a href="/">hasuki</a>
+        {/* biome-ignore lint/a11y/useValidAnchor: <explanation> */}
+        <a href="#" onClick={handleHome}>
+          hasuki
+        </a>
       </h1>
 
       <p>
@@ -82,8 +91,6 @@ function App() {
             playlist: <PlaylistLink playlistId={playlistId} />
           </span>
         ) : null}
-        <br />
-
         {videoId ? (
           <span>
             video: <MediaLink provider="yt" id={videoId} />
