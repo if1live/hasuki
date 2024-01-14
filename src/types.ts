@@ -48,7 +48,13 @@ const cast_thumbnail = (
   data: YouTube.Thumbnail | undefined,
 ): Thumbnail | undefined => {
   if (!data) {
-    return undefined;
+    return;
+  }
+
+  // 일부 재생목록은 썸네일 정보가 비어있다.
+  // Thumbnail { id: null, width: 0, height: 0, url: null }
+  if (!data.url) {
+    return;
   }
 
   const input: MyPartial<Thumbnail> = {

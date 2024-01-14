@@ -40,6 +40,7 @@ export default async function handler(
       }
     }
   } catch (error) {
+    console.error(error);
     return response.status(400).json(error);
   }
 }
