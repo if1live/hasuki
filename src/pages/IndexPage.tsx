@@ -121,7 +121,12 @@ export const IndexPage = (props: Props) => {
         </FormField>
 
         <ButtonGroup>
-          <Button positive onClick={handlePlay} disabled={!enabled_play}>
+          <Button
+            positive
+            onClick={handlePlay}
+            disabled={!enabled_play}
+            type="button"
+          >
             <Icon name="music" />
             play
           </Button>

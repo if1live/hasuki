@@ -16,7 +16,14 @@ function App() {
   // react-router 안쓰고 query string 손대는 편법
   // https://github.com/pbeshai/use-query-params/issues/237#issuecomment-1825975483
   const [query, setQuery] = useQueryParams(myQueryParams);
-  const { list: playlistId, v: videoId, player: playerTag, flag, note } = query;
+  const {
+    list: playlistId,
+    v: videoId,
+    autoplay,
+    player: playerTag,
+    flag,
+    note,
+  } = query;
   const [loc, setLocation] = useState(location.search);
 
   const setQueryParams: RedirectFn = (params) => {
@@ -73,6 +80,7 @@ function App() {
     setQueryParams({
       list: undefined,
       v: undefined,
+      autoplay: undefined,
     });
 
   return (
@@ -103,11 +111,16 @@ function App() {
         <PlaylistPage
           playlistId={playlistId}
           videoId={videoId}
+          autoplay={autoplay ?? false}
           redirect={setQueryParams}
         />
       )}
       {videoId && !playlistId && (
-        <SinglePage videoId={videoId} redirect={setQueryParams} />
+        <SinglePage
+          videoId={videoId}
+          autoplay={autoplay ?? false}
+          redirect={setQueryParams}
+        />
       )}
 
       {/* <MyPlayer playlist={playlist} /> */}

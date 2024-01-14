@@ -7,11 +7,13 @@ import { RedirectFn } from "../routes.js";
 interface Props {
   playlistId: string;
   videoId: string | null | undefined;
+
+  autoplay: boolean;
   redirect: RedirectFn;
 }
 
 export const PlaylistPage = (props: Props) => {
-  const { playlistId, videoId, redirect } = props;
+  const { playlistId, videoId } = props;
 
   const search = new URLSearchParams();
   search.append("action", "playlist");
@@ -35,5 +37,5 @@ export const PlaylistPage = (props: Props) => {
   }
 
   const { playlist } = data;
-  return <MyPlayer playlist={playlist} redirect={redirect} />;
+  return <MyPlayer playlist={playlist} {...props} />;
 };

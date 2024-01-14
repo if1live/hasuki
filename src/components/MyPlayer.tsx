@@ -24,11 +24,12 @@ import { MediaLink } from "./links.js";
 
 type Props = {
   redirect: RedirectFn;
+  autoplay: boolean;
   playlist: Playlist;
 };
 
 export const MyPlayer = (props: Props) => {
-  const { playlist } = props;
+  const { playlist, autoplay } = props;
 
   const ref = useRef<ReactPlayerPkg.default>(null);
 
@@ -44,7 +45,7 @@ export const MyPlayer = (props: Props) => {
   const [playerMode, setPlayerMode] = useState<PlayerTag>(playerTag_music);
 
   // 실사용에서는 true가 편한데 개발할때 true면 뭐 고칠떄마다 새로고침되서 false가 낫다.
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(autoplay);
 
   const [volume, setVolume] = useState(1.0);
   const [played, setPlayed] = useState(0);
@@ -235,6 +236,7 @@ export const MyPlayer = (props: Props) => {
     props.redirect({
       list: playlist.id,
       v: v,
+      autoplay: playing,
     });
   };
 
