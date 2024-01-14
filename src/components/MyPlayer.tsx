@@ -132,10 +132,33 @@ export const MyPlayer = (props: Props) => {
   useMediaMeta(metadata);
 
   const onEnded = () => {
+    if (playlist.mix) {
+      onEnded_YouTubeMix();
+    } else {
+      onEnded_Normal();
+    }
+  };
+
+  const onEnded_Normal = () => {
     const nextIdx = currentVideoIndex + 1;
     if (nextIdx >= videos.length) {
       // 플레이리스트 loop는 고려하지 않았다.
       setPlaying(false);
+    } else {
+      setCurrentVideoIndex(nextIdx);
+    }
+  };
+
+  const onEnded_YouTubeMix = () => {
+    const nextIdx = currentVideoIndex + 1;
+    const next = videos.at(nextIdx);
+
+    // 마지막 곡을 재생할때가 되면 플레이리스트 교체
+    // 마지막 곡이 새로운 플레이리스트의 첫번째 곡이 된다.
+    const last = videos.at(videos.length - 1);
+
+    if (last && last === next) {
+      handleYouTubeMix(last?.id);
     } else {
       setCurrentVideoIndex(nextIdx);
     }
@@ -202,6 +225,17 @@ export const MyPlayer = (props: Props) => {
     const idx = list.findIndex((x) => x === playerMode) ?? 0;
     const next = (idx + 1) % list.length;
     setPlayerMode(list[next]);
+  };
+
+  const handleYouTubeMix = (v: string) => {
+    const search = new URLSearchParams();
+    search.append("list", playlist.id);
+    search.append("v", v);
+
+    // TODO: 더 멀쩡한 리다이렉트?
+    const baseUrl = import.meta.env.BASE_URL;
+    const nextUrl = `${baseUrl}?${search}`;
+    window.location.href = nextUrl;
   };
 
   const video = videos.at(currentVideoIndex);
@@ -294,6 +328,23 @@ export const MyPlayer = (props: Props) => {
         <dt>mix</dt>
         <dd>{playlist.mix ? "true" : "nil"}</dd>
       </dl>
+
+      <div>
+        <h3>development</h3>
+        {playlist.mix ? (
+          <button
+            onClick={() => {
+              const last = videos.at(videos.length - 1);
+              if (last) {
+                handleYouTubeMix(last.id);
+              }
+            }}
+            type="button"
+          >
+            mix
+          </button>
+        ) : null}
+      </div>
 
       {/* TODO: 귀찮아서 대충 때움 */}
       <br />
