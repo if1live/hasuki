@@ -32,23 +32,24 @@ function App() {
         <a href="/">hasuki</a>
       </h1>
 
-      <span>
+      <p>
         {playlistId ? (
           <span>
             playlist: <PlaylistLink playlistId={playlistId} />
           </span>
         ) : null}
+        <br />
 
         {videoId ? (
           <span>
             video: <VideoLink videoId={videoId} />
           </span>
         ) : null}
-      </span>
+      </p>
 
       {page_index && <IndexPage />}
-      {playlistId && <PlaylistPage playlistId={playlistId} />}
-      {videoId && <SinglePage videoId={videoId} />}
+      {playlistId && <PlaylistPage playlistId={playlistId} videoId={videoId} />}
+      {videoId && !playlistId && <SinglePage videoId={videoId} />}
 
       <footer>
         <a

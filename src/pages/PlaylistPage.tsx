@@ -5,15 +5,20 @@ import { fetcher_playlist } from "../fetchers.js";
 
 interface Props {
   playlistId: string;
+  videoId: string | null | undefined;
 }
 
 export const PlaylistPage = (props: Props) => {
-  const { playlistId } = props;
+  const { playlistId, videoId } = props;
 
-  const { data, error, isLoading } = useSWRImmutable(
-    playlistId,
-    fetcher_playlist,
-  );
+  const search = new URLSearchParams();
+  search.append("action", "playlist");
+  search.append("list", playlistId);
+  if (videoId) {
+    search.append("v", videoId);
+  }
+  const url = `/api/simple?${search}`;
+  const { data, error, isLoading } = useSWRImmutable(url, fetcher_playlist);
 
   if (error) {
     return <ErrorView error={error} />;

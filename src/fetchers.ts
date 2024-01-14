@@ -2,25 +2,30 @@ import * as YouTube from "youtube-sr";
 import { VideoModel } from "../api/video.js";
 import { Playlist } from "./types.js";
 
-export const fetcher_playlist = async (
-  ...args: string[]
-): Promise<{ playlist: Playlist }> => {
-  const [id, ...rest] = args;
+// fetcher 내부 구현까지 다를 필요는 없을듯
+// 그래도 리턴 타입을 명시하려고 나눴다
+export const fetcher_generic = async <T>(...args: string[]): Promise<T> => {
+  const [url, ...rest] = args;
 
-  const url = `/api/simple?action=playlist&id=${id}`;
   const res = await fetch(url);
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error("fetcher_playlist failed", {
+    throw new Error("fetcher failed", {
       cause: {
-        id,
+        url,
         status: res.status,
         data,
       },
     });
   }
   return data;
+};
+
+export const fetcher_playlist = async (
+  ...args: string[]
+): Promise<{ playlist: Playlist }> => {
+  return await fetcher_generic(...args);
 };
 
 export const fetcher_video = async (
@@ -30,39 +35,11 @@ export const fetcher_video = async (
   adaptiveFormats: YouTube.VideoStreamingFormatAdaptive[];
   formats: YouTube.VideoStreamingFormat[];
 }> => {
-  const [id, ...rest] = args;
-
-  const url = `/api/simple?action=video&id=${id}`;
-  const res = await fetch(url);
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error("fetcher_video failed", {
-      cause: {
-        id,
-        status: res.status,
-        data,
-      },
-    });
-  }
-  return data;
+  return await fetcher_generic(...args);
 };
 
 export const fetcher_ytdl = async (...args: string[]): Promise<VideoModel> => {
-  const [url, ...rest] = args;
-  const res = await fetch(url);
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error("fetcher_ytdl failed", {
-      cause: {
-        url,
-        status: res.status,
-        data,
-      },
-    });
-  }
-  return data;
+  return await fetcher_generic(...args);
 };
 
 type FetchFn = (typeof globalThis)["fetch"];

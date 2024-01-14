@@ -86,9 +86,12 @@ function loadVideoInfo(videoId) {
  * @param playlistId {string}
  */
 function loadPlaylistInfo(playlistId) {
-  const results = YouTube.Playlists.list("id,contentDetails,localizations,snippet,status", {
-    id: playlistId,
-  });
+  const results = YouTube.Playlists.list(
+    "id,contentDetails,localizations,snippet,status",
+    {
+      id: playlistId,
+    },
+  );
   if (results.items.length === 0) {
     return;
   }
@@ -124,22 +127,27 @@ function handleEdit(row, col) {
   if (url) {
     const parsed = parseYouTubeUrl(url);
     console.log(url, parsed);
-    if (!parsed) { return; }
+    if (!parsed) {
+      return;
+    }
 
     if (parsed.videoId) {
       const info = loadVideoInfo(parsed.videoId);
-      if (!info) { return; }
+      if (!info) {
+        return;
+      }
 
       writeRecord_video(row, info);
     }
 
     if (parsed.playlistId) {
       const info = loadPlaylistInfo(parsed.playlistId);
-      if (!info) { return; }
+      if (!info) {
+        return;
+      }
 
       writeRecord_playlist(row, info);
     }
-
   } else {
     clearRecord(row);
   }

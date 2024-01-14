@@ -4,7 +4,15 @@ import { fetch_playlist, fetch_video } from "../src/apis.js";
 
 const schema = z.object({
   action: z.enum(["playlist", "video"]),
-  id: z.string(),
+});
+
+const schema_playlist = z.object({
+  list: z.string(),
+  v: z.string().optional(),
+});
+
+const schema_video = z.object({
+  v: z.string(),
 });
 
 export default async function handler(
@@ -18,14 +26,16 @@ export default async function handler(
   }
 
   try {
-    const { action, id } = input.data;
+    const { action } = input.data;
     switch (action) {
       case "playlist": {
-        const result = await fetch_playlist(id);
+        const req = schema_playlist.parse(request.query);
+        const result = await fetch_playlist(req.list, req.v);
         return response.status(200).json(result);
       }
       case "video": {
-        const result = await fetch_video(id);
+        const req = schema_video.parse(request.query);
+        const result = await fetch_video(req.v);
         return response.status(200).json(result);
       }
     }

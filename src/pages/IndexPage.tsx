@@ -9,7 +9,6 @@ import {
 } from "semantic-ui-react";
 import hasukiLogo from "../assets/hero.webp";
 import { parseYouTubeUrl } from "../links.js";
-import { PlayerTag, playerTag_music, playerTag_plain } from "../types.js";
 
 export const IndexPage = () => {
   // TODO: form library?
@@ -34,15 +33,15 @@ export const IndexPage = () => {
     const parsed = parseYouTubeUrl(text);
     if (parsed) {
       if (parsed.playlistId) {
-        return setPlaylistId(parsed.playlistId);
+        setPlaylistId(parsed.playlistId);
       }
       if (parsed.videoId) {
-        return setVideoId(parsed.videoId);
+        setVideoId(parsed.videoId);
       }
+    } else {
+      setPlaylistId("");
+      setVideoId("");
     }
-    // else...
-    setPlaylistId("");
-    setVideoId("");
   };
 
   const handleReset = () => {
@@ -51,20 +50,7 @@ export const IndexPage = () => {
     setYoutubeUrl("");
   };
 
-  // TODO: query string? redirect?
-  const fn_playlist = (id: string) => {
-    const search = new URLSearchParams();
-    search.append("list", id);
-    return fn_redirect(search);
-  };
-
-  const fn_video = (id: string) => {
-    const search = new URLSearchParams();
-    search.append("v", id);
-    return fn_redirect(search);
-  };
-
-  const fn_redirect = (search: URLSearchParams) => {
+  const redirect = (search: URLSearchParams) => {
     const baseUrl = import.meta.env.BASE_URL;
     const q = search.toString();
     const nextUrl = `${baseUrl}?${q}`;
@@ -72,14 +58,21 @@ export const IndexPage = () => {
   };
 
   const handlePlay = () => {
+    const search = new URLSearchParams();
     if (playlistId) {
-      return fn_playlist(playlistId);
+      search.append("list", playlistId);
     }
     if (videoId) {
-      return fn_video(videoId);
+      search.append("v", videoId);
     }
-    // TODO: 입력 에러를 밖으로 보여주기?
-    console.log("no input");
+
+    if (search.size === 0) {
+      // TODO: 입력 에러를 밖으로 보여주기?
+      console.log("no input");
+      return;
+    }
+
+    return redirect(search);
   };
 
   const enabled_play = playlistId || videoId;
@@ -96,9 +89,9 @@ export const IndexPage = () => {
           <input
             type="url"
             placeholder="youtube url"
-            autoComplete="false"
-            autoCapitalize="false"
-            autoCorrect="false"
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
             onChange={onChange_youtubeUrl}
             value={youtubeUrl}
           />
@@ -109,9 +102,9 @@ export const IndexPage = () => {
           <input
             type="text"
             placeholder="youtube playlist id (ex: PLqeVDqAa1AFbY2JCCVapGggt_pbeMIlDX)"
-            autoComplete="false"
-            autoCapitalize="false"
-            autoCorrect="false"
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
             onChange={onChange_playlist}
             value={playlistId}
           />
@@ -122,9 +115,9 @@ export const IndexPage = () => {
           <input
             type="text"
             placeholder="youtube video id (ex: P1cyCAUTWVg)"
-            autoComplete="false"
-            autoCapitalize="false"
-            autoCorrect="false"
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
             onChange={onChange_video}
             value={videoId}
           />

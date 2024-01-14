@@ -36,14 +36,39 @@ playnext 에서 사용되는 seed?로 추정. playnext는 1씩 올렸을떄 순�
 mix의 경우는 끝에 도달했을떄 다음 리스트를 읽는 식으로 작동하면 될듯?
 */
 
-export const fetch_playlist = async (
-  id: string,
-): Promise<{ playlist: Playlist }> => {
-  // TODO: 모바일 mix 흉내내는게 pc mix쪽보다 간편해서
+type PlaylistFn = (
+  playlistId: string,
+  videoId: string | undefined,
+) => Promise<{ playlist: Playlist }>;
+
+export const fetch_playlist: PlaylistFn = async (playlistId, videoId) => {
+  return videoId
+    ? fetch_playlist_mix(playlistId, videoId)
+    : fetch_playlist_real(playlistId);
+};
+
+const fetch_playlist_mix = async (playlistId: string, videoId: string) => {
+  const search = new URLSearchParams([
+    ["list", playlistId],
+    ["v", videoId],
+    ["start_radio", "1"],
+  ]);
+  const url = `https://www.youtube.com/watch?${search}`;
+  const playlist = await YouTube.getPlaylist(url, {
+    fetchAll: true,
+  });
+  const parsed = parse_playlist(playlist);
+  return {
+    playlist: parsed,
+  };
+};
+
+const fetch_playlist_real = async (playlistId: string) => {
+  // 모바일 mix 흉내내는게 pc mix쪽보다 간편해서
   // TOOD: mix의 반복 재생을 흉내낼 방법? 연속 재생하려면 pc처럼 videoId받는게 나을듯?
   const playnext = "1";
   const search = new URLSearchParams([
-    ["list", id],
+    ["list", playlistId],
     ["playnext", playnext],
   ]);
 
