@@ -41,7 +41,7 @@ export const MyPlayer = (props: Props) => {
 
   const [playerMode, setPlayerMode] = useState<PlayerTag>(playerTag_music);
 
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(true);
   const [volume, setVolume] = useState(1.0);
   const [played, setPlayed] = useState(0);
   const [loaded, setLoaded] = useState(0);
