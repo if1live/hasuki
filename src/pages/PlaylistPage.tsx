@@ -2,14 +2,16 @@ import useSWRImmutable from "swr/immutable";
 import { ErrorView } from "../components/ErrorView.js";
 import { MyPlayer } from "../components/MyPlayer.js";
 import { fetcher_playlist } from "../fetchers.js";
+import { RedirectFn } from "../routes.js";
 
 interface Props {
   playlistId: string;
   videoId: string | null | undefined;
+  redirect: RedirectFn;
 }
 
 export const PlaylistPage = (props: Props) => {
-  const { playlistId, videoId } = props;
+  const { playlistId, videoId, redirect } = props;
 
   const search = new URLSearchParams();
   search.append("action", "playlist");
@@ -33,5 +35,5 @@ export const PlaylistPage = (props: Props) => {
   }
 
   const { playlist } = data;
-  return <MyPlayer playlist={playlist} />;
+  return <MyPlayer playlist={playlist} redirect={redirect} />;
 };

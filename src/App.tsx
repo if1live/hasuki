@@ -1,22 +1,34 @@
+import { useEffect, useState } from "react";
 import { Container } from "semantic-ui-react";
-import { StringParam, useQueryParam } from "use-query-params";
+import { useQueryParams } from "use-query-params";
 import "./App.css";
-import { MyPlayer } from "./components/MyPlayer.js";
 import { MediaLink, PlaylistLink } from "./components/index.js";
 import { ExamplePage } from "./pages/ExamplePage.js";
 import { IndexPage } from "./pages/IndexPage.js";
 import { PlaylistPage } from "./pages/PlaylistPage.js";
 import { SinglePage } from "./pages/SinglePage.js";
-import { Playlist } from "./types.js";
+import { RedirectFn, myQueryParams } from "./routes.js";
 
 function App() {
   // TODO: 새로고침 없이 이동하는 방법?
   // youtube와 동일한 key 사용
-  const [playlistId, setPlaylistId] = useQueryParam("list", StringParam);
-  const [videoId, setVideoId] = useQueryParam("v", StringParam);
-  const [playerTag, setPlayerTag] = useQueryParam("player", StringParam);
-  const [flag, setFlag] = useQueryParam("flag", StringParam);
-  const [note, setNote] = useQueryParam("note", StringParam);
+
+  // react-router 안쓰고 query string 손대는 편법
+  // https://github.com/pbeshai/use-query-params/issues/237#issuecomment-1825975483
+  const [query, setQuery] = useQueryParams(myQueryParams);
+  const { list: playlistId, v: videoId, player: playerTag, flag, note } = query;
+  const [loc, setLocation] = useState(location.search);
+
+  const setQueryParams: RedirectFn = (params) => {
+    setQuery(params);
+    setLocation(location.search);
+  };
+
+  useEffect(() => {
+    const updateLocation = () => setLocation(location.search);
+    window.addEventListener("popstate", updateLocation);
+    return () => window.removeEventListener("popstate", updateLocation);
+  }, []);
 
   const page_index = !playlistId && !videoId;
 
@@ -79,9 +91,17 @@ function App() {
         ) : null}
       </p>
 
-      {page_index && <IndexPage />}
-      {playlistId && <PlaylistPage playlistId={playlistId} videoId={videoId} />}
-      {videoId && !playlistId && <SinglePage videoId={videoId} />}
+      {page_index && <IndexPage redirect={setQueryParams} />}
+      {playlistId && (
+        <PlaylistPage
+          playlistId={playlistId}
+          videoId={videoId}
+          redirect={setQueryParams}
+        />
+      )}
+      {videoId && !playlistId && (
+        <SinglePage videoId={videoId} redirect={setQueryParams} />
+      )}
 
       {/* <MyPlayer playlist={playlist} /> */}
 

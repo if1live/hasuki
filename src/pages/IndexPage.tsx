@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as R from "remeda";
 import {
   Button,
   ButtonGroup,
@@ -9,8 +10,13 @@ import {
 } from "semantic-ui-react";
 import hasukiLogo from "../assets/hero.webp";
 import { parseYouTubeUrl } from "../links.js";
+import { MyQueryParams, RedirectFn } from "../routes.js";
 
-export const IndexPage = () => {
+interface Props {
+  redirect: RedirectFn;
+}
+
+export const IndexPage = (props: Props) => {
   // TODO: form library?
   const [playlistId, setPlaylistId] = useState<string>("");
   const [videoId, setVideoId] = useState<string>("");
@@ -50,29 +56,20 @@ export const IndexPage = () => {
     setYoutubeUrl("");
   };
 
-  const redirect = (search: URLSearchParams) => {
-    const baseUrl = import.meta.env.BASE_URL;
-    const q = search.toString();
-    const nextUrl = `${baseUrl}?${q}`;
-    window.location.href = nextUrl;
-  };
-
   const handlePlay = () => {
-    const search = new URLSearchParams();
+    const { redirect } = props;
+
+    const args: MyQueryParams = {};
     if (playlistId) {
-      search.append("list", playlistId);
+      args.list = playlistId;
     }
     if (videoId) {
-      search.append("v", videoId);
+      args.v = videoId;
     }
 
-    if (search.size === 0) {
-      // TODO: 입력 에러를 밖으로 보여주기?
-      console.log("no input");
-      return;
+    if (!R.isEmpty(args)) {
+      redirect(args);
     }
-
-    return redirect(search);
   };
 
   const enabled_play = playlistId || videoId;

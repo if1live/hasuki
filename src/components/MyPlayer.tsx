@@ -4,6 +4,7 @@ import { OnProgressProps } from "react-player/base.js";
 import * as R from "remeda";
 import { Image } from "semantic-ui-react";
 import { useMediaMeta, useMediaSession } from "use-media-session";
+import { RedirectFn } from "../routes.js";
 import {
   PlayerTag,
   Playlist,
@@ -22,6 +23,7 @@ import { PlaylistView } from "./PlaylistView.js";
 import { MediaLink } from "./links.js";
 
 type Props = {
+  redirect: RedirectFn;
   playlist: Playlist;
 };
 
@@ -41,7 +43,9 @@ export const MyPlayer = (props: Props) => {
 
   const [playerMode, setPlayerMode] = useState<PlayerTag>(playerTag_music);
 
-  const [playing, setPlaying] = useState(true);
+  // 실사용에서는 true가 편한데 개발할때 true면 뭐 고칠떄마다 새로고침되서 false가 낫다.
+  const [playing, setPlaying] = useState(false);
+
   const [volume, setVolume] = useState(1.0);
   const [played, setPlayed] = useState(0);
   const [loaded, setLoaded] = useState(0);
@@ -228,14 +232,10 @@ export const MyPlayer = (props: Props) => {
   };
 
   const handleYouTubeMix = (v: string) => {
-    const search = new URLSearchParams();
-    search.append("list", playlist.id);
-    search.append("v", v);
-
-    // TODO: 더 멀쩡한 리다이렉트?
-    const baseUrl = import.meta.env.BASE_URL;
-    const nextUrl = `${baseUrl}?${search}`;
-    window.location.href = nextUrl;
+    props.redirect({
+      list: playlist.id,
+      v: v,
+    });
   };
 
   const video = videos.at(currentVideoIndex);
