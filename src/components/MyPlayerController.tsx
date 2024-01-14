@@ -1,8 +1,4 @@
-import {
-  Button,
-  ButtonGroup,
-  Icon,
-} from "semantic-ui-react";
+import { Button, ButtonGroup, Icon } from "semantic-ui-react";
 import { PlayerTag } from "../types.js";
 import { Duration } from "./Duration.js";
 

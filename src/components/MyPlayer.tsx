@@ -2,14 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactPlayerPkg from "react-player";
 import { OnProgressProps } from "react-player/base.js";
 import * as R from "remeda";
-import {
-  Button,
-  ButtonProps,
-  Icon,
-  Image,
-  Table,
-  TableRow,
-} from "semantic-ui-react";
+import { Image } from "semantic-ui-react";
 import { useMediaMeta, useMediaSession } from "use-media-session";
 import {
   PlayerTag,
@@ -25,6 +18,7 @@ import {
   MyPlayerStrategy_YouTubeMusic,
   PlayerProps,
 } from "./MyPlayerStrategy_YouTubeMusic.js";
+import { PlaylistView } from "./PlaylistView.js";
 import { VideoLink } from "./links.js";
 
 type Props = {
@@ -129,17 +123,6 @@ export const MyPlayer = (props: Props) => {
 
     setPlaying(false);
     setCurrentVideoIndex(0);
-  };
-
-  const handlePlayIndex = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    input: ButtonProps,
-  ) => {
-    const id = input["data-id"];
-    const idx = videos.findIndex((x) => x.id === id);
-
-    setCurrentVideoIndex(idx);
-    setPlaying(true);
   };
 
   useMediaSession({
@@ -294,42 +277,12 @@ export const MyPlayer = (props: Props) => {
         </div>
       </div>
 
-      <Table compact="very" size="small" selectable unstackable>
-        <Table.Header>
-          <TableRow>
-            <th>
-              {playlist.title} ({currentVideoIndex + 1}/{videos.length})
-            </th>
-            <th>duration</th>
-            <th>action</th>
-          </TableRow>
-        </Table.Header>
-        <Table.Body>
-          {videos.map((item, idx) => {
-            const active = currentVideoIndex === idx;
-            return (
-              <TableRow key={item.id} positive={active}>
-                <td>
-                  {item.title}
-                  <br />
-                  <VideoLink videoId={item.id} />
-                </td>
-                <td>{item.durationFormatted}</td>
-                <td>
-                  <Button
-                    size="mini"
-                    icon
-                    onClick={handlePlayIndex}
-                    data-id={item.id}
-                  >
-                    <Icon name="play" />
-                  </Button>
-                </td>
-              </TableRow>
-            );
-          })}
-        </Table.Body>
-      </Table>
+      <PlaylistView
+        title={playlist.title}
+        items={videos}
+        currentIndex={currentVideoIndex}
+        onPlayAt={setCurrentVideoIndex}
+      />
 
       <dl>
         <dt>fake</dt>

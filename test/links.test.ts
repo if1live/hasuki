@@ -37,10 +37,11 @@ describe("parseYouTubeUrl", () => {
     assert.strictEqual(parsed?.playlistId, undefined);
   });
 
-  it('youtube mix', () => {
-    const url = 'https://www.youtube.com/watch?v=oP_E9entrGU&list=RDoP_E9entrGU&start_radio=1';
+  it("youtube mix", () => {
+    const url =
+      "https://www.youtube.com/watch?v=oP_E9entrGU&list=RDoP_E9entrGU&start_radio=1";
     const parsed = parseYouTubeUrl(url);
-    assert.strictEqual(parsed?.videoId, 'oP_E9entrGU');
-    assert.strictEqual(parsed?.playlistId, 'RDoP_E9entrGU');
-  })
+    assert.strictEqual(parsed?.videoId, "oP_E9entrGU");
+    assert.strictEqual(parsed?.playlistId, "RDoP_E9entrGU");
+  });
 });
