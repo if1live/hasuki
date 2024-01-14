@@ -1,10 +1,10 @@
 import React from "react";
 import ReactPlayerPkg from "react-player";
-import { PlayerProps } from "./YouTubeMusicPlayer.js";
+import { PlayerProps } from "./MyPlayerStrategy_YouTubeMusic.js";
 
 const ReactPlayer = ReactPlayerPkg as unknown as typeof ReactPlayerPkg.default;
 
-export const PlainPlayer = React.forwardRef<
+export const MyPlayerStrategy_Plain = React.forwardRef<
   ReactPlayerPkg.default,
   PlayerProps
 >((props, ref) => {

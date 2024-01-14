@@ -1,13 +1,7 @@
 import {
   Button,
   ButtonGroup,
-  ButtonProps,
-  Container,
-  Form,
-  FormField,
   Icon,
-  Input,
-  Menu,
 } from "semantic-ui-react";
 import { PlayerTag } from "../types.js";
 import { Duration } from "./Duration.js";
@@ -34,7 +28,7 @@ interface Props {
   onNextPlayerMode: () => void;
 }
 
-export const PlayerButtonGroup = (props: Props) => {
+export const MyPlayerController = (props: Props) => {
   const { playing, played, duration, onSeekStart, onSeekEnd } = props;
 
   const isFirst = props.currentTrack === 0;

@@ -20,7 +20,7 @@ export type PlayerProps = {
   "onEnded" | "onReady" | "onProgress" | "onSeek" | "onError" | "onDuration"
 >;
 
-export const YouTubeMusicPlayer = React.forwardRef<
+export const MyPlayerStrategy_YouTubeMusic = React.forwardRef<
   ReactPlayerPkg.default,
   PlayerProps
 >((props, ref) => {

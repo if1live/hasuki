@@ -5,7 +5,6 @@ import * as R from "remeda";
 import {
   Button,
   ButtonProps,
-  Container,
   Icon,
   Image,
   Table,
@@ -19,11 +18,13 @@ import {
   playerTag_music,
   playerTag_plain,
 } from "../types.js";
-import { Duration } from "./Duration.js";
 import { ErrorProps, ErrorView } from "./ErrorView.js";
-import { PlainPlayer } from "./PlainPlayer.js";
-import { PlayerButtonGroup } from "./PlayerButtonGroup.js";
-import { PlayerProps, YouTubeMusicPlayer } from "./YouTubeMusicPlayer.js";
+import { MyPlayerController } from "./MyPlayerController.js";
+import { MyPlayerStrategy_Plain } from "./MyPlayerStrategy_Plain.js";
+import {
+  MyPlayerStrategy_YouTubeMusic,
+  PlayerProps,
+} from "./MyPlayerStrategy_YouTubeMusic.js";
 import { VideoLink } from "./links.js";
 
 type Props = {
@@ -251,10 +252,10 @@ export const MyPlayer = (props: Props) => {
       })}
 
       {playerMode === playerTag_plain ? (
-        <PlainPlayer ref={ref} {...playerProps} />
+        <MyPlayerStrategy_Plain ref={ref} {...playerProps} />
       ) : null}
       {playerMode === playerTag_music ? (
-        <YouTubeMusicPlayer ref={ref} {...playerProps} />
+        <MyPlayerStrategy_YouTubeMusic ref={ref} {...playerProps} />
       ) : null}
 
       <div>
@@ -346,7 +347,7 @@ export const MyPlayer = (props: Props) => {
       <br />
       <br />
 
-      <PlayerButtonGroup
+      <MyPlayerController
         onPreviousTrack={handlePreviousTrack}
         onNextTrack={handleNextTrack}
         onPlayPauseToggle={handlePlayPauseToggle}
