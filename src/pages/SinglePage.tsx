@@ -10,12 +10,16 @@ interface Props {
   redirect: RedirectFn;
 }
 
-export const SinglePage = (props: Props) => {
+const toUrl = (props: Pick<Props, "videoId">) => {
   const { videoId } = props;
-
   const search = new URLSearchParams();
+  search.append("action", "video");
   search.append("v", videoId);
-  const url = `/api/simple?${search}`;
+  return `/api/simple?${search}`;
+};
+
+export const SinglePage = (props: Props) => {
+  const url = toUrl(props);
   const { data, error, isLoading } = useSWRImmutable(url, fetcher_video);
 
   if (error) {

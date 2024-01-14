@@ -12,16 +12,19 @@ interface Props {
   redirect: RedirectFn;
 }
 
-export const PlaylistPage = (props: Props) => {
+const toUrl = (props: Pick<Props, "playlistId" | "videoId">) => {
   const { playlistId, videoId } = props;
-
   const search = new URLSearchParams();
   search.append("action", "playlist");
   search.append("list", playlistId);
   if (videoId) {
     search.append("v", videoId);
   }
-  const url = `/api/simple?${search}`;
+  return `/api/simple?${search}`;
+};
+
+export const PlaylistPage = (props: Props) => {
+  const url = toUrl(props);
   const { data, error, isLoading } = useSWRImmutable(url, fetcher_playlist);
 
   if (error) {
