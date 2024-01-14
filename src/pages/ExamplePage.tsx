@@ -1,7 +1,7 @@
 import ReactPlayerPkg from "react-player";
 import useSWR from "swr";
 import { ErrorView } from "../components/ErrorView.js";
-import { VideoLink } from "../components/index.js";
+import { MediaLink } from "../components/index.js";
 import { fetcher_video } from "../fetchers.js";
 
 const ReactPlayer = ReactPlayerPkg as unknown as typeof ReactPlayerPkg.default;
@@ -21,7 +21,7 @@ const Example_NotWorkingInMobile = () => {
   return (
     <div>
       모바일에서 안나오는 영상
-      <VideoLink videoId={videoId} />
+      <MediaLink provider="yt" id={videoId} />
       <ReactPlayer url={`https://www.youtube.com/watch?v=${videoId}`} />
     </div>
   );
@@ -48,7 +48,7 @@ const Example_FetchVideo = (props: {
   return (
     <>
       <h2>
-        dump: <VideoLink videoId={videoId} />
+        dump: <MediaLink provider="yt" id={videoId} />
       </h2>
       <pre>{JSON.stringify(data.adaptiveFormats, null, 2)}</pre>
       <pre>{JSON.stringify(data.formats, null, 2)}</pre>

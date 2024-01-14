@@ -1,6 +1,6 @@
 import { Button, ButtonProps, Icon, Table, TableRow } from "semantic-ui-react";
 import { Video } from "../types.js";
-import { VideoLink } from "./links.js";
+import { MediaLink } from "./links.js";
 
 interface Props {
   title: string;
@@ -42,7 +42,7 @@ export const PlaylistView = (props: Props) => {
               <td>
                 {item.title}
                 <br />
-                <VideoLink videoId={item.id} />
+                <MediaLink {...item} />
               </td>
               <td>{item.durationFormatted}</td>
               <td>

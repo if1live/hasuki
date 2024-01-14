@@ -19,7 +19,7 @@ import {
   PlayerProps,
 } from "./MyPlayerStrategy_YouTubeMusic.js";
 import { PlaylistView } from "./PlaylistView.js";
-import { VideoLink } from "./links.js";
+import { MediaLink } from "./links.js";
 
 type Props = {
   playlist: Playlist;
@@ -250,7 +250,7 @@ export const MyPlayer = (props: Props) => {
       </div>
       <p>
         <span>
-          video: <VideoLink videoId={video.id} />
+          video: <MediaLink {...video} />
         </span>
       </p>
 

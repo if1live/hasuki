@@ -1,11 +1,38 @@
-export const VideoLink = (props: {
-  videoId: string;
+interface MediaProps {
+  id: string;
+}
+
+export const MediaLink = (props: {
+  provider: "yt" | "sc";
+  id: string;
 }) => {
-  const { videoId } = props;
-  const url = `https://www.youtube.com/watch?v=${videoId}`;
+  const { provider } = props;
+  switch (provider) {
+    case "yt":
+      return <MediaLink_YouTube {...props} />;
+    case "sc":
+      return <MedisLink_SoundCloud {...props} />;
+  }
+};
+
+const MedisLink_SoundCloud = (props: MediaProps) => {
+  const { id } = props;
+
+  // https://soundcloud.com/moebyni/clannad-dango-daikazoku
+  const url = `https://soundcloud.com/${id}`;
   return (
     <a href={url} target="_blank" rel="noreferrer">
-      {videoId}
+      {id}
+    </a>
+  );
+};
+
+const MediaLink_YouTube = (props: MediaProps) => {
+  const { id } = props;
+  const url = `https://www.youtube.com/watch?v=${id}`;
+  return (
+    <a href={url} target="_blank" rel="noreferrer">
+      {id}
     </a>
   );
 };
