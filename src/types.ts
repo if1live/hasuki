@@ -4,9 +4,9 @@ import { z } from "zod";
 // youtube-sr 의 타입을 그대로 쓰기에는 question mark 가 많다
 // zod 처리하고 원하는 데이터만 갖고다니자
 export const Thumbnail = z.object({
-  width: z.number().default(0),
-  height: z.number().default(0),
-  url: z.string().nullable(),
+  width: z.number(),
+  height: z.number(),
+  url: z.string(),
 });
 export type Thumbnail = z.infer<typeof Thumbnail>;
 
@@ -23,14 +23,14 @@ export const Video = z.object({
   title: z.string(),
   duration: z.number(),
   durationFormatted: z.string(),
-  thumbnail: Thumbnail,
+  thumbnail: Thumbnail.optional(),
 });
 export type Video = z.infer<typeof Video>;
 
 export const Playlist = z.object({
   id: z.string(),
   title: z.string(),
-  thumbnail: Thumbnail,
+  thumbnail: Thumbnail.optional(),
   channel: Channel,
   url: z.string(),
   videos: z.array(Video),
@@ -44,11 +44,17 @@ type MyPartial<T> = {
   [P in keyof T]: T[P] | undefined;
 };
 
-const cast_thumbnail = (data: YouTube.Thumbnail | undefined): Thumbnail => {
+const cast_thumbnail = (
+  data: YouTube.Thumbnail | undefined,
+): Thumbnail | undefined => {
+  if (!data) {
+    return undefined;
+  }
+
   const input: MyPartial<Thumbnail> = {
-    height: data?.height,
-    width: data?.width,
-    url: data?.url,
+    height: data.height,
+    width: data.width,
+    url: data.url,
   };
   return Thumbnail.parse(input);
 };

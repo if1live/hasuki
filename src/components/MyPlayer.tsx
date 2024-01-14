@@ -58,12 +58,8 @@ export const MyPlayer = (props: Props) => {
       return;
     }
 
-    const fn_artwork = (data: Thumbnail) => {
+    const toArtwork = (data: Thumbnail) => {
       const url = data.url;
-      if (!url) {
-        return;
-      }
-
       let type = undefined;
       if (url.endsWith(".png")) {
         type = "image/png";
@@ -78,10 +74,9 @@ export const MyPlayer = (props: Props) => {
       };
     };
 
-    const artwork = fn_artwork(video.thumbnail);
     const m: MediaMetadataOptions = {
       title: video.title,
-      artwork: artwork ? [artwork] : undefined,
+      artwork: video.thumbnail ? [toArtwork(video.thumbnail)] : undefined,
     };
     setMetadata(m);
   }, [currentVideoIndex, videos]);
@@ -234,16 +229,24 @@ export const MyPlayer = (props: Props) => {
         return <ErrorView key={key} {...m} />;
       })}
 
-      {playerMode === playerTag_plain ? (
+      {/* youtube */}
+      {video.provider === "yt" && playerMode === playerTag_plain ? (
         <MyPlayerStrategy_Plain ref={ref} {...playerProps} />
       ) : null}
-      {playerMode === playerTag_music ? (
+      {video.provider === "yt" && playerMode === playerTag_music ? (
         <MyPlayerStrategy_YouTubeMusic ref={ref} {...playerProps} />
       ) : null}
 
+      {/* soundcloud, ... */}
+      {video.provider !== "yt" && (
+        <MyPlayerStrategy_Plain ref={ref} {...playerProps} />
+      )}
+
       <div>
         <h3>{video.title}</h3>
-        <Image size="large" src={video.thumbnail.url} alt="thumbnail" />
+        {video.thumbnail ? (
+          <Image size="large" src={video.thumbnail.url} alt="thumbnail" />
+        ) : null}
       </div>
       <p>
         <span>
