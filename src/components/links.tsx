@@ -17,11 +17,11 @@ export const MediaLink = (props: {
     case "yt":
       return <MediaLink_YouTube {...props} />;
     case "sc":
-      return <MedisLink_SoundCloud {...props} />;
+      return <MediaLink_SoundCloud {...props} />;
   }
 };
 
-const MedisLink_SoundCloud = (props: MediaProps) => {
+const MediaLink_SoundCloud = (props: MediaProps) => {
   const { id } = props;
 
   // https://soundcloud.com/moebyni/clannad-dango-daikazoku
