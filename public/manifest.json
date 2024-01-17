@@ -3,7 +3,7 @@
   "short_name": "hasuki · youtube audio player",
   "theme_color": "#493e46",
   "background_color": "#493e46",
-  "display": "fullscreen",
+  "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
