@@ -1,6 +1,6 @@
 {
-  "name": "hasuki",
-  "short_name": "hasuki · youtube audio player",
+  "name": "hasuki · youtube audio player",
+  "short_name": "hasuki",
   "theme_color": "#493e46",
   "background_color": "#493e46",
   "display": "standalone",
